@@ -101,6 +101,11 @@ public class Subcubo {
         }
     }
 
+    // Metodo de compatibilidad para versiones previas sin el parametro highlight
+    public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ, int trasX, int trasY, int trasZ, boolean lines) {
+        dibujar(g, escala, anguloX, anguloY, anguloZ, trasX, trasY, trasZ, lines, false);
+    }
+
     public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ, int trasX, int trasY, int trasZ, boolean lines, boolean highlight) {
         double[][] rotadas = new double[8][3];
         for (int i = 0; i < 8; i++) {
@@ -110,9 +115,9 @@ public class Subcubo {
         // Aplicar traslación a los vértices rotados
         double[][] trasladadas = new double[8][3];
         for (int i = 0; i < 8; i++) {
-            trasladadas[i][0] = rotadas[i][0] * escala + this.x + trasX;
-            trasladadas[i][1] = rotadas[i][1] * escala + this.y + trasY;
-            trasladadas[i][2] = rotadas[i][2] * escala + this.z + trasZ;
+            trasladadas[i][0] = rotadas[i][0] * escala + trasX;
+            trasladadas[i][1] = rotadas[i][1] * escala + trasY;
+            trasladadas[i][2] = rotadas[i][2] * escala + trasZ;
             screenVertices[i][0] = (int) trasladadas[i][0];
             screenVertices[i][1] = (int) trasladadas[i][1];
         }
