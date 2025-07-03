@@ -53,6 +53,51 @@ public class Subcubo {
         };
     }
 
+    public void rotateColors(int axis, boolean clockwise) {
+        Color[] c = Arrays.copyOf(colores, colores.length);
+        switch (axis) {
+            case 0: // X axis
+                if (clockwise) {
+                    colores[1] = c[3]; // front = top
+                    colores[2] = c[1]; // bottom = front
+                    colores[0] = c[2]; // back = bottom
+                    colores[3] = c[0]; // top = back
+                } else {
+                    colores[1] = c[2];
+                    colores[2] = c[0];
+                    colores[0] = c[3];
+                    colores[3] = c[1];
+                }
+                break;
+            case 1: // Y axis
+                if (clockwise) {
+                    colores[5] = c[1]; // right = front
+                    colores[0] = c[5]; // back = right
+                    colores[4] = c[0]; // left = back
+                    colores[1] = c[4]; // front = left
+                } else {
+                    colores[4] = c[1];
+                    colores[0] = c[4];
+                    colores[5] = c[0];
+                    colores[1] = c[5];
+                }
+                break;
+            case 2: // Z axis
+                if (clockwise) {
+                    colores[4] = c[3]; // left = top
+                    colores[2] = c[4]; // bottom = left
+                    colores[5] = c[2]; // right = bottom
+                    colores[3] = c[5]; // top = right
+                } else {
+                    colores[5] = c[3];
+                    colores[2] = c[5];
+                    colores[4] = c[2];
+                    colores[3] = c[4];
+                }
+                break;
+        }
+    }
+
     public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ, int trasX, int trasY, int trasZ, boolean lines) {
         double[][] rotadas = new double[8][3];
         for (int i = 0; i < 8; i++) {
