@@ -37,19 +37,14 @@ public class Cubo extends JFrame {
     }
 
     private void setSubcube() {
-        cuboRubik = new Subcubo[3][3][3];  // Cambiar a 3x3x3 para tener 27 subcubos
-
-        int offsetX = -size;
-        int offsetY = -size;
-        int offsetZ = -size;
+        cuboRubik = new Subcubo[3][3][3];
 
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
                 for (int z = 0; z < 3; z++) {
-                    // Ajustar las posiciones para los 27 subcubos
-                    int posX = (int) ((x - 1) * size * escala) + offsetX;
-                    int posY = (int) ((y - 1) * size * escala) + offsetY;
-                    int posZ = (int) ((z - 1) * size * escala) + offsetZ;
+                    int posX = (int) ((x - 1) * size * escala);
+                    int posY = (int) ((y - 1) * size * escala);
+                    int posZ = (int) ((z - 1) * size * escala);
                     cuboRubik[x][y][z] = new Subcubo(posX, posY, posZ, size);
                 }
             }
@@ -144,7 +139,7 @@ public class Cubo extends JFrame {
     private void rotateLayerAnimated(int axis, int layer, boolean clockwise) {
         int dir = clockwise ? 1 : -1;
         double offset = (layer - 1) * size;
-        for (int a = 0; a <= 90; a += 15) {
+        for (int a = 0; a <= 90; a += 10) {
             graficos.clear();
             for (int x = 0; x < 3; x++) {
                 for (int y = 0; y < 3; y++) {
