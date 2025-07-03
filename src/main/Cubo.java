@@ -160,6 +160,7 @@ public class Cubo extends JFrame {
             }
         }
         drawUI();
+        graficos.repaint();
     }
 
     public static void main(String[] args) {
