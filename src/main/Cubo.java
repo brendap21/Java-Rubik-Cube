@@ -202,7 +202,7 @@ public class Cubo extends JFrame {
                         info.x, info.y, (int) info.depth, lines, info.highlight);
             }
             drawUI();
-            graficos.repaint();
+            graficos.render();
 
             ang[0] += 10;
             if (ang[0] > 90) {
@@ -273,7 +273,7 @@ public class Cubo extends JFrame {
             }
         }
         drawUI();
-        graficos.repaint();
+        graficos.render();
     }
 
     private void scrambleAnimation() {
@@ -460,6 +460,7 @@ public class Cubo extends JFrame {
         });
 
         setVisible(true);
+        graficos.initBufferStrategy();
     }
 
     private void drawUI() {
