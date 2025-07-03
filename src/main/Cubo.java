@@ -22,6 +22,7 @@ public class Cubo extends JFrame {
     private Timer timer;
     private int lastX;
     private int lastY;
+    private boolean draggingRight;
 
     public Cubo() {
         initComponents();
@@ -184,17 +185,26 @@ public class Cubo extends JFrame {
         addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mousePressed(java.awt.event.MouseEvent e) {
-                if (javax.swing.SwingUtilities.isRightMouseButton(e)) {
+                draggingRight = javax.swing.SwingUtilities.isRightMouseButton(e);
+                if (draggingRight) {
                     lastX = e.getX();
                     lastY = e.getY();
                 }
+            }
+            @Override
+            public void mouseReleased(java.awt.event.MouseEvent e) {
+                draggingRight = false;
             }
         });
 
         addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             @Override
             public void mouseDragged(java.awt.event.MouseEvent e) {
-                if (javax.swing.SwingUtilities.isRightMouseButton(e)) {
+                // SwingUtilities.isRightMouseButton returns false for drag
+                // events, so check the modifiers to know if the right button
+                // SwingUtilities.isRightMouseButton returns false for drag
+                // events, so we track button state ourselves
+                if (draggingRight) {
                     int dx = e.getX() - lastX;
                     int dy = e.getY() - lastY;
                     anguloY += dx / 2.0;
