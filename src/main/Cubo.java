@@ -11,7 +11,8 @@ public class Cubo extends JFrame {
     private Subcubo[][][] cuboRubik;
     private double anguloX = 30, anguloY = 30, anguloZ = 0; //Angulo de rotacion
     private double escala = 1; // Factor de escala para la separación
-    private int trasX = 430, trasY = 330, trasZ = 0; // Coordenadas de traslacion
+    // Centrar el cubo en la ventana
+    private int trasX = 400, trasY = 300, trasZ = 0; // Coordenadas de traslacion
     private int size = 80;
     private boolean lines = true;
     private boolean ejeSubcubo = false;
@@ -232,7 +233,8 @@ public class Cubo extends JFrame {
             }
         });
 
-        addMouseListener(new java.awt.event.MouseAdapter() {
+        // Registrar eventos de ratón sobre el lienzo de dibujo
+        graficos.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mousePressed(java.awt.event.MouseEvent e) {
                 if (javax.swing.SwingUtilities.isRightMouseButton(e)) {
@@ -259,7 +261,7 @@ public class Cubo extends JFrame {
             }
         });
 
-        addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+        graficos.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             @Override
             public void mouseDragged(java.awt.event.MouseEvent e) {
                 // SwingUtilities.isRightMouseButton returns false for drag
@@ -277,7 +279,7 @@ public class Cubo extends JFrame {
             }
         });
 
-        addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+        graficos.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
             @Override
             public void mouseWheelMoved(java.awt.event.MouseWheelEvent e) {
                 size -= e.getWheelRotation() * 5;
