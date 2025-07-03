@@ -160,7 +160,10 @@ public class Cubo extends JFrame {
     private void rotateLayerAnimated(int axis, int layer, boolean clockwise) {
         int dir = clockwise ? 1 : -1;
         double offset = (layer - 1) * size;
-        for (int a = 0; a <= 90; a += 10) {
+
+        final int[] ang = {0};
+        javax.swing.Timer timer = new javax.swing.Timer(20, null);
+        timer.addActionListener(e -> {
             graficos.clear();
             java.util.List<RenderInfo> infos = new java.util.ArrayList<>();
             for (int x = 0; x < 3; x++) {
@@ -172,17 +175,17 @@ public class Cubo extends JFrame {
                         double posZ = (z - 1) * size;
                         double extraX = 0, extraY = 0, extraZ = 0;
                         if (axis == 0 && x == layer) {
-                            double[] r = rotatePointAroundAxis(new double[]{posX, posY, posZ}, 0, dir * a, offset);
+                            double[] r = rotatePointAroundAxis(new double[]{posX, posY, posZ}, 0, dir * ang[0], offset);
                             posX = r[0]; posY = r[1]; posZ = r[2];
-                            extraX = dir * a;
+                            extraX = dir * ang[0];
                         } else if (axis == 1 && y == layer) {
-                            double[] r = rotatePointAroundAxis(new double[]{posX, posY, posZ}, 1, dir * a, offset);
+                            double[] r = rotatePointAroundAxis(new double[]{posX, posY, posZ}, 1, dir * ang[0], offset);
                             posX = r[0]; posY = r[1]; posZ = r[2];
-                            extraY = dir * a;
+                            extraY = dir * ang[0];
                         } else if (axis == 2 && z == layer) {
-                            double[] r = rotatePointAroundAxis(new double[]{posX, posY, posZ}, 2, dir * a, offset);
+                            double[] r = rotatePointAroundAxis(new double[]{posX, posY, posZ}, 2, dir * ang[0], offset);
                             posX = r[0]; posY = r[1]; posZ = r[2];
-                            extraZ = dir * a;
+                            extraZ = dir * ang[0];
                         }
                         double[] rotatedPos = cuboRubik[x][y][z].rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
                         int finalX = (int) (rotatedPos[0] + trasX);
@@ -200,10 +203,15 @@ public class Cubo extends JFrame {
             }
             drawUI();
             graficos.repaint();
-            try { Thread.sleep(20); } catch (InterruptedException ex) { /* ignore */ }
-        }
-        rotateLayer(axis, layer, clockwise);
-        moverCubo();
+
+            ang[0] += 10;
+            if (ang[0] > 90) {
+                timer.stop();
+                rotateLayer(axis, layer, clockwise);
+                moverCubo();
+            }
+        });
+        timer.start();
     }
 
     private void swapSubcubes(int x1, int y1, int z1, int x2, int y2, int z2) {
