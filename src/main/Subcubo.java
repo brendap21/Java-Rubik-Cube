@@ -10,6 +10,7 @@ public class Subcubo {
     private final int[][] aristas;
     private final Color[] colores;
     private final int[][] caras;
+    private final int[][] screenVertices;
 
     public Subcubo(int x, int y, int z, int size) {
         this.x = x;
@@ -51,6 +52,8 @@ public class Subcubo {
             new Color(135, 206, 235), // azul cielo
             new Color(128, 0, 0)      // tinto
         };
+
+        screenVertices = new int[8][2];
     }
 
     public void rotateColors(int axis, boolean clockwise) {
@@ -98,7 +101,7 @@ public class Subcubo {
         }
     }
 
-    public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ, int trasX, int trasY, int trasZ, boolean lines) {
+    public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ, int trasX, int trasY, int trasZ, boolean lines, boolean highlight) {
         double[][] rotadas = new double[8][3];
         for (int i = 0; i < 8; i++) {
             rotadas[i] = rotar(vertices[i], anguloX, anguloY, anguloZ);
@@ -110,6 +113,8 @@ public class Subcubo {
             trasladadas[i][0] = rotadas[i][0] * escala + this.x + trasX;
             trasladadas[i][1] = rotadas[i][1] * escala + this.y + trasY;
             trasladadas[i][2] = rotadas[i][2] * escala + this.z + trasZ;
+            screenVertices[i][0] = (int) trasladadas[i][0];
+            screenVertices[i][1] = (int) trasladadas[i][1];
         }
 
         // Algoritmo del pintor
@@ -136,6 +141,18 @@ public class Subcubo {
                 }
             }
         }
+
+        if (highlight) {
+            int minX = screenVertices[0][0], maxX = screenVertices[0][0];
+            int minY = screenVertices[0][1], maxY = screenVertices[0][1];
+            for (int i = 1; i < 8; i++) {
+                if (screenVertices[i][0] < minX) minX = screenVertices[i][0];
+                if (screenVertices[i][0] > maxX) maxX = screenVertices[i][0];
+                if (screenVertices[i][1] < minY) minY = screenVertices[i][1];
+                if (screenVertices[i][1] > maxY) maxY = screenVertices[i][1];
+            }
+            g.drawRect(minX, minY, maxX, maxY, Color.YELLOW);
+        }
     }
 
     public double[] rotar(double[] punto, double anguloX, double anguloY, double anguloZ) {
@@ -157,5 +174,30 @@ public class Subcubo {
         resultado[0] = temp;
 
         return resultado;
+    }
+
+    public boolean containsPoint(int px, int py) {
+        for (int[] face : caras) {
+            int[] xs = new int[4];
+            int[] ys = new int[4];
+            for (int i = 0; i < 4; i++) {
+                xs[i] = screenVertices[face[i]][0];
+                ys[i] = screenVertices[face[i]][1];
+            }
+            if (pointInPolygon(px, py, xs, ys)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean pointInPolygon(int x, int y, int[] polyX, int[] polyY) {
+        boolean inside = false;
+        for (int i = 0, j = polyX.length - 1; i < polyX.length; j = i++) {
+            boolean intersect = ((polyY[i] > y) != (polyY[j] > y)) &&
+                    (x < (double)(polyX[j] - polyX[i]) * (y - polyY[i]) / (polyY[j] - polyY[i]) + polyX[i]);
+            if (intersect) inside = !inside;
+        }
+        return inside;
     }
 }

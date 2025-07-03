@@ -18,6 +18,8 @@ public class Cubo extends JFrame {
     private boolean ejeSubcubo = false;
     private int lastX;
     private int lastY;
+    private boolean gameMode = false;
+    private int selX = -1, selY = -1, selZ = -1;
 
     private int[][] buttons = {
         {700, 50, 80, 20},  // front
@@ -105,6 +107,12 @@ public class Cubo extends JFrame {
         cuboRubik = nuevo;
     }
 
+    private void swapSubcubes(int x1, int y1, int z1, int x2, int y2, int z2) {
+        Subcubo tmp = cuboRubik[x1][y1][z1];
+        cuboRubik[x1][y1][z1] = cuboRubik[x2][y2][z2];
+        cuboRubik[x2][y2][z2] = tmp;
+    }
+
     private void moverCubo() {
         if (!ejeSubcubo) {
             graficos.clear();
@@ -134,7 +142,8 @@ public class Cubo extends JFrame {
                         int finalY = (int) (rotatedPos[1] + trasY);
                         int finalZ = (int) (rotatedPos[2] + trasZ);
 
-                        cuboRubik[x][y][z].dibujar(graficos, 1, anguloX, anguloY, anguloZ, finalX, finalY, finalZ, lines);
+                        boolean highlight = gameMode && x == selX && y == selY && z == selZ;
+                        cuboRubik[x][y][z].dibujar(graficos, 1, anguloX, anguloY, anguloZ, finalX, finalY, finalZ, lines, highlight);
                     }
                 }
             }
@@ -144,7 +153,8 @@ public class Cubo extends JFrame {
             for (int x = 0; x < 3; x++) {
                 for (int y = 0; y < 3; y++) {
                     for (int z = 0; z < 3; z++) {
-                        cuboRubik[x][y][z].dibujar(graficos, 1.0, anguloX, anguloY, anguloZ, trasX, trasY, trasZ, lines);
+                        boolean highlight = gameMode && x == selX && y == selY && z == selZ;
+                        cuboRubik[x][y][z].dibujar(graficos, 1.0, anguloX, anguloY, anguloZ, trasX, trasY, trasZ, lines, highlight);
                     }
                 }
             }
@@ -207,11 +217,11 @@ public class Cubo extends JFrame {
                         size += 5;
                         break;
                     case KeyEvent.VK_B:
-                        if (!lines) {
-                            lines = true;
-                        } else {
-                            lines = false;
-                        }
+                        lines = !lines;
+                        break;
+                    case KeyEvent.VK_ENTER:
+                        gameMode = !gameMode;
+                        if (!gameMode) { selX = selY = selZ = -1; }
                         break;
                     case KeyEvent.VK_E:
                         if (!ejeSubcubo) {
@@ -221,12 +231,26 @@ public class Cubo extends JFrame {
                         }
                         break;
                     case KeyEvent.VK_UP:
-                        size += 5;
-                        setSubcube();
+                        if (gameMode && selX != -1) {
+                            if (selY > 0) { swapSubcubes(selX, selY, selZ, selX, selY-1, selZ); selY--; }
+                        } else {
+                            size += 5;
+                            setSubcube();
+                        }
                         break;
                     case KeyEvent.VK_DOWN:
-                        size -= 5;
-                        setSubcube();
+                        if (gameMode && selX != -1) {
+                            if (selY < 2) { swapSubcubes(selX, selY, selZ, selX, selY+1, selZ); selY++; }
+                        } else {
+                            size -= 5;
+                            setSubcube();
+                        }
+                        break;
+                    case KeyEvent.VK_LEFT:
+                        if (gameMode && selX != -1 && selX > 0) { swapSubcubes(selX, selY, selZ, selX-1, selY, selZ); selX--; }
+                        break;
+                    case KeyEvent.VK_RIGHT:
+                        if (gameMode && selX != -1 && selX < 2) { swapSubcubes(selX, selY, selZ, selX+1, selY, selZ); selX++; }
                         break;
                 }
                 moverCubo();
@@ -243,18 +267,30 @@ public class Cubo extends JFrame {
                 } else if (javax.swing.SwingUtilities.isLeftMouseButton(e)) {
                     int mx = e.getX();
                     int my = e.getY();
-                    if (inButton(0, mx, my)) {
-                        rotateLayer(2, 2, true);
-                    } else if (inButton(1, mx, my)) {
-                        rotateLayer(2, 0, true);
-                    } else if (inButton(2, mx, my)) {
-                        rotateLayer(0, 0, true);
-                    } else if (inButton(3, mx, my)) {
-                        rotateLayer(0, 2, true);
-                    } else if (inButton(4, mx, my)) {
-                        rotateLayer(1, 2, true);
-                    } else if (inButton(5, mx, my)) {
-                        rotateLayer(1, 0, true);
+                    if (gameMode) {
+                        for (int x = 0; x < 3; x++) {
+                            for (int y = 0; y < 3; y++) {
+                                for (int z = 0; z < 3; z++) {
+                                    if (cuboRubik[x][y][z].containsPoint(mx, my)) {
+                                        selX = x; selY = y; selZ = z;
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        if (inButton(0, mx, my)) {
+                            rotateLayer(2, 2, true);
+                        } else if (inButton(1, mx, my)) {
+                            rotateLayer(2, 0, true);
+                        } else if (inButton(2, mx, my)) {
+                            rotateLayer(0, 0, true);
+                        } else if (inButton(3, mx, my)) {
+                            rotateLayer(0, 2, true);
+                        } else if (inButton(4, mx, my)) {
+                            rotateLayer(1, 2, true);
+                        } else if (inButton(5, mx, my)) {
+                            rotateLayer(1, 0, true);
+                        }
                     }
                     moverCubo();
                 }
@@ -267,7 +303,7 @@ public class Cubo extends JFrame {
                 // SwingUtilities.isRightMouseButton returns false for drag
                 // events, so check the modifiers to know if the right button
                 // is being held down
-                if ((e.getModifiersEx() & java.awt.event.InputEvent.BUTTON3_DOWN_MASK) != 0) {
+                if (!gameMode && (e.getModifiersEx() & java.awt.event.InputEvent.BUTTON3_DOWN_MASK) != 0) {
                     int dx = e.getX() - lastX;
                     int dy = e.getY() - lastY;
                     anguloY += dx / 2.0;
@@ -302,6 +338,10 @@ public class Cubo extends JFrame {
         PixelFont.drawString(graficos, "B TOGGLE LINES", 10, y, 2, Color.WHITE); y += step;
         PixelFont.drawString(graficos, "E CHANGE AXIS", 10, y, 2, Color.WHITE); y += step;
         PixelFont.drawString(graficos, "CLICK BUTTONS TO ROTATE", 10, y, 2, Color.WHITE);
+        y += step;
+        PixelFont.drawString(graficos, "ENTER PLAY MODE", 10, y, 2, Color.WHITE); y += step;
+        PixelFont.drawString(graficos, "CLICK CUBE SELECT", 10, y, 2, Color.WHITE); y += step;
+        PixelFont.drawString(graficos, "ARROWS MOVE PIECE", 10, y, 2, Color.WHITE);
 
         String[] names = {"FRONT", "BACK", "LEFT", "RIGHT", "UP", "DOWN"};
         for (int i = 0; i < buttons.length; i++) {
