@@ -194,7 +194,10 @@ public class Cubo extends JFrame {
         addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             @Override
             public void mouseDragged(java.awt.event.MouseEvent e) {
-                if (javax.swing.SwingUtilities.isRightMouseButton(e)) {
+                // SwingUtilities.isRightMouseButton returns false for drag
+                // events, so check the modifiers to know if the right button
+                // is being held down
+                if ((e.getModifiersEx() & java.awt.event.InputEvent.BUTTON3_DOWN_MASK) != 0) {
                     int dx = e.getX() - lastX;
                     int dy = e.getY() - lastY;
                     anguloY += dx / 2.0;
