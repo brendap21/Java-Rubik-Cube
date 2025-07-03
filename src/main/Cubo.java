@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -11,18 +12,19 @@ public class Cubo extends JFrame {
 
     private Graficos graficos;
     private Subcubo[][][] cuboRubik;
-    private double anguloX = 0, anguloY = 0, anguloZ = 0; //Angulo de rotacion
-    private double escala = 0; // Factor de escala para la separación
+    private double anguloX = 30, anguloY = 30, anguloZ = 0; //Angulo de rotacion
+    private double escala = 1; // Factor de escala para la separación
     private int trasX = 430, trasY = 330, trasZ = 0; // Coordenadas de traslacion
-    private int size = 60;
-    private boolean lines = false;
+    private int size = 80;
+    private boolean lines = true;
     private boolean ejeSubcubo = false;
     private boolean incrementingSize = true;
     private Timer timer;
+    private int lastX;
+    private int lastY;
 
     public Cubo() {
         initComponents();
-        printInstructions();
         setSubcube();
         moverCubo();
     }
@@ -92,6 +94,7 @@ public class Cubo extends JFrame {
                 }
             }
         }
+        drawUI();
     }
 
     public static void main(String[] args) {
@@ -178,6 +181,41 @@ public class Cubo extends JFrame {
             }
         });
 
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mousePressed(java.awt.event.MouseEvent e) {
+                if (javax.swing.SwingUtilities.isRightMouseButton(e)) {
+                    lastX = e.getX();
+                    lastY = e.getY();
+                }
+            }
+        });
+
+        addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(java.awt.event.MouseEvent e) {
+                if (javax.swing.SwingUtilities.isRightMouseButton(e)) {
+                    int dx = e.getX() - lastX;
+                    int dy = e.getY() - lastY;
+                    anguloY += dx / 2.0;
+                    anguloX += dy / 2.0;
+                    lastX = e.getX();
+                    lastY = e.getY();
+                    moverCubo();
+                }
+            }
+        });
+
+        addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(java.awt.event.MouseWheelEvent e) {
+                size -= e.getWheelRotation() * 5;
+                if (size < 20) size = 20;
+                setSubcube();
+                moverCubo();
+            }
+        });
+
         setVisible(true);
     }
 
@@ -216,13 +254,15 @@ public class Cubo extends JFrame {
         }
     }
 
-    private void printInstructions() {
-        System.out.println("WASD to translate.\n"
-                + "IJKL to rotate.\n"
-                + "SPACE to animate,\n"
-                + "B to set cube lines.\n"
-                + "E to rotate into subcube center.\n"
-                + "UP and DOWN to scalate."
-        );
+    private void drawUI() {
+        PixelFont.drawString(graficos, "RUBIK 3D", 10, 20, 4, Color.WHITE);
+        int y = 60;
+        int step = 18;
+        PixelFont.drawString(graficos, "WASD MOVE", 10, y, 2, Color.WHITE); y += step;
+        PixelFont.drawString(graficos, "RIGHT DRAG ROTATE", 10, y, 2, Color.WHITE); y += step;
+        PixelFont.drawString(graficos, "MOUSE WHEEL SCALE", 10, y, 2, Color.WHITE); y += step;
+        PixelFont.drawString(graficos, "SPACE ANIMATE", 10, y, 2, Color.WHITE); y += step;
+        PixelFont.drawString(graficos, "B TOGGLE LINES", 10, y, 2, Color.WHITE); y += step;
+        PixelFont.drawString(graficos, "E CHANGE AXIS", 10, y, 2, Color.WHITE);
     }
 }

@@ -43,7 +43,14 @@ public class Subcubo {
             {1, 2, 6, 5} // right
         };
 
-        colores = new Color[]{Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.ORANGE, Color.WHITE};
+        colores = new Color[]{
+            new Color(255, 105, 180), // rosa
+            Color.CYAN,               // cian
+            Color.WHITE,              // blanco
+            new Color(128, 0, 128),   // morado
+            new Color(135, 206, 235), // azul cielo
+            new Color(128, 0, 0)      // tinto
+        };
     }
 
     public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ, int trasX, int trasY, int trasZ, boolean lines) {
