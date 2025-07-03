@@ -27,7 +27,8 @@ public class Cubo extends JFrame {
         {700, 110, 80, 20}, // left
         {700, 140, 80, 20}, // right
         {700, 170, 80, 20}, // up
-        {700, 200, 80, 20}  // down
+        {700, 200, 80, 20}, // down
+        {700, 230, 80, 20}  // mix
     };
 
     public Cubo() {
@@ -94,6 +95,7 @@ public class Cubo extends JFrame {
                         }
                         nuevo[nx][ny][nz] = cuboRubik[x][y][z];
                         nuevo[nx][ny][nz].rotateColors(axis, clockwise);
+                        nuevo[nx][ny][nz].rotateOrientation(axis, clockwise);
                     }
                 }
             }
@@ -235,6 +237,15 @@ public class Cubo extends JFrame {
         graficos.repaint();
     }
 
+    private void scrambleAnimation() {
+        java.util.Random r = new java.util.Random();
+        for (int i = 0; i < 20; i++) {
+            int axis = r.nextInt(3);
+            int layer = r.nextInt(3);
+            rotateLayerAnimated(axis, layer, r.nextBoolean());
+        }
+    }
+
     public static void main(String[] args) {
         new Cubo();
     }
@@ -304,26 +315,35 @@ public class Cubo extends JFrame {
                         }
                         break;
                     case KeyEvent.VK_UP:
-                        if (gameMode && selX != -1) {
-                            if (selY > 0) { swapSubcubes(selX, selY, selZ, selX, selY-1, selZ); selY--; }
+                        if (gameMode) {
+                            rotateLayerAnimated(1, 2, true);
                         } else {
                             size += 5;
                             setSubcube();
                         }
                         break;
                     case KeyEvent.VK_DOWN:
-                        if (gameMode && selX != -1) {
-                            if (selY < 2) { swapSubcubes(selX, selY, selZ, selX, selY+1, selZ); selY++; }
+                        if (gameMode) {
+                            rotateLayerAnimated(1, 0, true);
                         } else {
                             size -= 5;
                             setSubcube();
                         }
                         break;
                     case KeyEvent.VK_LEFT:
-                        if (gameMode && selX != -1 && selX > 0) { swapSubcubes(selX, selY, selZ, selX-1, selY, selZ); selX--; }
+                        if (gameMode) {
+                            rotateLayerAnimated(0, 0, true);
+                        }
                         break;
                     case KeyEvent.VK_RIGHT:
-                        if (gameMode && selX != -1 && selX < 2) { swapSubcubes(selX, selY, selZ, selX+1, selY, selZ); selX++; }
+                        if (gameMode) {
+                            rotateLayerAnimated(0, 2, true);
+                        }
+                        break;
+                    case KeyEvent.VK_R:
+                        if (!gameMode) {
+                            scrambleAnimation();
+                        }
                         break;
                 }
                 moverCubo();
@@ -363,6 +383,8 @@ public class Cubo extends JFrame {
                             rotateLayerAnimated(1, 2, true);
                         } else if (inButton(5, mx, my)) {
                             rotateLayerAnimated(1, 0, true);
+                        } else if (inButton(6, mx, my)) {
+                            scrambleAnimation();
                         }
                     }
                     moverCubo();
@@ -403,6 +425,7 @@ public class Cubo extends JFrame {
 
     private void drawUI() {
         PixelFont.drawString(graficos, "RUBIK 3D", 10, 20, 4, Color.WHITE);
+        PixelFont.drawString(graficos, gameMode ? "MODE: PLAY" : "MODE: VIEW", 10, 40, 2, Color.YELLOW);
         int y = 60;
         int step = 18;
         PixelFont.drawString(graficos, "WASD MOVE", 10, y, 2, Color.WHITE); y += step;
@@ -410,13 +433,12 @@ public class Cubo extends JFrame {
         PixelFont.drawString(graficos, "MOUSE WHEEL SCALE", 10, y, 2, Color.WHITE); y += step;
         PixelFont.drawString(graficos, "B TOGGLE LINES", 10, y, 2, Color.WHITE); y += step;
         PixelFont.drawString(graficos, "E CHANGE AXIS", 10, y, 2, Color.WHITE); y += step;
-        PixelFont.drawString(graficos, "CLICK BUTTONS TO ROTATE", 10, y, 2, Color.WHITE);
-        y += step;
+        PixelFont.drawString(graficos, "ARROWS ROTATE", 10, y, 2, Color.WHITE); y += step;
         PixelFont.drawString(graficos, "ENTER PLAY MODE", 10, y, 2, Color.WHITE); y += step;
         PixelFont.drawString(graficos, "CLICK CUBE SELECT", 10, y, 2, Color.WHITE); y += step;
-        PixelFont.drawString(graficos, "ARROWS MOVE PIECE", 10, y, 2, Color.WHITE);
+        PixelFont.drawString(graficos, "R MIX CUBE", 10, y, 2, Color.WHITE);
 
-        String[] names = {"FRONT", "BACK", "LEFT", "RIGHT", "UP", "DOWN"};
+        String[] names = {"FRONT", "BACK", "LEFT", "RIGHT", "UP", "DOWN", "MIX"};
         for (int i = 0; i < buttons.length; i++) {
             int[] b = buttons[i];
             graficos.drawRect(b[0], b[1], b[0] + b[2], b[1] + b[3], Color.WHITE);

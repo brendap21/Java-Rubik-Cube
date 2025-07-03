@@ -12,6 +12,8 @@ public class Subcubo {
     private final int[][] caras;
     private final int[][] screenVertices;
 
+    private double rotX = 0, rotY = 0, rotZ = 0;
+
     public Subcubo(int x, int y, int z, int size) {
         this.x = x;
         this.y = y;
@@ -101,6 +103,21 @@ public class Subcubo {
         }
     }
 
+    public void rotateOrientation(int axis, boolean clockwise) {
+        double ang = clockwise ? 90 : -90;
+        switch (axis) {
+            case 0:
+                rotX = (rotX + ang) % 360;
+                break;
+            case 1:
+                rotY = (rotY + ang) % 360;
+                break;
+            case 2:
+                rotZ = (rotZ + ang) % 360;
+                break;
+        }
+    }
+
     // Metodo de compatibilidad para versiones previas sin el parametro highlight
     public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ, int trasX, int trasY, int trasZ, boolean lines) {
         dibujar(g, escala, anguloX, anguloY, anguloZ, trasX, trasY, trasZ, lines, false);
@@ -109,7 +126,8 @@ public class Subcubo {
     public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ, int trasX, int trasY, int trasZ, boolean lines, boolean highlight) {
         double[][] rotadas = new double[8][3];
         for (int i = 0; i < 8; i++) {
-            rotadas[i] = rotar(vertices[i], anguloX, anguloY, anguloZ);
+            double[] local = rotar(vertices[i], rotX, rotY, rotZ);
+            rotadas[i] = rotar(local, anguloX, anguloY, anguloZ);
         }
 
         // Aplicar traslación a los vértices rotados
