@@ -111,7 +111,6 @@ public class Graficos extends Canvas {
                 }
             }
         }
-        repaint();
     }
 
     public void drawLine(int x1, int y1, int x2, int y2, Color color) {
@@ -143,7 +142,6 @@ public class Graficos extends Canvas {
                 y1 += sy;
             }
         }
-        repaint();
     }
 
     public void drawThickLine(int x0, int y0, int x1, int y1, int thickness, Color color) {
@@ -169,7 +167,6 @@ public class Graficos extends Canvas {
                 }
             }
         }
-        repaint();
     }
 
     public void drawCircle(int x0, int y0, int RADIO, Color color) {
@@ -187,7 +184,6 @@ public class Graficos extends Canvas {
             putPixel(x0 - y, y0 + x, color);
             putPixel(x0 - x, y0 + y, color);
         }
-        repaint();
     }
 
     public void drawDottedCircle(int x0, int y0, int radio, Color color) {
@@ -213,7 +209,6 @@ public class Graficos extends Canvas {
                 drawDots(x0, y0, x, y, color);
             }
         }
-        repaint();
     }
 
     private void drawDots(int xc, int yc, int x, int y, Color c) {
@@ -279,7 +274,6 @@ public class Graficos extends Canvas {
             }
         }
 
-        repaint();
     }
 
     public void putPixel(int x, int y, Color color) {
@@ -292,6 +286,11 @@ public class Graficos extends Canvas {
     public void paint(Graphics g) {
         super.paint(g);
         g.drawImage(buffer, 0, 0, this);
+    }
+
+    @Override
+    public void update(Graphics g) {
+        paint(g);
     }
     
     public void clear() {
