@@ -107,6 +107,83 @@ public class Cubo extends JFrame {
         cuboRubik = nuevo;
     }
 
+    private double[] rotatePointAroundAxis(double[] p, int axis, double angleDeg, double offset) {
+        double rad = Math.toRadians(angleDeg);
+        double x = p[0];
+        double y = p[1];
+        double z = p[2];
+        switch (axis) {
+            case 0: // X axis
+                x -= offset;
+                double ty = y;
+                double tz = z;
+                y = ty * Math.cos(rad) - tz * Math.sin(rad);
+                z = ty * Math.sin(rad) + tz * Math.cos(rad);
+                x += offset;
+                break;
+            case 1: // Y axis
+                y -= offset;
+                double tx = x;
+                double tz2 = z;
+                x = tx * Math.cos(rad) + tz2 * Math.sin(rad);
+                z = -tx * Math.sin(rad) + tz2 * Math.cos(rad);
+                y += offset;
+                break;
+            case 2: // Z axis
+                z -= offset;
+                double tx2 = x;
+                double ty2 = y;
+                x = tx2 * Math.cos(rad) - ty2 * Math.sin(rad);
+                y = tx2 * Math.sin(rad) + ty2 * Math.cos(rad);
+                z += offset;
+                break;
+        }
+        return new double[]{x, y, z};
+    }
+
+    private void rotateLayerAnimated(int axis, int layer, boolean clockwise) {
+        int dir = clockwise ? 1 : -1;
+        double offset = (layer - 1) * size;
+        for (int a = 0; a <= 90; a += 15) {
+            graficos.clear();
+            for (int x = 0; x < 3; x++) {
+                for (int y = 0; y < 3; y++) {
+                    for (int z = 0; z < 3; z++) {
+                        boolean highlight = gameMode && x == selX && y == selY && z == selZ;
+                        double posX = (x - 1) * size;
+                        double posY = (y - 1) * size;
+                        double posZ = (z - 1) * size;
+                        double extraX = 0, extraY = 0, extraZ = 0;
+                        if (axis == 0 && x == layer) {
+                            double[] r = rotatePointAroundAxis(new double[]{posX, posY, posZ}, 0, dir * a, offset);
+                            posX = r[0]; posY = r[1]; posZ = r[2];
+                            extraX = dir * a;
+                        } else if (axis == 1 && y == layer) {
+                            double[] r = rotatePointAroundAxis(new double[]{posX, posY, posZ}, 1, dir * a, offset);
+                            posX = r[0]; posY = r[1]; posZ = r[2];
+                            extraY = dir * a;
+                        } else if (axis == 2 && z == layer) {
+                            double[] r = rotatePointAroundAxis(new double[]{posX, posY, posZ}, 2, dir * a, offset);
+                            posX = r[0]; posY = r[1]; posZ = r[2];
+                            extraZ = dir * a;
+                        }
+                        double[] rotatedPos = cuboRubik[x][y][z].rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
+                        int finalX = (int) (rotatedPos[0] + trasX);
+                        int finalY = (int) (rotatedPos[1] + trasY);
+                        int finalZ = (int) (rotatedPos[2] + trasZ);
+                        cuboRubik[x][y][z].dibujar(graficos, 1.0, anguloX + extraX, anguloY + extraY, anguloZ + extraZ,
+                                finalX, finalY, finalZ, lines, highlight);
+                    }
+                }
+            }
+            drawUI();
+            graficos.repaint();
+            try { Thread.sleep(20); } catch (InterruptedException ex) { /* ignore */ }
+        }
+        rotateLayer(axis, layer, clockwise);
+        moverCubo();
+    }
+
     private void swapSubcubes(int x1, int y1, int z1, int x2, int y2, int z2) {
         Subcubo tmp = cuboRubik[x1][y1][z1];
         cuboRubik[x1][y1][z1] = cuboRubik[x2][y2][z2];
@@ -160,6 +237,7 @@ public class Cubo extends JFrame {
             }
         }
         drawUI();
+        graficos.repaint();
     }
 
     public static void main(String[] args) {
@@ -279,17 +357,17 @@ public class Cubo extends JFrame {
                         }
                     } else {
                         if (inButton(0, mx, my)) {
-                            rotateLayer(2, 2, true);
+                            rotateLayerAnimated(2, 2, true);
                         } else if (inButton(1, mx, my)) {
-                            rotateLayer(2, 0, true);
+                            rotateLayerAnimated(2, 0, true);
                         } else if (inButton(2, mx, my)) {
-                            rotateLayer(0, 0, true);
+                            rotateLayerAnimated(0, 0, true);
                         } else if (inButton(3, mx, my)) {
-                            rotateLayer(0, 2, true);
+                            rotateLayerAnimated(0, 2, true);
                         } else if (inButton(4, mx, my)) {
-                            rotateLayer(1, 2, true);
+                            rotateLayerAnimated(1, 2, true);
                         } else if (inButton(5, mx, my)) {
-                            rotateLayer(1, 0, true);
+                            rotateLayerAnimated(1, 0, true);
                         }
                     }
                     moverCubo();
