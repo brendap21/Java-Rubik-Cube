@@ -38,15 +38,8 @@ public class Graficos extends Canvas {
         int ny1 = Math.max(y0, y1);
 
         for (int y = ny0; y <= ny1; y++) {
-            int xInicio = -1;
             for (int x = nx0; x <= nx1; x++) {
-                if (xInicio == -1) {
-                    xInicio = x;
-                }
-                if (xInicio != -1) {
-                    putPixel(xInicio, y, color);
-                    xInicio = -1;
-                }
+                putPixel(x, y, color);
             }
         }
     }
