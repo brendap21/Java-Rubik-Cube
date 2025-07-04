@@ -194,7 +194,7 @@ public class Cubo extends JFrame {
         }
     }
 
-    private void rotateLayerAnimated(int axis, int layer, boolean clockwise) {
+    private void rotateLayerAnimated(int axis, int layer, boolean clockwise, Runnable done) {
         int dir = clockwise ? 1 : -1;
         double offset = (layer - 1) * size;
 
@@ -253,9 +253,16 @@ public class Cubo extends JFrame {
                 timer.stop();
                 rotateLayer(axis, layer, clockwise);
                 moverCubo();
+                if (done != null) {
+                    done.run();
+                }
             }
         });
         timer.start();
+    }
+
+    private void rotateLayerAnimated(int axis, int layer, boolean clockwise) {
+        rotateLayerAnimated(axis, layer, clockwise, null);
     }
 
     private void swapSubcubes(int x1, int y1, int z1, int x2, int y2, int z2) {
@@ -323,11 +330,19 @@ public class Cubo extends JFrame {
 
     private void scrambleAnimation() {
         java.util.Random r = new java.util.Random();
+        java.util.List<int[]> moves = new java.util.ArrayList<>();
         for (int i = 0; i < 20; i++) {
-            int axis = r.nextInt(3);
-            int layer = r.nextInt(3);
-            rotateLayerAnimated(axis, layer, r.nextBoolean());
+            moves.add(new int[]{r.nextInt(3), r.nextInt(3), r.nextBoolean() ? 1 : 0});
         }
+        scrambleStep(moves, 0);
+    }
+
+    private void scrambleStep(java.util.List<int[]> moves, int idx) {
+        if (idx >= moves.size()) {
+            return;
+        }
+        int[] m = moves.get(idx);
+        rotateLayerAnimated(m[0], m[1], m[2] == 1, () -> scrambleStep(moves, idx + 1));
     }
 
     public static void main(String[] args) {
