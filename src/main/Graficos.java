@@ -1,22 +1,16 @@
 package main;
 
-import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
-import java.awt.image.BufferStrategy;
+import javax.swing.JPanel;
 
-public class Graficos extends Canvas {
+public class Graficos {
 
     private final int WIDTH;
     private final int HEIGHT;
     private BufferedImage buffer;
-    private boolean[][] canvas;
-    private BufferStrategy strategy;
 
-
-    // Variables para la traslación
+     // Variables para la traslación
     private int translateX = 0;
     private int translateY = 0;
 
@@ -24,13 +18,6 @@ public class Graficos extends Canvas {
         this.WIDTH = width;
         this.HEIGHT = height;
         buffer = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
-        canvas = new boolean [width][height];
-        setIgnoreRepaint(true);
-    }
-
-    public void initBufferStrategy() {
-        createBufferStrategy(2);
-        strategy = getBufferStrategy();
     }
 
     public void fillRect(int x0, int y0, int x1, int y1, Color color) {
@@ -58,13 +45,6 @@ public class Graficos extends Canvas {
         drawLine(x1, y0, x1, y1, color);
     }
     
-    public void clearRect(int x, int y, int width, int height) {
-        for (int i = x; i < x + width; i++) {
-            for (int j = y; j < y + height; j++) {
-                canvas[i][j] = false;
-            }
-        }
-    }
     
     public void fillPolygon(int[] xPoints, int[] yPoints, int nPoints, Color color) {
         if (nPoints < 3) return;
@@ -281,32 +261,19 @@ public class Graficos extends Canvas {
             buffer.setRGB(x, y, color.getRGB());
         }
     }
+    
+    private javax.swing.JPanel panel;
 
-    @Override
-    public void paint(Graphics g) {
-        render();
+    public void setPanel(javax.swing.JPanel panel) {
+        this.panel = panel;
     }
-
-    @Override
-    public void update(Graphics g) {
-        render();
-    }
-
+    
     public void render() {
-        if (strategy == null) {
-            Graphics gTemp = getGraphics();
-            if (gTemp != null) {
-                gTemp.drawImage(buffer, 0, 0, null);
-                gTemp.dispose();
-            }
-            return;
+        if (panel != null) {
+            panel.repaint();
         }
-        Graphics g = strategy.getDrawGraphics();
-        g.drawImage(buffer, 0, 0, null);
-        g.dispose();
-        strategy.show();
-        Toolkit.getDefaultToolkit().sync();
     }
+
     
     public void clear() {
         fillRect(0, 0, WIDTH, HEIGHT, new Color(5, 5, 20));
@@ -316,6 +283,14 @@ public class Graficos extends Canvas {
         return buffer;
     }
 
+    public int getWidth() {
+        return WIDTH;
+    }
+
+    public int getHeight() {
+        return HEIGHT;
+    }
+    
     public void translate(int x, int y) {
         this.translateX = x;
         this.translateY = y;

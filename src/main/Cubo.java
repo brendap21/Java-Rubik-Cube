@@ -5,6 +5,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 
+import main.RenderPanel;
+
 public class Cubo extends JFrame {
 
     private Graficos graficos;
@@ -22,16 +24,17 @@ public class Cubo extends JFrame {
     private int selX = -1, selY = -1, selZ = -1;
 
     private int[][] buttons = {
-        {700, 50, 80, 20},  // front
-        {700, 80, 80, 20},  // back
+        {700, 50, 80, 20}, // front
+        {700, 80, 80, 20}, // back
         {700, 110, 80, 20}, // left
         {700, 140, 80, 20}, // right
         {700, 170, 80, 20}, // up
         {700, 200, 80, 20}, // down
-        {700, 230, 80, 20}  // mix
+        {700, 230, 80, 20} // mix
     };
 
     private static class RenderInfo {
+
         final Subcubo cubo;
         final int x, y;
         final double depth;
@@ -176,15 +179,21 @@ public class Cubo extends JFrame {
                         double extraX = 0, extraY = 0, extraZ = 0;
                         if (axis == 0 && x == layer) {
                             double[] r = rotatePointAroundAxis(new double[]{posX, posY, posZ}, 0, dir * ang[0], offset);
-                            posX = r[0]; posY = r[1]; posZ = r[2];
+                            posX = r[0];
+                            posY = r[1];
+                            posZ = r[2];
                             extraX = dir * ang[0];
                         } else if (axis == 1 && y == layer) {
                             double[] r = rotatePointAroundAxis(new double[]{posX, posY, posZ}, 1, dir * ang[0], offset);
-                            posX = r[0]; posY = r[1]; posZ = r[2];
+                            posX = r[0];
+                            posY = r[1];
+                            posZ = r[2];
                             extraY = dir * ang[0];
                         } else if (axis == 2 && z == layer) {
                             double[] r = rotatePointAroundAxis(new double[]{posX, posY, posZ}, 2, dir * ang[0], offset);
-                            posX = r[0]; posY = r[1]; posZ = r[2];
+                            posX = r[0];
+                            posY = r[1];
+                            posZ = r[2];
                             extraZ = dir * ang[0];
                         }
                         double[] rotatedPos = cuboRubik[x][y][z].rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
@@ -297,8 +306,8 @@ public class Cubo extends JFrame {
         setResizable(false);
 
         graficos = new Graficos(800, 600);
-        add(graficos);
-
+        RenderPanel panel = new RenderPanel(graficos);
+        add(panel);
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -344,7 +353,9 @@ public class Cubo extends JFrame {
                         break;
                     case KeyEvent.VK_ENTER:
                         gameMode = !gameMode;
-                        if (!gameMode) { selX = selY = selZ = -1; }
+                        if (!gameMode) {
+                            selX = selY = selZ = -1;
+                        }
                         break;
                     case KeyEvent.VK_E:
                         if (!ejeSubcubo) {
@@ -390,7 +401,7 @@ public class Cubo extends JFrame {
         });
 
         // Registrar eventos de ratón sobre el lienzo de dibujo
-        graficos.addMouseListener(new java.awt.event.MouseAdapter() {
+        panel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mousePressed(java.awt.event.MouseEvent e) {
                 if (javax.swing.SwingUtilities.isRightMouseButton(e)) {
@@ -404,7 +415,9 @@ public class Cubo extends JFrame {
                             for (int y = 0; y < 3; y++) {
                                 for (int z = 0; z < 3; z++) {
                                     if (cuboRubik[x][y][z].containsPoint(mx, my)) {
-                                        selX = x; selY = y; selZ = z;
+                                        selX = x;
+                                        selY = y;
+                                        selZ = z;
                                     }
                                 }
                             }
@@ -431,7 +444,7 @@ public class Cubo extends JFrame {
             }
         });
 
-        graficos.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+        panel.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             @Override
             public void mouseDragged(java.awt.event.MouseEvent e) {
                 // SwingUtilities.isRightMouseButton returns false for drag
@@ -449,18 +462,19 @@ public class Cubo extends JFrame {
             }
         });
 
-        graficos.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+        panel.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
             @Override
             public void mouseWheelMoved(java.awt.event.MouseWheelEvent e) {
                 size -= e.getWheelRotation() * 5;
-                if (size < 20) size = 20;
+                if (size < 20) {
+                    size = 20;
+                }
                 setSubcube();
                 moverCubo();
             }
         });
 
         setVisible(true);
-        graficos.initBufferStrategy();
     }
 
     private void drawUI() {
@@ -468,14 +482,22 @@ public class Cubo extends JFrame {
         PixelFont.drawString(graficos, gameMode ? "MODE: PLAY" : "MODE: VIEW", 10, 40, 2, Color.YELLOW);
         int y = 60;
         int step = 18;
-        PixelFont.drawString(graficos, "WASD MOVE", 10, y, 2, Color.WHITE); y += step;
-        PixelFont.drawString(graficos, "RIGHT DRAG ROTATE", 10, y, 2, Color.WHITE); y += step;
-        PixelFont.drawString(graficos, "MOUSE WHEEL SCALE", 10, y, 2, Color.WHITE); y += step;
-        PixelFont.drawString(graficos, "B TOGGLE LINES", 10, y, 2, Color.WHITE); y += step;
-        PixelFont.drawString(graficos, "E CHANGE AXIS", 10, y, 2, Color.WHITE); y += step;
-        PixelFont.drawString(graficos, "ARROWS ROTATE", 10, y, 2, Color.WHITE); y += step;
-        PixelFont.drawString(graficos, "ENTER PLAY MODE", 10, y, 2, Color.WHITE); y += step;
-        PixelFont.drawString(graficos, "CLICK CUBE SELECT", 10, y, 2, Color.WHITE); y += step;
+        PixelFont.drawString(graficos, "WASD MOVE", 10, y, 2, Color.WHITE);
+        y += step;
+        PixelFont.drawString(graficos, "RIGHT DRAG ROTATE", 10, y, 2, Color.WHITE);
+        y += step;
+        PixelFont.drawString(graficos, "MOUSE WHEEL SCALE", 10, y, 2, Color.WHITE);
+        y += step;
+        PixelFont.drawString(graficos, "B TOGGLE LINES", 10, y, 2, Color.WHITE);
+        y += step;
+        PixelFont.drawString(graficos, "E CHANGE AXIS", 10, y, 2, Color.WHITE);
+        y += step;
+        PixelFont.drawString(graficos, "ARROWS ROTATE", 10, y, 2, Color.WHITE);
+        y += step;
+        PixelFont.drawString(graficos, "ENTER PLAY MODE", 10, y, 2, Color.WHITE);
+        y += step;
+        PixelFont.drawString(graficos, "CLICK CUBE SELECT", 10, y, 2, Color.WHITE);
+        y += step;
         PixelFont.drawString(graficos, "R MIX CUBE", 10, y, 2, Color.WHITE);
 
         String[] names = {"FRONT", "BACK", "LEFT", "RIGHT", "UP", "DOWN", "MIX"};
