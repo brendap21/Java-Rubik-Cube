@@ -1,10 +1,18 @@
 package main;
 
+/**
+ * Fuente de 5x7 píxeles utilizada para renderizar texto básico en la pantalla.
+ */
+
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
 public class PixelFont {
+    /**
+     * Mapa que asocia cada carácter con un patrón de bits que representa
+     * una matriz de 5x7 donde 1 indica un píxel encendido.
+     */
     private static final Map<Character, int[]> FONT = new HashMap<>();
     static {
         // digits
@@ -50,6 +58,9 @@ public class PixelFont {
         FONT.put('-', new int[]{0,0,0,0b11111,0,0,0});
     }
 
+    /**
+     * Dibuja una cadena de texto utilizando la fuente de píxeles.
+     */
     public static void drawString(Graficos g, String text, int x, int y, int scale, Color color) {
         int cursorX = x;
         text = text.toUpperCase();
@@ -60,10 +71,14 @@ public class PixelFont {
         }
     }
 
+    /**
+     * Dibuja un carácter individual a partir de su patrón de bits.
+     */
     private static void drawCharPattern(Graficos g, int[] pattern, int x, int y, int scale, Color color) {
         for (int row = 0; row < 7; row++) {
             int bits = pattern[row];
             for (int col = 0; col < 5; col++) {
+                // Comprobamos si el bit correspondiente está activo
                 if ((bits & (1 << (4 - col))) != 0) {
                     int x0 = x + col * scale;
                     int y0 = y + row * scale;

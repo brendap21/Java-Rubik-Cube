@@ -1,5 +1,10 @@
 package main;
 
+/**
+ * Ventana principal que gestiona la interacción con el usuario y el renderizado
+ * completo del cubo de Rubik.
+ */
+
 import java.awt.Color;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -9,20 +14,30 @@ import main.RenderPanel;
 
 public class Cubo extends JFrame {
 
+    /** Contenedor de utilidades de dibujo. */
     private Graficos graficos;
+    /** Matriz de subcubos que conforman el cubo de Rubik. */
     private Subcubo[][][] cuboRubik;
-    private double anguloX = 30, anguloY = 30, anguloZ = 0; //Angulo de rotacion
-    private double escala = 1; // Factor de escala para la separación
-    // Centrar el cubo en la ventana
-    private int trasX = 400, trasY = 300, trasZ = 0; // Coordenadas de traslacion
+    /** Rotaciones globales del cubo. */
+    private double anguloX = 30, anguloY = 30, anguloZ = 0;
+    /** Factor de escala para separar los subcubos. */
+    private double escala = 1;
+    /** Traslación para centrar el cubo en la ventana. */
+    private int trasX = 400, trasY = 300, trasZ = 0;
+    /** Tamaño de cada subcubo en píxeles. */
     private int size = 80;
+    /** Indica si se dibujan las líneas de las caras. */
     private boolean lines = true;
+    /** Si está activo, las rotaciones se hacen pieza por pieza. */
     private boolean ejeSubcubo = false;
+    /** Posiciones del ratón para calcular arrastre. */
     private int lastX;
     private int lastY;
+    /** Modo de juego en el que se puede seleccionar subcubos. */
     private boolean gameMode = false;
     private int selX = -1, selY = -1, selZ = -1;
 
+    /** Coordenadas de los botones de la interfaz. */
     private int[][] buttons = {
         {700, 50, 80, 20},  // front
         {700, 80, 80, 20},  // back
@@ -31,6 +46,10 @@ public class Cubo extends JFrame {
         {700, 170, 80, 20}  // mix
     };
 
+    /**
+     * Información auxiliar usada durante el renderizado para ordenar las
+     * piezas por profundidad.
+     */
     private static class RenderInfo {
 
         final Subcubo cubo;
@@ -51,12 +70,18 @@ public class Cubo extends JFrame {
         }
     }
 
+    /**
+     * Inicializa la ventana y el cubo de Rubik.
+     */
     public Cubo() {
         initComponents();
         setSubcube();
         moverCubo();
     }
 
+    /**
+     * Crea todas las piezas del cubo de Rubik en sus posiciones iniciales.
+     */
     private void setSubcube() {
         cuboRubik = new Subcubo[3][3][3];
 
@@ -73,6 +98,10 @@ public class Cubo extends JFrame {
 
     }
 
+    /**
+     * Rota una capa completa del cubo modificando orientación y colores de
+     * las piezas que la componen.
+     */
     private void rotateLayer(int axis, int layer, boolean clockwise) {
         Subcubo[][][] nuevo = new Subcubo[3][3][3];
         for (int x = 0; x < 3; x++) {
@@ -192,6 +221,9 @@ public class Cubo extends JFrame {
         }
     }
 
+    /**
+     * Rota una capa con animación y ejecuta una acción al finalizar.
+     */
     private void rotateLayerAnimated(int axis, int layer, boolean clockwise, Runnable done) {
         int dir = clockwise ? 1 : -1;
         double offset = (layer - 1) * size;
@@ -286,6 +318,9 @@ public class Cubo extends JFrame {
         cuboRubik[x2][y2][z2] = tmp;
     }
 
+    /**
+     * Redibuja el cubo aplicando las rotaciones y traslaciones actuales.
+     */
     private void moverCubo() {
         if (!ejeSubcubo) {
             graficos.clear();
@@ -343,6 +378,9 @@ public class Cubo extends JFrame {
         graficos.render();
     }
 
+    /**
+     * Mezcla aleatoriamente el cubo realizando varias rotaciones animadas.
+     */
     private void scrambleAnimation() {
         java.util.Random r = new java.util.Random();
         java.util.List<int[]> moves = new java.util.ArrayList<>();
@@ -352,6 +390,9 @@ public class Cubo extends JFrame {
         scrambleStep(moves, 0);
     }
 
+    /**
+     * Ejecuta recursivamente los pasos de mezclado.
+     */
     private void scrambleStep(java.util.List<int[]> moves, int idx) {
         if (idx >= moves.size()) {
             return;
@@ -551,6 +592,9 @@ public class Cubo extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Dibuja textos y botones de ayuda sobre la imagen generada.
+     */
     private void drawUI() {
         PixelFont.drawString(graficos, "RUBIK 3D", 10, 20, 4, Color.WHITE);
         PixelFont.drawString(graficos, gameMode ? "MODE: PLAY" : "MODE: VIEW", 10, 40, 2, Color.YELLOW);
@@ -582,6 +626,7 @@ public class Cubo extends JFrame {
         }
     }
 
+    /** Devuelve si una coordenada está dentro de uno de los botones. */
     private boolean inButton(int idx, int x, int y) {
         int[] b = buttons[idx];
         return x >= b[0] && x <= b[0] + b[2] && y >= b[1] && y <= b[1] + b[3];
