@@ -48,11 +48,11 @@ public class Subcubo {
 
         colores = new Color[]{
             new Color(255, 105, 180), // rosa
-            Color.CYAN,               // cian
-            Color.WHITE,              // blanco
-            new Color(128, 0, 128),   // morado
+            Color.CYAN, // cian
+            Color.WHITE, // blanco
+            new Color(128, 0, 128), // morado
             new Color(135, 206, 235), // azul cielo
-            new Color(128, 0, 0)      // tinto
+            new Color(128, 0, 0) // tinto
         };
 
         screenVertices = new int[8][2];
@@ -120,13 +120,19 @@ public class Subcubo {
 
     // Metodo de compatibilidad para versiones previas sin el parametro highlight
     public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ, int trasX, int trasY, int trasZ, boolean lines) {
-        dibujar(g, escala, anguloX, anguloY, anguloZ, trasX, trasY, trasZ, lines, false);
+        dibujar(g, escala, anguloX, anguloY, anguloZ, trasX, trasY, trasZ, lines, false, 0, 0, 0);
     }
 
     public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ, int trasX, int trasY, int trasZ, boolean lines, boolean highlight) {
+        dibujar(g, escala, anguloX, anguloY, anguloZ, trasX, trasY, trasZ, lines, highlight, 0, 0, 0);
+    }
+
+    public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ,
+            int trasX, int trasY, int trasZ, boolean lines, boolean highlight,
+            double extraRotX, double extraRotY, double extraRotZ) {
         double[][] rotadas = new double[8][3];
         for (int i = 0; i < 8; i++) {
-            double[] local = rotar(vertices[i], rotX, rotY, rotZ);
+            double[] local = rotar(vertices[i], rotX + extraRotX, rotY + extraRotY, rotZ + extraRotZ);
             rotadas[i] = rotar(local, anguloX, anguloY, anguloZ);
         }
 
@@ -169,10 +175,18 @@ public class Subcubo {
             int minX = screenVertices[0][0], maxX = screenVertices[0][0];
             int minY = screenVertices[0][1], maxY = screenVertices[0][1];
             for (int i = 1; i < 8; i++) {
-                if (screenVertices[i][0] < minX) minX = screenVertices[i][0];
-                if (screenVertices[i][0] > maxX) maxX = screenVertices[i][0];
-                if (screenVertices[i][1] < minY) minY = screenVertices[i][1];
-                if (screenVertices[i][1] > maxY) maxY = screenVertices[i][1];
+                if (screenVertices[i][0] < minX) {
+                    minX = screenVertices[i][0];
+                }
+                if (screenVertices[i][0] > maxX) {
+                    maxX = screenVertices[i][0];
+                }
+                if (screenVertices[i][1] < minY) {
+                    minY = screenVertices[i][1];
+                }
+                if (screenVertices[i][1] > maxY) {
+                    maxY = screenVertices[i][1];
+                }
             }
             g.drawRect(minX, minY, maxX, maxY, Color.YELLOW);
         }
@@ -217,9 +231,11 @@ public class Subcubo {
     private boolean pointInPolygon(int x, int y, int[] polyX, int[] polyY) {
         boolean inside = false;
         for (int i = 0, j = polyX.length - 1; i < polyX.length; j = i++) {
-            boolean intersect = ((polyY[i] > y) != (polyY[j] > y)) &&
-                    (x < (double)(polyX[j] - polyX[i]) * (y - polyY[i]) / (polyY[j] - polyY[i]) + polyX[i]);
-            if (intersect) inside = !inside;
+            boolean intersect = ((polyY[i] > y) != (polyY[j] > y))
+                    && (x < (double) (polyX[j] - polyX[i]) * (y - polyY[i]) / (polyY[j] - polyY[i]) + polyX[i]);
+            if (intersect) {
+                inside = !inside;
+            }
         }
         return inside;
     }
