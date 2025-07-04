@@ -249,7 +249,24 @@ public class Cubo extends JFrame {
             ang[0] += 10;
             if (ang[0] > 90) {
                 timer.stop();
+                Subcubo selected = null;
+                if (selX != -1) {
+                    selected = cuboRubik[selX][selY][selZ];
+                }
                 rotateLayer(axis, layer, clockwise);
+                if (selected != null) {
+                    for (int ix = 0; ix < 3; ix++) {
+                        for (int iy = 0; iy < 3; iy++) {
+                            for (int iz = 0; iz < 3; iz++) {
+                                if (cuboRubik[ix][iy][iz] == selected) {
+                                    selX = ix;
+                                    selY = iy;
+                                    selZ = iz;
+                                }
+                            }
+                        }
+                    }
+                }
                 moverCubo();
                 if (done != null) {
                     done.run();
@@ -414,33 +431,41 @@ public class Cubo extends JFrame {
                         }
                         break;
                     case KeyEvent.VK_UP:
-                        if (gameMode) {
+                        if (gameMode && selX != -1) {
                             int[] m = mapDirection(rotateVector(new double[]{0, 1, 0}, anguloX, anguloY, anguloZ));
-                            rotateLayerAnimated(m[0], m[1], true);
-                        } else {
+                            int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
+                            if (layer < 0) layer = m[1];
+                            rotateLayerAnimated(m[0], layer, true);
+                        } else if (!gameMode) {
                             size += 5;
                             setSubcube();
                         }
                         break;
                     case KeyEvent.VK_DOWN:
-                        if (gameMode) {
+                        if (gameMode && selX != -1) {
                             int[] m = mapDirection(rotateVector(new double[]{0, -1, 0}, anguloX, anguloY, anguloZ));
-                            rotateLayerAnimated(m[0], m[1], false);
-                        } else {
+                            int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
+                            if (layer < 0) layer = m[1];
+                            rotateLayerAnimated(m[0], layer, false);
+                        } else if (!gameMode) {
                             size -= 5;
                             setSubcube();
                         }
                         break;
                     case KeyEvent.VK_LEFT:
-                        if (gameMode) {
+                        if (gameMode && selX != -1) {
                             int[] m = mapDirection(rotateVector(new double[]{-1, 0, 0}, anguloX, anguloY, anguloZ));
-                            rotateLayerAnimated(m[0], m[1], false);
+                            int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
+                            if (layer < 0) layer = m[1];
+                            rotateLayerAnimated(m[0], layer, false);
                         }
                         break;
                     case KeyEvent.VK_RIGHT:
-                        if (gameMode) {
+                        if (gameMode && selX != -1) {
                             int[] m = mapDirection(rotateVector(new double[]{1, 0, 0}, anguloX, anguloY, anguloZ));
-                            rotateLayerAnimated(m[0], m[1], true);
+                            int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
+                            if (layer < 0) layer = m[1];
+                            rotateLayerAnimated(m[0], layer, true);
                         }
                         break;
                     case KeyEvent.VK_R:
