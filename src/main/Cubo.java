@@ -194,6 +194,20 @@ public class Cubo extends JFrame {
         }
     }
 
+    private int getSelectedLayer(int axis, int fallback) {
+        if (selX != -1) {
+            switch (axis) {
+                case 0:
+                    return selX;
+                case 1:
+                    return selY;
+                case 2:
+                    return selZ;
+            }
+        }
+        return fallback;
+    }
+
     private void rotateLayerAnimated(int axis, int layer, boolean clockwise) {
         int dir = clockwise ? 1 : -1;
         double offset = (layer - 1) * size;
@@ -252,10 +266,49 @@ public class Cubo extends JFrame {
             if (ang[0] > 90) {
                 timer.stop();
                 rotateLayer(axis, layer, clockwise);
+                updateSelectionAfterRotation(axis, layer, clockwise);
                 moverCubo();
             }
         });
         timer.start();
+    }
+
+    private void updateSelectionAfterRotation(int axis, int layer, boolean clockwise) {
+        if (selX == -1) {
+            return;
+        }
+        if ((axis == 0 && selX == layer) || (axis == 1 && selY == layer) || (axis == 2 && selZ == layer)) {
+            int x = selX, y = selY, z = selZ;
+            int nx = x, ny = y, nz = z;
+            if (axis == 0) {
+                if (clockwise) {
+                    ny = 2 - z;
+                    nz = y;
+                } else {
+                    ny = z;
+                    nz = 2 - y;
+                }
+            } else if (axis == 1) {
+                if (clockwise) {
+                    nx = z;
+                    nz = 2 - x;
+                } else {
+                    nx = 2 - z;
+                    nz = x;
+                }
+            } else {
+                if (clockwise) {
+                    nx = 2 - y;
+                    ny = x;
+                } else {
+                    nx = y;
+                    ny = 2 - x;
+                }
+            }
+            selX = nx;
+            selY = ny;
+            selZ = nz;
+        }
     }
 
     private void swapSubcubes(int x1, int y1, int z1, int x2, int y2, int z2) {
@@ -403,7 +456,8 @@ public class Cubo extends JFrame {
                     case KeyEvent.VK_UP:
                         if (gameMode) {
                             int[] m = mapDirection(rotateVector(new double[]{0, 1, 0}, anguloX, anguloY, anguloZ));
-                            rotateLayerAnimated(m[0], m[1], true);
+                            int layer = getSelectedLayer(m[0], m[1]);
+                            rotateLayerAnimated(m[0], layer, true);
                         } else {
                             size += 5;
                             setSubcube();
@@ -412,7 +466,8 @@ public class Cubo extends JFrame {
                     case KeyEvent.VK_DOWN:
                         if (gameMode) {
                             int[] m = mapDirection(rotateVector(new double[]{0, -1, 0}, anguloX, anguloY, anguloZ));
-                            rotateLayerAnimated(m[0], m[1], false);
+                            int layer = getSelectedLayer(m[0], m[1]);
+                            rotateLayerAnimated(m[0], layer, false);
                         } else {
                             size -= 5;
                             setSubcube();
@@ -421,13 +476,15 @@ public class Cubo extends JFrame {
                     case KeyEvent.VK_LEFT:
                         if (gameMode) {
                             int[] m = mapDirection(rotateVector(new double[]{-1, 0, 0}, anguloX, anguloY, anguloZ));
-                            rotateLayerAnimated(m[0], m[1], false);
+                            int layer = getSelectedLayer(m[0], m[1]);
+                            rotateLayerAnimated(m[0], layer, false);
                         }
                         break;
                     case KeyEvent.VK_RIGHT:
                         if (gameMode) {
                             int[] m = mapDirection(rotateVector(new double[]{1, 0, 0}, anguloX, anguloY, anguloZ));
-                            rotateLayerAnimated(m[0], m[1], true);
+                            int layer = getSelectedLayer(m[0], m[1]);
+                            rotateLayerAnimated(m[0], layer, true);
                         }
                         break;
                     case KeyEvent.VK_R:
