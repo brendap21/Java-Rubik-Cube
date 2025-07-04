@@ -160,6 +160,40 @@ public class Cubo extends JFrame {
         return new double[]{x, y, z};
     }
 
+    private double[] rotateVector(double[] v, double ax, double ay, double az) {
+        double[] r = java.util.Arrays.copyOf(v, 3);
+        double radX = Math.toRadians(ax);
+        double radY = Math.toRadians(ay);
+        double radZ = Math.toRadians(az);
+
+        double t = r[1] * Math.cos(radX) - r[2] * Math.sin(radX);
+        r[2] = r[1] * Math.sin(radX) + r[2] * Math.cos(radX);
+        r[1] = t;
+
+        t = r[0] * Math.cos(radY) + r[2] * Math.sin(radY);
+        r[2] = -r[0] * Math.sin(radY) + r[2] * Math.cos(radY);
+        r[0] = t;
+
+        t = r[0] * Math.cos(radZ) - r[1] * Math.sin(radZ);
+        r[1] = r[0] * Math.sin(radZ) + r[1] * Math.cos(radZ);
+        r[0] = t;
+
+        return r;
+    }
+
+    private int[] mapDirection(double[] v) {
+        double ax = Math.abs(v[0]);
+        double ay = Math.abs(v[1]);
+        double az = Math.abs(v[2]);
+        if (ax >= ay && ax >= az) {
+            return new int[]{0, v[0] >= 0 ? 2 : 0};
+        } else if (ay >= ax && ay >= az) {
+            return new int[]{1, v[1] >= 0 ? 2 : 0};
+        } else {
+            return new int[]{2, v[2] >= 0 ? 2 : 0};
+        }
+    }
+
     private void rotateLayerAnimated(int axis, int layer, boolean clockwise) {
         int dir = clockwise ? 1 : -1;
         double offset = (layer - 1) * size;
@@ -366,7 +400,8 @@ public class Cubo extends JFrame {
                         break;
                     case KeyEvent.VK_UP:
                         if (gameMode) {
-                            rotateLayerAnimated(1, 2, true);
+                            int[] m = mapDirection(rotateVector(new double[]{0, 1, 0}, anguloX, anguloY, anguloZ));
+                            rotateLayerAnimated(m[0], m[1], true);
                         } else {
                             size += 5;
                             setSubcube();
@@ -374,7 +409,8 @@ public class Cubo extends JFrame {
                         break;
                     case KeyEvent.VK_DOWN:
                         if (gameMode) {
-                            rotateLayerAnimated(1, 0, true);
+                            int[] m = mapDirection(rotateVector(new double[]{0, -1, 0}, anguloX, anguloY, anguloZ));
+                            rotateLayerAnimated(m[0], m[1], false);
                         } else {
                             size -= 5;
                             setSubcube();
@@ -382,12 +418,14 @@ public class Cubo extends JFrame {
                         break;
                     case KeyEvent.VK_LEFT:
                         if (gameMode) {
-                            rotateLayerAnimated(0, 0, true);
+                            int[] m = mapDirection(rotateVector(new double[]{-1, 0, 0}, anguloX, anguloY, anguloZ));
+                            rotateLayerAnimated(m[0], m[1], false);
                         }
                         break;
                     case KeyEvent.VK_RIGHT:
                         if (gameMode) {
-                            rotateLayerAnimated(0, 2, true);
+                            int[] m = mapDirection(rotateVector(new double[]{1, 0, 0}, anguloX, anguloY, anguloZ));
+                            rotateLayerAnimated(m[0], m[1], true);
                         }
                         break;
                     case KeyEvent.VK_R:
