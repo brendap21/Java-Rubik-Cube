@@ -24,13 +24,11 @@ public class Cubo extends JFrame {
     private int selX = -1, selY = -1, selZ = -1;
 
     private int[][] buttons = {
-        {700, 50, 80, 20}, // front
-        {700, 80, 80, 20}, // back
+        {700, 50, 80, 20},  // front
+        {700, 80, 80, 20},  // back
         {700, 110, 80, 20}, // left
         {700, 140, 80, 20}, // right
-        {700, 170, 80, 20}, // up
-        {700, 200, 80, 20}, // down
-        {700, 230, 80, 20} // mix
+        {700, 170, 80, 20}  // mix
     };
 
     private static class RenderInfo {
@@ -472,10 +470,6 @@ public class Cubo extends JFrame {
                         } else if (inButton(3, mx, my)) {
                             rotateLayerAnimated(0, 2, true);
                         } else if (inButton(4, mx, my)) {
-                            rotateLayerAnimated(1, 2, true);
-                        } else if (inButton(5, mx, my)) {
-                            rotateLayerAnimated(1, 0, true);
-                        } else if (inButton(6, mx, my)) {
                             scrambleAnimation();
                         }
                     }
@@ -540,7 +534,7 @@ public class Cubo extends JFrame {
         y += step;
         PixelFont.drawString(graficos, "R MIX CUBE", 10, y, 2, Color.WHITE);
 
-        String[] names = {"FRONT", "BACK", "LEFT", "RIGHT", "UP", "DOWN", "MIX"};
+        String[] names = {"FRONT", "BACK", "LEFT", "RIGHT", "MIX"};
         for (int i = 0; i < buttons.length; i++) {
             int[] b = buttons[i];
             graficos.drawRect(b[0], b[1], b[0] + b[2], b[1] + b[3], Color.WHITE);
