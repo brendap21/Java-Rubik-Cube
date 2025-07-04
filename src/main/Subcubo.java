@@ -74,28 +74,32 @@ public class Subcubo {
         switch (axis) {
             case 0: // X axis
                 if (clockwise) {
-                    colores[1] = c[3]; // front = top
-                    colores[2] = c[1]; // bottom = front
-                    colores[0] = c[2]; // back = bottom
-                    colores[3] = c[0]; // top = back
+                    // bottom -> front -> top -> back -> bottom
+                    colores[1] = c[2]; // front = old bottom
+                    colores[3] = c[1]; // top   = old front
+                    colores[0] = c[3]; // back  = old top
+                    colores[2] = c[0]; // bottom= old back
                 } else {
-                    colores[1] = c[2];
-                    colores[2] = c[0];
-                    colores[0] = c[3];
-                    colores[3] = c[1];
+                    // top -> front -> bottom -> back -> top
+                    colores[1] = c[3]; // front = old top
+                    colores[2] = c[1]; // bottom= old front
+                    colores[0] = c[2]; // back  = old bottom
+                    colores[3] = c[0]; // top   = old back
                 }
                 break;
             case 1: // Y axis
                 if (clockwise) {
-                    colores[5] = c[1]; // right = front
-                    colores[0] = c[5]; // back = right
-                    colores[4] = c[0]; // left = back
-                    colores[1] = c[4]; // front = left
+                    // front -> right -> back -> left -> front
+                    colores[1] = c[5]; // front = old right
+                    colores[5] = c[0]; // right = old back
+                    colores[0] = c[4]; // back  = old left
+                    colores[4] = c[1]; // left  = old front
                 } else {
-                    colores[4] = c[1];
-                    colores[0] = c[4];
-                    colores[5] = c[0];
-                    colores[1] = c[5];
+                    // front -> left -> back -> right -> front
+                    colores[1] = c[4]; // front = old left
+                    colores[4] = c[0]; // left  = old back
+                    colores[0] = c[5]; // back  = old right
+                    colores[5] = c[1]; // right = old front
                 }
                 break;
             case 2: // Z axis
