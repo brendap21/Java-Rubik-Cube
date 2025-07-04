@@ -11,6 +11,15 @@ public class Cubo extends JFrame {
 
     private Graficos graficos;
     private Subcubo[][][] cuboRubik;
+
+    // Colors used for each face of the solved cube
+    private static final Color COLOR_BACK = new Color(255, 105, 180);
+    private static final Color COLOR_FRONT = Color.CYAN;
+    private static final Color COLOR_BOTTOM = Color.WHITE;
+    private static final Color COLOR_TOP = new Color(128, 0, 128);
+    private static final Color COLOR_LEFT = new Color(135, 206, 235);
+    private static final Color COLOR_RIGHT = new Color(128, 0, 0);
+
     private double anguloX = 30, anguloY = 30, anguloZ = 0; //Angulo de rotacion
     private double escala = 1; // Factor de escala para la separación
     // Centrar el cubo en la ventana
@@ -66,7 +75,15 @@ public class Cubo extends JFrame {
                     int posX = (int) ((x - 1) * size * escala);
                     int posY = (int) ((y - 1) * size * escala);
                     int posZ = (int) ((z - 1) * size * escala);
-                    cuboRubik[x][y][z] = new Subcubo(posX, posY, posZ, size);
+                    Subcubo s = new Subcubo(posX, posY, posZ, size);
+                    // Assign colors only to visible faces
+                    s.setFaceColor(0, z == 0 ? COLOR_BACK : Color.BLACK);   // back
+                    s.setFaceColor(1, z == 2 ? COLOR_FRONT : Color.BLACK);  // front
+                    s.setFaceColor(2, y == 0 ? COLOR_BOTTOM : Color.BLACK); // bottom
+                    s.setFaceColor(3, y == 2 ? COLOR_TOP : Color.BLACK);    // top
+                    s.setFaceColor(4, x == 0 ? COLOR_LEFT : Color.BLACK);   // left
+                    s.setFaceColor(5, x == 2 ? COLOR_RIGHT : Color.BLACK);  // right
+                    cuboRubik[x][y][z] = s;
                 }
             }
         }
