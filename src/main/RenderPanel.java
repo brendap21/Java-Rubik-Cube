@@ -3,10 +3,17 @@ package main;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
-/** Simple panel to display the buffer from Graficos. */
+/**
+ * Panel ligero encargado únicamente de dibujar el {@link BufferedImage}
+ * generado por la clase {@link Graficos}.
+ */
 public class RenderPanel extends JPanel {
+    /** Referencia al sistema de dibujo del que se obtendrá el buffer. */
     private final Graficos graficos;
 
+    /**
+     * Crea el panel y lo asocia al contexto gráfico.
+     */
     public RenderPanel(Graficos graficos) {
         this.graficos = graficos;
         graficos.setPanel(this);
@@ -14,6 +21,9 @@ public class RenderPanel extends JPanel {
     }
 
     @Override
+    /**
+     * Pinta en pantalla la última imagen generada.
+     */
     protected void paintComponent(java.awt.Graphics g) {
         super.paintComponent(g);
         BufferedImage img = graficos.getBuffer();

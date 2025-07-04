@@ -1,19 +1,35 @@
 package main;
 
+/**
+ * Representa una pieza individual del cubo de Rubik.
+ * Se encarga de mantener su orientación, colores y de dibujarse
+ * aplicando las transformaciones necesarias.
+ */
+
 import java.awt.Color;
 import java.util.Arrays;
 
 public class Subcubo {
 
+    /** Posición original de la pieza dentro del cubo completo. */
     public int x, y, z, size;
+    /** Coordenadas de los 8 vértices en su espacio local. */
     private final double[][] vertices;
+    /** Conexiones entre vértices para dibujar aristas. */
     private final int[][] aristas;
+    /** Colores de cada una de las seis caras de la pieza. */
     private final Color[] colores;
+    /** Índices de los vértices que componen cada cara. */
     private final int[][] caras;
+    /** Coordenadas proyectadas en pantalla de cada vértice. */
     private final int[][] screenVertices;
 
+    /** Rotaciones acumuladas alrededor de cada eje. */
     private double rotX = 0, rotY = 0, rotZ = 0;
 
+    /**
+     * Crea un subcubo en la posición indicada dentro del cubo de Rubik.
+     */
     public Subcubo(int x, int y, int z, int size) {
         this.x = x;
         this.y = y;
@@ -58,6 +74,9 @@ public class Subcubo {
         screenVertices = new int[8][2];
     }
 
+    /**
+     * Rota los colores de las caras cuando la pieza gira alrededor de un eje.
+     */
     public void rotateColors(int axis, boolean clockwise) {
         Color[] c = Arrays.copyOf(colores, colores.length);
         switch (axis) {
@@ -105,6 +124,9 @@ public class Subcubo {
         }
     }
 
+    /**
+     * Actualiza la rotación acumulada de la pieza.
+     */
     public void rotateOrientation(int axis, boolean clockwise) {
         double ang = clockwise ? 90 : -90;
         switch (axis) {
@@ -120,15 +142,22 @@ public class Subcubo {
         }
     }
 
-    // Metodo de compatibilidad para versiones previas sin el parametro highlight
+    // Método de compatibilidad para versiones previas sin el parámetro highlight
     public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ, int trasX, int trasY, int trasZ, boolean lines) {
         dibujar(g, escala, anguloX, anguloY, anguloZ, trasX, trasY, trasZ, lines, false, 0, 0, 0);
     }
 
+    /**
+     * Dibuja el subcubo aplicando las transformaciones indicadas.
+     */
     public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ, int trasX, int trasY, int trasZ, boolean lines, boolean highlight) {
         dibujar(g, escala, anguloX, anguloY, anguloZ, trasX, trasY, trasZ, lines, highlight, 0, 0, 0);
     }
 
+    /**
+     * Dibuja el subcubo con rotaciones adicionales opcionales utilizadas para
+     * animaciones.
+     */
     public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ,
             int trasX, int trasY, int trasZ, boolean lines, boolean highlight,
             double extraRotX, double extraRotY, double extraRotZ) {
@@ -194,6 +223,9 @@ public class Subcubo {
         }
     }
 
+    /**
+     * Aplica rotaciones en X, Y y Z a un punto en 3D.
+     */
     public double[] rotar(double[] punto, double anguloX, double anguloY, double anguloZ) {
         double[] resultado = Arrays.copyOf(punto, 3);
         double radX = Math.toRadians(anguloX);
@@ -215,6 +247,10 @@ public class Subcubo {
         return resultado;
     }
 
+    /**
+     * Determina si un punto en pantalla se encuentra dentro de la proyección
+     * de este subcubo.
+     */
     public boolean containsPoint(int px, int py) {
         for (int[] face : caras) {
             int[] xs = new int[4];
@@ -230,6 +266,10 @@ public class Subcubo {
         return false;
     }
 
+    /**
+     * Implementación del algoritmo even-odd para determinar si un punto está
+     * dentro de un polígono.
+     */
     private boolean pointInPolygon(int x, int y, int[] polyX, int[] polyY) {
         boolean inside = false;
         for (int i = 0, j = polyX.length - 1; i < polyX.length; j = i++) {
