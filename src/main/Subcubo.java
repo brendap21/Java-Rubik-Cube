@@ -89,15 +89,17 @@ public class Subcubo {
                 break;
             case 2: // Z axis
                 if (clockwise) {
+                    // top -> right -> bottom -> left -> top
+                    colores[5] = c[3]; // right = top
+                    colores[2] = c[5]; // bottom = right
+                    colores[4] = c[2]; // left = bottom
+                    colores[3] = c[4]; // top = left
+                } else {
+                    // top -> left -> bottom -> right -> top
                     colores[4] = c[3]; // left = top
                     colores[2] = c[4]; // bottom = left
                     colores[5] = c[2]; // right = bottom
                     colores[3] = c[5]; // top = right
-                } else {
-                    colores[5] = c[3];
-                    colores[2] = c[5];
-                    colores[4] = c[2];
-                    colores[3] = c[4];
                 }
                 break;
         }
