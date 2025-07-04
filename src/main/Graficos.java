@@ -1,19 +1,16 @@
 package main;
 
-import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
-import java.awt.image.BufferStrategy;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 
-public class Graficos extends Canvas {
+public class Graficos extends JLabel {
 
     private final int WIDTH;
     private final int HEIGHT;
     private BufferedImage buffer;
     private boolean[][] canvas;
-    private BufferStrategy strategy;
 
 
     // Variables para la traslación
@@ -25,12 +22,7 @@ public class Graficos extends Canvas {
         this.HEIGHT = height;
         buffer = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
         canvas = new boolean [width][height];
-        setIgnoreRepaint(true);
-    }
-
-    public void initBufferStrategy() {
-        createBufferStrategy(2);
-        strategy = getBufferStrategy();
+        setIcon(new ImageIcon(buffer));
     }
 
     public void fillRect(int x0, int y0, int x1, int y1, Color color) {
@@ -282,30 +274,9 @@ public class Graficos extends Canvas {
         }
     }
 
-    @Override
-    public void paint(Graphics g) {
-        render();
-    }
-
-    @Override
-    public void update(Graphics g) {
-        render();
-    }
-
     public void render() {
-        if (strategy == null) {
-            Graphics gTemp = getGraphics();
-            if (gTemp != null) {
-                gTemp.drawImage(buffer, 0, 0, null);
-                gTemp.dispose();
-            }
-            return;
-        }
-        Graphics g = strategy.getDrawGraphics();
-        g.drawImage(buffer, 0, 0, null);
-        g.dispose();
-        strategy.show();
-        Toolkit.getDefaultToolkit().sync();
+        setIcon(new ImageIcon(buffer));
+        repaint();
     }
     
     public void clear() {

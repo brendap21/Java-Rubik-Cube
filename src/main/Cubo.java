@@ -460,7 +460,6 @@ public class Cubo extends JFrame {
         });
 
         setVisible(true);
-        graficos.initBufferStrategy();
     }
 
     private void drawUI() {
