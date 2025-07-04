@@ -432,7 +432,7 @@ public class Cubo extends JFrame {
                         break;
                     case KeyEvent.VK_UP:
                         if (gameMode && selX != -1) {
-                            int[] m = mapDirection(rotateVector(new double[]{0, 1, 0}, anguloX, anguloY, anguloZ));
+                            int[] m = mapDirection(rotateVector(new double[]{0, 1, 0}, -anguloX, -anguloY, -anguloZ));
                             int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
                             if (layer < 0) layer = m[1];
                             rotateLayerAnimated(m[0], layer, true);
@@ -443,7 +443,7 @@ public class Cubo extends JFrame {
                         break;
                     case KeyEvent.VK_DOWN:
                         if (gameMode && selX != -1) {
-                            int[] m = mapDirection(rotateVector(new double[]{0, -1, 0}, anguloX, anguloY, anguloZ));
+                            int[] m = mapDirection(rotateVector(new double[]{0, -1, 0}, -anguloX, -anguloY, -anguloZ));
                             int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
                             if (layer < 0) layer = m[1];
                             rotateLayerAnimated(m[0], layer, false);
@@ -454,7 +454,7 @@ public class Cubo extends JFrame {
                         break;
                     case KeyEvent.VK_LEFT:
                         if (gameMode && selX != -1) {
-                            int[] m = mapDirection(rotateVector(new double[]{-1, 0, 0}, anguloX, anguloY, anguloZ));
+                            int[] m = mapDirection(rotateVector(new double[]{-1, 0, 0}, -anguloX, -anguloY, -anguloZ));
                             int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
                             if (layer < 0) layer = m[1];
                             rotateLayerAnimated(m[0], layer, false);
@@ -462,7 +462,7 @@ public class Cubo extends JFrame {
                         break;
                     case KeyEvent.VK_RIGHT:
                         if (gameMode && selX != -1) {
-                            int[] m = mapDirection(rotateVector(new double[]{1, 0, 0}, anguloX, anguloY, anguloZ));
+                            int[] m = mapDirection(rotateVector(new double[]{1, 0, 0}, -anguloX, -anguloY, -anguloZ));
                             int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
                             if (layer < 0) layer = m[1];
                             rotateLayerAnimated(m[0], layer, true);
