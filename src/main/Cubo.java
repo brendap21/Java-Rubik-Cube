@@ -198,9 +198,8 @@ public class Cubo extends JFrame {
             }
             infos.sort((aInfo, bInfo) -> Double.compare(bInfo.depth, aInfo.depth));
             for (RenderInfo info : infos) {
-                info.cubo.dibujar(graficos, 1.0, anguloX, anguloY, anguloZ,
-                        info.x, info.y, (int) info.depth, lines, info.highlight,
-                        info.ex, info.ey, info.ez);
+                info.cubo.dibujar(graficos, 1.0, anguloX + info.ex, anguloY + info.ey, anguloZ + info.ez,
+                        info.x, info.y, (int) info.depth, lines, info.highlight);
             }
             drawUI();
             graficos.render();

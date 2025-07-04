@@ -120,19 +120,13 @@ public class Subcubo {
 
     // Metodo de compatibilidad para versiones previas sin el parametro highlight
     public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ, int trasX, int trasY, int trasZ, boolean lines) {
-        dibujar(g, escala, anguloX, anguloY, anguloZ, trasX, trasY, trasZ, lines, false, 0, 0, 0);
+        dibujar(g, escala, anguloX, anguloY, anguloZ, trasX, trasY, trasZ, lines, false);
     }
 
     public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ, int trasX, int trasY, int trasZ, boolean lines, boolean highlight) {
-        dibujar(g, escala, anguloX, anguloY, anguloZ, trasX, trasY, trasZ, lines, highlight, 0, 0, 0);
-    }
-
-    public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ,
-            int trasX, int trasY, int trasZ, boolean lines, boolean highlight,
-            double extraRotX, double extraRotY, double extraRotZ) {
         double[][] rotadas = new double[8][3];
         for (int i = 0; i < 8; i++) {
-            double[] local = rotar(vertices[i], rotX + extraRotX, rotY + extraRotY, rotZ + extraRotZ);
+            double[] local = rotar(vertices[i], rotX, rotY, rotZ);
             rotadas[i] = rotar(local, anguloX, anguloY, anguloZ);
         }
 
