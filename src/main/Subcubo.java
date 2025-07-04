@@ -58,6 +58,17 @@ public class Subcubo {
         screenVertices = new int[8][2];
     }
 
+    /**
+     * Sets the color of a specific face.
+     * Face order matches the {@code caras} array: 0 back, 1 front,
+     * 2 bottom, 3 top, 4 left, 5 right.
+     */
+    public void setFaceColor(int face, Color color) {
+        if (face >= 0 && face < colores.length) {
+            colores[face] = color;
+        }
+    }
+
     public void rotateColors(int axis, boolean clockwise) {
         Color[] c = Arrays.copyOf(colores, colores.length);
         switch (axis) {
