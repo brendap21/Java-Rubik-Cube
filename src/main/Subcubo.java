@@ -1,30 +1,43 @@
 package main;
 
 /**
- * Representa una pieza individual del cubo de Rubik.
- * Se encarga de mantener su orientación, colores y de dibujarse
- * aplicando las transformaciones necesarias.
+ * Representa una pieza individual del cubo de Rubik. Se encarga de mantener su
+ * orientación, colores y de dibujarse aplicando las transformaciones
+ * necesarias.
  */
-
 import java.awt.Color;
 import java.util.Arrays;
 
 public class Subcubo {
 
-    /** Posición original de la pieza dentro del cubo completo. */
+    /**
+     * Posición original de la pieza dentro del cubo completo.
+     */
     public int x, y, z, size;
-    /** Coordenadas de los 8 vértices en su espacio local. */
+    /**
+     * Coordenadas de los 8 vértices en su espacio local.
+     */
     private final double[][] vertices;
-    /** Conexiones entre vértices para dibujar aristas. */
+    /**
+     * Conexiones entre vértices para dibujar aristas.
+     */
     private final int[][] aristas;
-    /** Colores de cada una de las seis caras de la pieza. */
+    /**
+     * Colores de cada una de las seis caras de la pieza.
+     */
     private final Color[] colores;
-    /** Índices de los vértices que componen cada cara. */
+    /**
+     * Índices de los vértices que componen cada cara.
+     */
     private final int[][] caras;
-    /** Coordenadas proyectadas en pantalla de cada vértice. */
+    /**
+     * Coordenadas proyectadas en pantalla de cada vértice.
+     */
     private final int[][] screenVertices;
 
-    /** Rotaciones acumuladas alrededor de cada eje. */
+    /**
+     * Rotaciones acumuladas alrededor de cada eje.
+     */
     private double rotX = 0, rotY = 0, rotZ = 0;
 
     /**
@@ -63,12 +76,12 @@ public class Subcubo {
         };
 
         colores = new Color[]{
-            new Color(255, 105, 180), // rosa
-            Color.CYAN, // cian
-            Color.WHITE, // blanco
-            new Color(128, 0, 128), // morado
-            new Color(135, 206, 235), // azul cielo
-            new Color(128, 0, 0) // tinto
+            new Color(114, 176, 29), // verde
+            new Color(8, 127, 140), // azul 
+            new Color(246, 247, 235), // blanco
+            new Color(97, 41, 64), // morado
+            new Color(242, 92, 84), 
+            new Color(222, 26, 26) // rojo
         };
 
         screenVertices = new int[8][2];
@@ -248,8 +261,8 @@ public class Subcubo {
     }
 
     /**
-     * Determina si un punto en pantalla se encuentra dentro de la proyección
-     * de este subcubo.
+     * Determina si un punto en pantalla se encuentra dentro de la proyección de
+     * este subcubo.
      */
     public boolean containsPoint(int px, int py) {
         for (int[] face : caras) {

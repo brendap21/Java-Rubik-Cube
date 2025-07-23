@@ -37,15 +37,6 @@ public class Cubo extends JFrame {
     private boolean gameMode = false;
     private int selX = -1, selY = -1, selZ = -1;
 
-    /** Coordenadas de los botones de la interfaz. */
-    private int[][] buttons = {
-        {700, 50, 80, 20},  // front
-        {700, 80, 80, 20},  // back
-        {700, 110, 80, 20}, // left
-        {700, 140, 80, 20}, // right
-        {700, 170, 80, 20}  // mix
-    };
-
     /**
      * Información auxiliar usada durante el renderizado para ordenar las
      * piezas por profundidad.
@@ -541,19 +532,7 @@ public class Cubo extends JFrame {
                                 }
                             }
                         }
-                    } else {
-                        if (inButton(0, mx, my)) {
-                            rotateLayerAnimated(2, 2, true);
-                        } else if (inButton(1, mx, my)) {
-                            rotateLayerAnimated(2, 0, true);
-                        } else if (inButton(2, mx, my)) {
-                            rotateLayerAnimated(0, 0, true);
-                        } else if (inButton(3, mx, my)) {
-                            rotateLayerAnimated(0, 2, true);
-                        } else if (inButton(4, mx, my)) {
-                            scrambleAnimation();
-                        }
-                    }
+                    } 
                     moverCubo();
                 }
             }
@@ -597,7 +576,7 @@ public class Cubo extends JFrame {
      */
     private void drawUI() {
         PixelFont.drawString(graficos, "RUBIK 3D", 10, 20, 4, Color.WHITE);
-        PixelFont.drawString(graficos, gameMode ? "MODE: PLAY" : "MODE: VIEW", 10, 40, 2, Color.YELLOW);
+        PixelFont.drawString(graficos, gameMode ? "MODE: PLAY" : "MODE: VIEW", 650, 20, 2, Color.YELLOW);
         int y = 60;
         int step = 18;
         PixelFont.drawString(graficos, "WASD MOVE", 10, y, 2, Color.WHITE);
@@ -617,18 +596,5 @@ public class Cubo extends JFrame {
         PixelFont.drawString(graficos, "CLICK CUBE SELECT", 10, y, 2, Color.WHITE);
         y += step;
         PixelFont.drawString(graficos, "R MIX CUBE", 10, y, 2, Color.WHITE);
-
-        String[] names = {"FRONT", "BACK", "LEFT", "RIGHT", "MIX"};
-        for (int i = 0; i < buttons.length; i++) {
-            int[] b = buttons[i];
-            graficos.drawRect(b[0], b[1], b[0] + b[2], b[1] + b[3], Color.WHITE);
-            PixelFont.drawString(graficos, names[i], b[0] + 5, b[1] + 5, 2, Color.WHITE);
-        }
-    }
-
-    /** Devuelve si una coordenada está dentro de uno de los botones. */
-    private boolean inButton(int idx, int x, int y) {
-        int[] b = buttons[idx];
-        return x >= b[0] && x <= b[0] + b[2] && y >= b[1] && y <= b[1] + b[3];
     }
 }

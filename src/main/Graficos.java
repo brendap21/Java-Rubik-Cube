@@ -10,7 +10,6 @@ package main;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import javax.swing.JPanel;
 
 public class Graficos {
 
@@ -362,10 +361,10 @@ public class Graficos {
 
     
     /**
-     * Limpia el buffer rellenándolo con un color oscuro.
+     * Limpia el buffer rellenándolo con un color oscuro. (fondo)
      */
     public void clear() {
-        fillRect(0, 0, WIDTH, HEIGHT, new Color(5, 5, 20));
+        fillRect(0, 0, WIDTH, HEIGHT, new Color(15, 17, 12));
     }
 
     /** Devuelve la imagen interna usada como buffer. */
