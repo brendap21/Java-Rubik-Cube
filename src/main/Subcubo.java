@@ -174,6 +174,15 @@ public class Subcubo {
     public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ,
             int trasX, int trasY, int trasZ, boolean lines, boolean highlight,
             double extraRotX, double extraRotY, double extraRotZ) {
+        dibujar(g, escala, anguloX, anguloY, anguloZ, trasX, trasY, trasZ,
+                lines, highlight, extraRotX, extraRotY, extraRotZ,
+                false, 0, 0, 0);
+    }
+
+    public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ,
+            int trasX, int trasY, int trasZ, boolean lines, boolean highlight,
+            double extraRotX, double extraRotY, double extraRotZ,
+            boolean showLabels, int idxX, int idxY, int idxZ) {
         double[][] rotadas = new double[8][3];
         for (int i = 0; i < 8; i++) {
             double[] local = rotar(vertices[i], rotX + extraRotX, rotY + extraRotY, rotZ + extraRotZ);
@@ -206,11 +215,19 @@ public class Subcubo {
                 xPoints[j] = (int) trasladadas[caras[i][j]][0];
                 yPoints[j] = (int) trasladadas[caras[i][j]][1];
             }
-            g.fillPolygon(xPoints, yPoints, 4, colores[i]); // Pintar caraas
+            g.fillPolygon(xPoints, yPoints, 4, colores[i]); // Pintar caras
             if (lines) {
                 for (int j = 0; j < 4; j++) {
                     int next = (j + 1) % 4;
                     g.drawLine(xPoints[j], yPoints[j], xPoints[next], yPoints[next], Color.BLACK);
+                }
+            }
+            if (showLabels) {
+                String label = getFaceLabel(i, idxX, idxY, idxZ);
+                if (label != null) {
+                    int cx = (xPoints[0] + xPoints[1] + xPoints[2] + xPoints[3]) / 4;
+                    int cy = (yPoints[0] + yPoints[1] + yPoints[2] + yPoints[3]) / 4;
+                    PixelFont.drawString(g, label, cx - 4, cy - 4, 1, Color.BLACK);
                 }
             }
         }
@@ -233,6 +250,19 @@ public class Subcubo {
                 }
             }
             g.drawRect(minX, minY, maxX, maxY, Color.YELLOW);
+        }
+    }
+
+    private String getFaceLabel(int face, int ix, int iy, int iz) {
+        switch (face) {
+            case 1: // front
+                return "A" + (iy * 3 + ix + 1);
+            case 5: // right
+                return "B" + (iy * 3 + (2 - iz) + 1);
+            case 3: // top
+                return "C" + ((2 - iz) * 3 + ix + 1);
+            default:
+                return null;
         }
     }
 
