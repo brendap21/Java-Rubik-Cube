@@ -266,7 +266,7 @@ public class Subcubo {
             case 2: // bottom
                 return "E" + (iz * 3 + ix + 1);
             case 0: // back
-                return "F" + (iy * 3 + (2 - ix) + 1);
+                return "F" + (iy * 3 + ix + 1);
             default:
                 return null;
         }
