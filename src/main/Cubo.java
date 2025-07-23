@@ -48,8 +48,10 @@ public class Cubo extends JFrame {
         final double depth;
         final double ex, ey, ez;
         final boolean highlight;
+        final int ix, iy, iz;
 
-        RenderInfo(Subcubo c, int x, int y, double depth, double ex, double ey, double ez, boolean h) {
+        RenderInfo(Subcubo c, int x, int y, double depth, double ex, double ey,
+                   double ez, boolean h, int ix, int iy, int iz) {
             this.cubo = c;
             this.x = x;
             this.y = y;
@@ -58,6 +60,9 @@ public class Cubo extends JFrame {
             this.ey = ey;
             this.ez = ez;
             this.highlight = h;
+            this.ix = ix;
+            this.iy = iy;
+            this.iz = iz;
         }
     }
 
@@ -256,7 +261,7 @@ public class Cubo extends JFrame {
                         int finalY = (int) (rotatedPos[1] + trasY);
                         int finalZ = (int) (rotatedPos[2] + trasZ);
                         infos.add(new RenderInfo(cuboRubik[x][y][z], finalX, finalY, finalZ,
-                                extraX, extraY, extraZ, highlight));
+                                extraX, extraY, extraZ, highlight, x, y, z));
                     }
                 }
             }
@@ -264,7 +269,7 @@ public class Cubo extends JFrame {
             for (RenderInfo info : infos) {
                 info.cubo.dibujar(graficos, 1.0, anguloX, anguloY, anguloZ,
                         info.x, info.y, (int) info.depth, lines, info.highlight,
-                        info.ex, info.ey, info.ez);
+                        info.ex, info.ey, info.ez, true, info.ix, info.iy, info.iz);
             }
             drawUI();
             graficos.render();
@@ -343,7 +348,7 @@ public class Cubo extends JFrame {
                         int finalZ = (int) (rotatedPos[2] + trasZ);
 
                         boolean highlight = gameMode && x == selX && y == selY && z == selZ;
-                        infos.add(new RenderInfo(cuboRubik[x][y][z], finalX, finalY, finalZ, 0, 0, 0, highlight));
+                        infos.add(new RenderInfo(cuboRubik[x][y][z], finalX, finalY, finalZ, 0, 0, 0, highlight, x, y, z));
                     }
                 }
             }
@@ -351,7 +356,7 @@ public class Cubo extends JFrame {
             for (RenderInfo info : infos) {
                  info.cubo.dibujar(graficos, 1, anguloX, anguloY, anguloZ,
                         info.x, info.y, (int) info.depth, lines, info.highlight,
-                        info.ex, info.ey, info.ez);
+                        info.ex, info.ey, info.ez, true, info.ix, info.iy, info.iz);
             }
         } else {
             graficos.clear();
@@ -360,7 +365,8 @@ public class Cubo extends JFrame {
                 for (int y = 0; y < 3; y++) {
                     for (int z = 0; z < 3; z++) {
                         boolean highlight = gameMode && x == selX && y == selY && z == selZ;
-                        cuboRubik[x][y][z].dibujar(graficos, 1.0, anguloX, anguloY, anguloZ, trasX, trasY, trasZ, lines, highlight);
+                        cuboRubik[x][y][z].dibujar(graficos, 1.0, anguloX, anguloY, anguloZ,
+                                trasX, trasY, trasZ, lines, highlight, 0, 0, 0, true, x, y, z);
                     }
                 }
             }
