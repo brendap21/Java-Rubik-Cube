@@ -330,4 +330,11 @@ public class Subcubo {
         }
         return inside;
     }
+
+    /**
+     * Devuelve las coordenadas de los vértices proyectados en pantalla.
+     */
+    public int[][] getScreenVertices() {
+        return screenVertices;
+    }
 }

@@ -540,7 +540,59 @@ public class Cubo extends JFrame {
                                 }
                             }
                         }
-                    } 
+                    } else {
+                        int cx = 0, cy = 0;
+                        double bestDepth = -Double.MAX_VALUE;
+                        int idxX = -1, idxY = -1, idxZ = -1;
+                        for (int x = 0; x < 3; x++) {
+                            for (int y = 0; y < 3; y++) {
+                                for (int z = 0; z < 3; z++) {
+                                    Subcubo sc = cuboRubik[x][y][z];
+                                    if (sc.containsPoint(mx, my)) {
+                                        double posX = (x - 1) * size;
+                                        double posY = (y - 1) * size;
+                                        double posZ = (z - 1) * size;
+                                        double[] r = sc.rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
+                                        if (r[2] > bestDepth) {
+                                            bestDepth = r[2];
+                                            idxX = x;
+                                            idxY = y;
+                                            idxZ = z;
+                                            cx = 0;
+                                            cy = 0;
+                                            int[][] verts = sc.getScreenVertices();
+                                            for (int i = 0; i < 8; i++) {
+                                                cx += verts[i][0];
+                                                cy += verts[i][1];
+                                            }
+                                            cx /= 8;
+                                            cy /= 8;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (idxX != -1) {
+                            int dx = cx - trasX;
+                            int dy = cy - trasY;
+                            int t = size / 2;
+                            if (Math.abs(dx) > t && Math.abs(dy) > t) {
+                                if ((dx > 0 && dy < 0) || (dx < 0 && dy > 0)) {
+                                    anguloZ += 5;
+                                } else {
+                                    anguloZ -= 5;
+                                }
+                            } else if (Math.abs(dx) <= t && dy < -t) {
+                                anguloX += 5;
+                            } else if (Math.abs(dx) <= t && dy > t) {
+                                anguloX -= 5;
+                            } else if (Math.abs(dy) <= t && dx < -t) {
+                                anguloY -= 5;
+                            } else if (Math.abs(dy) <= t && dx > t) {
+                                anguloY += 5;
+                            }
+                        }
+                    }
                     moverCubo();
                 }
             }
