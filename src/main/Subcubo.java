@@ -261,6 +261,12 @@ public class Subcubo {
                 return "B" + (iy * 3 + (2 - iz) + 1);
             case 3: // top
                 return "C" + ((2 - iz) * 3 + ix + 1);
+            case 4: // left
+                return "D" + (iy * 3 + iz + 1);
+            case 2: // bottom
+                return "E" + (iz * 3 + ix + 1);
+            case 0: // back
+                return "F" + (iy * 3 + (2 - ix) + 1);
             default:
                 return null;
         }
