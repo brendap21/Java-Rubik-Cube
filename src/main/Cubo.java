@@ -429,16 +429,16 @@ public class Cubo extends JFrame {
                         trasY += 5;
                         break;
                     case KeyEvent.VK_I:
-                        anguloX -= 5;
-                        break;
-                    case KeyEvent.VK_K:
                         anguloX += 5;
                         break;
+                    case KeyEvent.VK_K:
+                        anguloX -= 5;
+                        break;
                     case KeyEvent.VK_L:
-                        anguloY -= 5;
+                        anguloY += 5;
                         break;
                     case KeyEvent.VK_J:
-                        anguloY += 5;
+                        anguloY -= 5;
                         break;
                     case KeyEvent.VK_U:
                         anguloZ -= 5;
@@ -475,8 +475,7 @@ public class Cubo extends JFrame {
                             if (layer < 0) layer = m[1];
                             rotateLayerAnimated(m[0], layer, true);
                         } else if (!gameMode) {
-                            size += 5;
-                            setSubcube();
+                            anguloX += 5;
                         }
                         break;
                     case KeyEvent.VK_DOWN:
@@ -486,8 +485,7 @@ public class Cubo extends JFrame {
                             if (layer < 0) layer = m[1];
                             rotateLayerAnimated(m[0], layer, false);
                         } else if (!gameMode) {
-                            size -= 5;
-                            setSubcube();
+                            anguloX -= 5;
                         }
                         break;
                     case KeyEvent.VK_LEFT:
@@ -496,6 +494,8 @@ public class Cubo extends JFrame {
                             int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
                             if (layer < 0) layer = m[1];
                             rotateLayerAnimated(m[0], layer, false);
+                        } else if (!gameMode) {
+                            anguloY += 5;
                         }
                         break;
                     case KeyEvent.VK_RIGHT:
@@ -504,6 +504,8 @@ public class Cubo extends JFrame {
                             int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
                             if (layer < 0) layer = m[1];
                             rotateLayerAnimated(m[0], layer, true);
+                        } else if (!gameMode) {
+                            anguloY -= 5;
                         }
                         break;
                     case KeyEvent.VK_R:
@@ -554,7 +556,7 @@ public class Cubo extends JFrame {
                     int dx = e.getX() - lastX;
                     int dy = e.getY() - lastY;
                     anguloY += dx / 2.0;
-                    anguloX += dy / 2.0;
+                    anguloX -= dy / 2.0;
                     lastX = e.getX();
                     lastY = e.getY();
                     moverCubo();
