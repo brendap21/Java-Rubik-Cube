@@ -429,22 +429,22 @@ public class Cubo extends JFrame {
                         trasY += 5;
                         break;
                     case KeyEvent.VK_I:
-                        anguloX -= 5;
-                        break;
-                    case KeyEvent.VK_K:
                         anguloX += 5;
                         break;
-                    case KeyEvent.VK_L:
-                        anguloY += 5;
+                    case KeyEvent.VK_K:
+                        anguloX -= 5;
                         break;
-                    case KeyEvent.VK_J:
+                    case KeyEvent.VK_L:
                         anguloY -= 5;
                         break;
+                    case KeyEvent.VK_J:
+                        anguloY += 5;
+                        break;
                     case KeyEvent.VK_U:
-                        anguloZ += 5;
+                        anguloZ -= 5;
                         break;
                     case KeyEvent.VK_O:
-                        anguloZ -= 5;
+                        anguloZ += 5;
                         break;
                     case KeyEvent.VK_Z:
                         size -= 5;
@@ -473,9 +473,9 @@ public class Cubo extends JFrame {
                             int[] m = mapDirection(rotateVector(new double[]{0, 1, 0}, -anguloX, -anguloY, -anguloZ));
                             int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
                             if (layer < 0) layer = m[1];
-                            rotateLayerAnimated(m[0], layer, true);
+                            rotateLayerAnimated(m[0], layer, false);
                         } else if (!gameMode) {
-                            anguloX -= 5;
+                            anguloX += 5;
                         }
                         break;
                     case KeyEvent.VK_DOWN:
@@ -483,9 +483,9 @@ public class Cubo extends JFrame {
                             int[] m = mapDirection(rotateVector(new double[]{0, -1, 0}, -anguloX, -anguloY, -anguloZ));
                             int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
                             if (layer < 0) layer = m[1];
-                            rotateLayerAnimated(m[0], layer, false);
+                            rotateLayerAnimated(m[0], layer, true);
                         } else if (!gameMode) {
-                            anguloX += 5;
+                            anguloX -= 5;
                         }
                         break;
                     case KeyEvent.VK_LEFT:
@@ -493,9 +493,9 @@ public class Cubo extends JFrame {
                             int[] m = mapDirection(rotateVector(new double[]{-1, 0, 0}, -anguloX, -anguloY, -anguloZ));
                             int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
                             if (layer < 0) layer = m[1];
-                            rotateLayerAnimated(m[0], layer, false);
+                            rotateLayerAnimated(m[0], layer, true);
                         } else if (!gameMode) {
-                            anguloY -= 5;
+                            anguloY += 5;
                         }
                         break;
                     case KeyEvent.VK_RIGHT:
@@ -503,9 +503,9 @@ public class Cubo extends JFrame {
                             int[] m = mapDirection(rotateVector(new double[]{1, 0, 0}, -anguloX, -anguloY, -anguloZ));
                             int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
                             if (layer < 0) layer = m[1];
-                            rotateLayerAnimated(m[0], layer, true);
+                            rotateLayerAnimated(m[0], layer, false);
                         } else if (!gameMode) {
-                            anguloY += 5;
+                            anguloY -= 5;
                         }
                         break;
                     case KeyEvent.VK_R:
@@ -578,18 +578,18 @@ public class Cubo extends JFrame {
                             int t = size / 2;
                             if (Math.abs(dx) > t && Math.abs(dy) > t) {
                                 if ((dx > 0 && dy < 0) || (dx < 0 && dy > 0)) {
-                                    anguloZ -= 5;
-                                } else {
                                     anguloZ += 5;
+                                } else {
+                                    anguloZ -= 5;
                                 }
                             } else if (Math.abs(dx) <= t && dy < -t) {
-                                anguloX -= 5;
-                            } else if (Math.abs(dx) <= t && dy > t) {
                                 anguloX += 5;
+                            } else if (Math.abs(dx) <= t && dy > t) {
+                                anguloX -= 5;
                             } else if (Math.abs(dy) <= t && dx < -t) {
-                                anguloY -= 5;
-                            } else if (Math.abs(dy) <= t && dx > t) {
                                 anguloY += 5;
+                            } else if (Math.abs(dy) <= t && dx > t) {
+                                anguloY -= 5;
                             }
                         }
                     }
