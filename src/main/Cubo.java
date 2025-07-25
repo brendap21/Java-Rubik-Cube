@@ -250,6 +250,66 @@ public class Cubo extends JFrame {
         }
     }
 
+    // ----- Ayudas para detectar la cara y esquinas visibles -----
+
+    private static final double EPS = 0.1;
+
+    // Devuelve la posición rotada del centro de un subcubo
+    private double[] rotatedCenter(int x, int y, int z) {
+        double posX = (x - 1) * size;
+        double posY = (y - 1) * size;
+        double posZ = (z - 1) * size;
+        return rotateVector(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
+    }
+
+    // Profundidad máxima (más cercana al observador) de la malla actual
+    private double frontDepth() {
+        double maxZ = -Double.MAX_VALUE;
+        for (int ix = 0; ix < 3; ix++) {
+            for (int iy = 0; iy < 3; iy++) {
+                for (int iz = 0; iz < 3; iz++) {
+                    double[] r = rotatedCenter(ix, iy, iz);
+                    if (r[2] > maxZ) {
+                        maxZ = r[2];
+                    }
+                }
+            }
+        }
+        return maxZ;
+    }
+
+    // Comprueba si un subcubo pertenece a la cara frontal visible
+    private boolean isFrontFace(int x, int y, int z) {
+        double maxZ = frontDepth();
+        double[] p = rotatedCenter(x, y, z);
+        return Math.abs(p[2] - maxZ) < EPS * size;
+    }
+
+    // Comprueba si un subcubo está en una esquina visible de la cara frontal
+    private boolean isFrontCorner(int x, int y, int z) {
+        double maxZ = frontDepth();
+        double minX = Double.MAX_VALUE, maxX = -Double.MAX_VALUE;
+        double minY = Double.MAX_VALUE, maxY = -Double.MAX_VALUE;
+        for (int ix = 0; ix < 3; ix++) {
+            for (int iy = 0; iy < 3; iy++) {
+                for (int iz = 0; iz < 3; iz++) {
+                    double[] r = rotatedCenter(ix, iy, iz);
+                    if (Math.abs(r[2] - maxZ) < EPS * size) {
+                        if (r[0] < minX) minX = r[0];
+                        if (r[0] > maxX) maxX = r[0];
+                        if (r[1] < minY) minY = r[1];
+                        if (r[1] > maxY) maxY = r[1];
+                    }
+                }
+            }
+        }
+
+        double[] p = rotatedCenter(x, y, z);
+        return Math.abs(p[2] - maxZ) < EPS * size &&
+               (Math.abs(p[0] - minX) < EPS * size || Math.abs(p[0] - maxX) < EPS * size) &&
+               (Math.abs(p[1] - minY) < EPS * size || Math.abs(p[1] - maxY) < EPS * size);
+    }
+
     // ----- Utilidades para el manejo de rotaciones globales -----
 
     private double[][] matrixFromAngles(double ax, double ay, double az) {
@@ -637,11 +697,9 @@ public class Cubo extends JFrame {
                     }
                     if (idxX != -1) {
                         int dx = cx - trasX, dy = cy - trasY;
-                        // Only treat the four front-face corners (F1, F3, F7, F9)
-                        // as Z-axis drag handles
-                        boolean corner = idxZ == 2 &&
-                                         (idxX == 0 || idxX == 2) &&
-                                         (idxY == 0 || idxY == 2);
+                        // Identificar si el subcubo corresponde a una esquina
+                        // visible para rotar sobre el eje Z
+                        boolean corner = isFrontCorner(idxX, idxY, idxZ);
                         if (corner) {
                             // --- ESQUINA: eje Z (como O/U) ---
                             draggingCorner = true;
@@ -653,8 +711,8 @@ public class Cubo extends JFrame {
                             } else {
                                 applyRotation(2, -5);
                             }
-                        } else {
-                            // --- RESTO DE SUBCUBOS: ejes X/Y como flechas ---
+                        } else if (isFrontFace(idxX, idxY, idxZ)) {
+                            // --- RESTO DE SUBCUBOS DE LA CARA FRONTAL: X/Y ---
                             draggingFace = true;
                             draggingCorner = false;
                             lastX = e.getX();
