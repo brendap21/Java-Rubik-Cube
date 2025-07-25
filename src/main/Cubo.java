@@ -61,6 +61,15 @@ public class Cubo extends JFrame {
      */
     private boolean draggingCorner = false;
     /**
+     * Indica si se está arrastrando un subcubo de cara para rotar en X/Y.
+     */
+    private boolean draggingFace = false;
+    /**
+     * Eje de rotaci\u00f3n seleccionado al iniciar el arrastre de una cara.
+     * 0 = X, 1 = Y, -1 = ninguno.
+     */
+    private int dragAxis = -1;
+    /**
      * Modo de juego en el que se puede seleccionar subcubos.
      */
     private boolean gameMode = false;
@@ -639,6 +648,8 @@ public class Cubo extends JFrame {
                         if (corner) {
                             // --- ESQUINA: eje Z (como O/U) ---
                             draggingCorner = true;
+                            draggingFace = false;
+                            dragAxis = -1;
                             lastX = e.getX();
                             lastY = e.getY();
                             if ((dx > 0 && dy < 0) || (dx < 0 && dy > 0)) {
@@ -648,7 +659,10 @@ public class Cubo extends JFrame {
                             }
                         } else {
                             // --- RESTO DE SUBCUBOS: ejes X/Y como flechas ---
+                            draggingFace = true;
+                            draggingCorner = false;
                             if (Math.abs(dx) >= Math.abs(dy)) {
+                                dragAxis = 1; // Y
                                 if (dx < 0) {
                                     // Izquierda (J/←)
                                     applyRotation(1, 5);
@@ -657,6 +671,7 @@ public class Cubo extends JFrame {
                                     applyRotation(1, -5);
                                 }
                             } else {
+                                dragAxis = 0; // X
                                 if (dy < 0) {
                                     // Arriba (I/↑)
                                     applyRotation(0, -5);
@@ -665,6 +680,8 @@ public class Cubo extends JFrame {
                                     applyRotation(0, 5);
                                 }
                             }
+                            lastX = e.getX();
+                            lastY = e.getY();
                         }
                     }
                     moverCubo();
@@ -673,6 +690,8 @@ public class Cubo extends JFrame {
             @Override
             public void mouseReleased(MouseEvent e) {
                 draggingCorner = false;
+                draggingFace = false;
+                dragAxis = -1;
             }
         });
 
@@ -688,6 +707,17 @@ public class Cubo extends JFrame {
                     applyRotation(2, cross / 1000.0);
                     lastX = e.getX();
                     lastY = e.getY();
+                    moverCubo();
+                } else if (!gameMode && draggingFace && (e.getModifiersEx() & InputEvent.BUTTON1_DOWN_MASK) != 0) {
+                    int dx = e.getX() - lastX;
+                    int dy = e.getY() - lastY;
+                    if (dragAxis == 1) {
+                        applyRotation(1, -dx / 2.0);
+                        lastX = e.getX();
+                    } else if (dragAxis == 0) {
+                        applyRotation(0, dy / 2.0);
+                        lastY = e.getY();
+                    }
                     moverCubo();
                 } else if (!gameMode && (e.getModifiersEx() & InputEvent.BUTTON3_DOWN_MASK) != 0) {
                     int dx = e.getX() - lastX, dy = e.getY() - lastY;
