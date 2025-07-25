@@ -288,26 +288,44 @@ public class Cubo extends JFrame {
     // Comprueba si un subcubo está en una esquina visible de la cara frontal
     private boolean isFrontCorner(int x, int y, int z) {
         double maxZ = frontDepth();
-        double minX = Double.MAX_VALUE, maxX = -Double.MAX_VALUE;
-        double minY = Double.MAX_VALUE, maxY = -Double.MAX_VALUE;
+        // Bounding box in screen coordinates of the visible face
+        int minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE;
+        int minY = Integer.MAX_VALUE, maxY = Integer.MIN_VALUE;
+        int centerX = 0, centerY = 0;
+        boolean targetVisible = false;
+
         for (int ix = 0; ix < 3; ix++) {
             for (int iy = 0; iy < 3; iy++) {
                 for (int iz = 0; iz < 3; iz++) {
                     double[] r = rotatedCenter(ix, iy, iz);
                     if (Math.abs(r[2] - maxZ) < EPS * size) {
-                        if (r[0] < minX) minX = r[0];
-                        if (r[0] > maxX) maxX = r[0];
-                        if (r[1] < minY) minY = r[1];
-                        if (r[1] > maxY) maxY = r[1];
+                        int[][] verts = cuboRubik[ix][iy][iz].getScreenVertices();
+                        int cx = 0, cy = 0;
+                        for (int i = 0; i < 8; i++) {
+                            cx += verts[i][0];
+                            cy += verts[i][1];
+                        }
+                        cx /= 8;
+                        cy /= 8;
+
+                        if (ix == x && iy == y && iz == z) {
+                            centerX = cx;
+                            centerY = cy;
+                            targetVisible = true;
+                        }
+
+                        if (cx < minX) minX = cx;
+                        if (cx > maxX) maxX = cx;
+                        if (cy < minY) minY = cy;
+                        if (cy > maxY) maxY = cy;
                     }
                 }
             }
         }
 
-        double[] p = rotatedCenter(x, y, z);
-        return Math.abs(p[2] - maxZ) < EPS * size &&
-               (Math.abs(p[0] - minX) < EPS * size || Math.abs(p[0] - maxX) < EPS * size) &&
-               (Math.abs(p[1] - minY) < EPS * size || Math.abs(p[1] - maxY) < EPS * size);
+        if (!targetVisible) return false;
+        return (Math.abs(centerX - minX) < EPS * size || Math.abs(centerX - maxX) < EPS * size) &&
+               (Math.abs(centerY - minY) < EPS * size || Math.abs(centerY - maxY) < EPS * size);
     }
 
     // ----- Utilidades para el manejo de rotaciones globales -----
