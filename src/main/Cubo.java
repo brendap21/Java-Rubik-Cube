@@ -65,6 +65,10 @@ public class Cubo extends JFrame {
      */
     private boolean draggingFace = false;
     /**
+     * Indica si se está arrastrando una capa frontal para rotar en Z.
+     */
+    private boolean draggingLayerZ = false;
+    /**
      * Modo de juego en el que se puede seleccionar subcubos.
      */
     private boolean gameMode = false;
@@ -700,26 +704,36 @@ public class Cubo extends JFrame {
                                 applyRotation(2, -5);
                             }
                         } else if (isFrontFace(idxX, idxY, idxZ)) {
-                            // --- RESTO DE SUBCUBOS DE LA CARA FRONTAL: X/Y ---
-                            draggingFace = true;
+                            // --- RESTO DE SUBCUBOS DE LA CARA FRONTAL ---
                             draggingCorner = false;
-                            lastX = e.getX();
-                            lastY = e.getY();
-                            if (Math.abs(dx) >= Math.abs(dy)) {
-                                if (dx < 0) {
-                                    // Izquierda (J/←)
-                                    applyRotation(1, 5);
-                                } else {
-                                    // Derecha (L/→)
-                                    applyRotation(1, -5);
-                                }
+                            if (e.isShiftDown()) {
+                                // Arrastre para rotar la capa frontal en Z
+                                draggingLayerZ = true;
+                                draggingFace = false;
+                                lastX = e.getX();
+                                lastY = e.getY();
                             } else {
-                                if (dy < 0) {
-                                    // Arriba (I/↑)
-                                    applyRotation(0, -5);
+                                // Rotación global en X/Y al arrastrar la cara
+                                draggingFace = true;
+                                draggingLayerZ = false;
+                                lastX = e.getX();
+                                lastY = e.getY();
+                                if (Math.abs(dx) >= Math.abs(dy)) {
+                                    if (dx < 0) {
+                                        // Izquierda (J/←)
+                                        applyRotation(1, 5);
+                                    } else {
+                                        // Derecha (L/→)
+                                        applyRotation(1, -5);
+                                    }
                                 } else {
-                                    // Abajo (K/↓)
-                                    applyRotation(0, 5);
+                                    if (dy < 0) {
+                                        // Arriba (I/↑)
+                                        applyRotation(0, -5);
+                                    } else {
+                                        // Abajo (K/↓)
+                                        applyRotation(0, 5);
+                                    }
                                 }
                             }
                         }
@@ -731,6 +745,7 @@ public class Cubo extends JFrame {
             public void mouseReleased(MouseEvent e) {
                 draggingCorner = false;
                 draggingFace = false;
+                draggingLayerZ = false;
             }
         });
 
@@ -747,6 +762,18 @@ public class Cubo extends JFrame {
                     lastX = e.getX();
                     lastY = e.getY();
                     moverCubo();
+                } else if (!gameMode && draggingLayerZ && (e.getModifiersEx() & InputEvent.BUTTON1_DOWN_MASK) != 0) {
+                    double vx1 = lastX - trasX;
+                    double vy1 = lastY - trasY;
+                    double vx2 = e.getX() - trasX;
+                    double vy2 = e.getY() - trasY;
+                    double cross = vx1 * vy2 - vy1 * vx2;
+                    boolean clockwise = cross > 0;
+                    int[] front = getFrontAxis();
+                    int axis = front[0];
+                    int layer = front[1] > 0 ? 2 : 0;
+                    rotateLayerAnimated(axis, layer, clockwise);
+                    draggingLayerZ = false;
                 } else if (!gameMode && draggingFace && (e.getModifiersEx() & InputEvent.BUTTON1_DOWN_MASK) != 0) {
                     int dx = e.getX() - lastX, dy = e.getY() - lastY;
                     applyRotation(1, -dx / 2.0);
