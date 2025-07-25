@@ -26,6 +26,12 @@ public class Cubo extends JFrame {
      */
     private double anguloX = 30, anguloY = 30, anguloZ = 0;
     /**
+     * Matriz de rotación acumulada para mantener la orientación del cubo. Se
+     * actualiza cada vez que se aplica una rotación para conservar la misma
+     * dirección independientemente de la vista actual.
+     */
+    private double[][] rotMatrix;
+    /**
      * Factor de escala para separar los subcubos.
      */
     private double escala = 1;
@@ -236,6 +242,76 @@ public class Cubo extends JFrame {
         }
     }
 
+    // ----- Utilidades para el manejo de rotaciones globales -----
+
+    private double[][] matrixFromAngles(double ax, double ay, double az) {
+        double radX = Math.toRadians(ax);
+        double radY = Math.toRadians(ay);
+        double radZ = Math.toRadians(az);
+
+        double cx = Math.cos(radX), sx = Math.sin(radX);
+        double cy = Math.cos(radY), sy = Math.sin(radY);
+        double cz = Math.cos(radZ), sz = Math.sin(radZ);
+
+        double[][] m = new double[3][3];
+        m[0][0] = cy * cz;
+        m[0][1] = cz * sy * sx - sz * cx;
+        m[0][2] = cz * sy * cx + sz * sx;
+        m[1][0] = cy * sz;
+        m[1][1] = sz * sy * sx + cz * cx;
+        m[1][2] = sz * sy * cx - cz * sx;
+        m[2][0] = -sy;
+        m[2][1] = cy * sx;
+        m[2][2] = cy * cx;
+        return m;
+    }
+
+    private double[] anglesFromMatrix(double[][] m) {
+        double ay = Math.asin(-m[2][0]);
+        double cy = Math.cos(ay);
+        double ax, az;
+        if (Math.abs(cy) > 1e-6) {
+            ax = Math.atan2(m[2][1], m[2][2]);
+            az = Math.atan2(m[1][0], m[0][0]);
+        } else {
+            ax = Math.atan2(-m[1][2], m[1][1]);
+            az = 0;
+        }
+        return new double[]{Math.toDegrees(ax), Math.toDegrees(ay), Math.toDegrees(az)};
+    }
+
+    private double[][] multiply(double[][] a, double[][] b) {
+        double[][] r = new double[3][3];
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                r[i][j] = a[i][0] * b[0][j] + a[i][1] * b[1][j] + a[i][2] * b[2][j];
+            }
+        }
+        return r;
+    }
+
+    private void applyRotation(int axis, double degrees) {
+        double rad = Math.toRadians(degrees);
+        double c = Math.cos(rad), s = Math.sin(rad);
+        double[][] r = new double[3][3];
+        switch (axis) {
+            case 0: // X
+                r = new double[][]{{1, 0, 0}, {0, c, -s}, {0, s, c}};
+                break;
+            case 1: // Y
+                r = new double[][]{{c, 0, s}, {0, 1, 0}, {-s, 0, c}};
+                break;
+            case 2: // Z
+                r = new double[][]{{c, -s, 0}, {s, c, 0}, {0, 0, 1}};
+                break;
+        }
+        rotMatrix = multiply(r, rotMatrix);
+        double[] angs = anglesFromMatrix(rotMatrix);
+        anguloX = angs[0];
+        anguloY = angs[1];
+        anguloZ = angs[2];
+    }
+
     /**
      * Rota una capa con animación y ejecuta una acción al finalizar.
      */
@@ -431,6 +507,9 @@ public class Cubo extends JFrame {
         graficos = new Graficos(800, 600);
         RenderPanel panel = new RenderPanel(graficos);
         add(panel);
+
+        // Matriz de rotación inicial basada en los ángulos predeterminados
+        rotMatrix = matrixFromAngles(anguloX, anguloY, anguloZ);
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -452,13 +531,13 @@ public class Cubo extends JFrame {
                     case KeyEvent.VK_I:    // “flecha arriba” o I
                     case KeyEvent.VK_UP:
                         if (!gameMode) {
-                            anguloX -= 5;
+                            applyRotation(0, -5);
                         }
                         break;
                     case KeyEvent.VK_K:    // “flecha abajo” o K
                     case KeyEvent.VK_DOWN:
                         if (!gameMode) {
-                            anguloX += 5;
+                            applyRotation(0, 5);
                         }
                         break;
 
@@ -466,25 +545,25 @@ public class Cubo extends JFrame {
                     case KeyEvent.VK_J:    // “flecha izquierda” o J
                     case KeyEvent.VK_LEFT:
                         if (!gameMode) {
-                            anguloY += 5;  // <— ahora suma para girar a la izquierda
+                            applyRotation(1, 5);  // giro a la izquierda
                         }
                         break;
                     case KeyEvent.VK_L:    // “flecha derecha” o L
                     case KeyEvent.VK_RIGHT:
                         if (!gameMode) {
-                            anguloY -= 5;  // <— ahora resta para girar a la derecha
+                            applyRotation(1, -5);  // giro a la derecha
                         }
                         break;
 
                     // — ROTACIÓN EN Z (profundidad) —
                     case KeyEvent.VK_O:
                         if (!gameMode) {
-                            anguloZ += 5;
+                            applyRotation(2, 5);
                         }
                         break;
                     case KeyEvent.VK_U:
                         if (!gameMode) {
-                            anguloZ -= 5;
+                            applyRotation(2, -5);
                         }
                         break;
 
@@ -553,22 +632,22 @@ public class Cubo extends JFrame {
                         if (Math.abs(dx) > t && Math.abs(dy) > t) {
                             // --- ESQUINA: eje Z (como O/U) ---
                             if ((dx > 0 && dy < 0) || (dx < 0 && dy > 0)) {
-                                anguloZ += 5; // invertido (era -=5) :contentReference[oaicite:0]{index=0}
+                                applyRotation(2, 5);
                             } else {
-                                anguloZ -= 5; // invertido (era +=5)
+                                applyRotation(2, -5);
                             }
                         } else if (Math.abs(dx) <= t && dy < -t) {
                             // --- BORDE SUPERIOR: eje X (como I/↑) ---
-                            anguloX += 5; // invertido (era -=5) :contentReference[oaicite:1]{index=1}
+                            applyRotation(0, 5);
                         } else if (Math.abs(dx) <= t && dy > t) {
                             // --- BORDE INFERIOR: eje X (como K/↓) ---
-                            anguloX -= 5; // invertido (era +=5)
+                            applyRotation(0, -5);
                         } else if (Math.abs(dy) <= t && dx < -t) {
                             // --- BORDE IZQUIERDA: eje Y (como J/←) ---
-                            anguloY += 5; // invertido (era -=5)
+                            applyRotation(1, 5);
                         } else if (Math.abs(dy) <= t && dx > t) {
                             // --- BORDE DERECHA: eje Y (como L/→) ---
-                            anguloY -= 5; // invertido (era +=5)
+                            applyRotation(1, -5);
                         }
                     }
                     moverCubo();
@@ -582,8 +661,8 @@ public class Cubo extends JFrame {
                 if (!gameMode && (e.getModifiersEx() & InputEvent.BUTTON3_DOWN_MASK) != 0) {
                     int dx = e.getX() - lastX, dy = e.getY() - lastY;
                     // --- ARRASTRE DERECHO: también invertido ---
-                    anguloY -= dx / 2.0; // antes era += dx/2.0 :contentReference[oaicite:2]{index=2}
-                    anguloX += dy / 2.0; // antes era -= dy/2.0
+                    applyRotation(1, -dx / 2.0); // antes era += dx/2.0
+                    applyRotation(0, dy / 2.0);  // antes era -= dy/2.0
                     lastX = e.getX();
                     lastY = e.getY();
                     moverCubo();
