@@ -4,42 +4,61 @@ package main;
  * Ventana principal que gestiona la interacción con el usuario y el renderizado
  * completo del cubo de Rubik.
  */
-
 import java.awt.Color;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import main.RenderPanel;
 
 public class Cubo extends JFrame {
 
-    /** Contenedor de utilidades de dibujo. */
+    /**
+     * Contenedor de utilidades de dibujo.
+     */
     private Graficos graficos;
-    /** Matriz de subcubos que conforman el cubo de Rubik. */
+    /**
+     * Matriz de subcubos que conforman el cubo de Rubik.
+     */
     private Subcubo[][][] cuboRubik;
-    /** Rotaciones globales del cubo. */
+    /**
+     * Rotaciones globales del cubo.
+     */
     private double anguloX = 30, anguloY = 30, anguloZ = 0;
-    /** Factor de escala para separar los subcubos. */
+    /**
+     * Factor de escala para separar los subcubos.
+     */
     private double escala = 1;
-    /** Traslación para centrar el cubo en la ventana. */
+    /**
+     * Traslación para centrar el cubo en la ventana.
+     */
     private int trasX = 400, trasY = 300, trasZ = 0;
-    /** Tamaño de cada subcubo en píxeles. */
+    /**
+     * Tamaño de cada subcubo en píxeles.
+     */
     private int size = 80;
-    /** Indica si se dibujan las líneas de las caras. */
+    /**
+     * Indica si se dibujan las líneas de las caras.
+     */
     private boolean lines = true;
-    /** Si está activo, las rotaciones se hacen pieza por pieza. */
+    /**
+     * Si está activo, las rotaciones se hacen pieza por pieza.
+     */
     private boolean ejeSubcubo = false;
-    /** Posiciones del ratón para calcular arrastre. */
+    /**
+     * Posiciones del ratón para calcular arrastre.
+     */
     private int lastX;
     private int lastY;
-    /** Modo de juego en el que se puede seleccionar subcubos. */
+    /**
+     * Modo de juego en el que se puede seleccionar subcubos.
+     */
     private boolean gameMode = false;
     private int selX = -1, selY = -1, selZ = -1;
 
     /**
-     * Información auxiliar usada durante el renderizado para ordenar las
-     * piezas por profundidad.
+     * Información auxiliar usada durante el renderizado para ordenar las piezas
+     * por profundidad.
      */
     private static class RenderInfo {
 
@@ -51,7 +70,7 @@ public class Cubo extends JFrame {
         final int ix, iy, iz;
 
         RenderInfo(Subcubo c, int x, int y, double depth, double ex, double ey,
-                   double ez, boolean h, int ix, int iy, int iz) {
+                double ez, boolean h, int ix, int iy, int iz) {
             this.cubo = c;
             this.x = x;
             this.y = y;
@@ -95,8 +114,8 @@ public class Cubo extends JFrame {
     }
 
     /**
-     * Rota una capa completa del cubo modificando orientación y colores de
-     * las piezas que la componen.
+     * Rota una capa completa del cubo modificando orientación y colores de las
+     * piezas que la componen.
      */
     private void rotateLayer(int axis, int layer, boolean clockwise) {
         Subcubo[][][] nuevo = new Subcubo[3][3][3];
@@ -354,7 +373,7 @@ public class Cubo extends JFrame {
             }
             infos.sort((a, b) -> Double.compare(b.depth, a.depth));
             for (RenderInfo info : infos) {
-                 info.cubo.dibujar(graficos, 1, anguloX, anguloY, anguloZ,
+                info.cubo.dibujar(graficos, 1, anguloX, anguloY, anguloZ,
                         info.x, info.y, (int) info.depth, lines, info.highlight,
                         info.ex, info.ey, info.ez, true, info.ix, info.iy, info.iz);
             }
@@ -428,32 +447,51 @@ public class Cubo extends JFrame {
                     case KeyEvent.VK_S:
                         trasY += 5;
                         break;
-                    case KeyEvent.VK_I:
-                        anguloX -= 5;
+
+                    // — ROTACIÓN EN X (eje horizontal) —
+                    case KeyEvent.VK_I:    // “flecha arriba” o I
+                    case KeyEvent.VK_UP:
+                        if (!gameMode) {
+                            anguloX -= 5;
+                        }
                         break;
-                    case KeyEvent.VK_K:
-                        anguloX += 5;
+                    case KeyEvent.VK_K:    // “flecha abajo” o K
+                    case KeyEvent.VK_DOWN:
+                        if (!gameMode) {
+                            anguloX += 5;
+                        }
                         break;
-                    case KeyEvent.VK_L:
-                        anguloY += 5;
+
+                    // — ROTACIÓN EN Y (eje vertical) —
+                    case KeyEvent.VK_J:    // “flecha izquierda” o J
+                    case KeyEvent.VK_LEFT:
+                        if (!gameMode) {
+                            anguloY += 5;  // <— ahora suma para girar a la izquierda
+                        }
                         break;
-                    case KeyEvent.VK_J:
-                        anguloY -= 5;
+                    case KeyEvent.VK_L:    // “flecha derecha” o L
+                    case KeyEvent.VK_RIGHT:
+                        if (!gameMode) {
+                            anguloY -= 5;  // <— ahora resta para girar a la derecha
+                        }
+                        break;
+
+                    // — ROTACIÓN EN Z (profundidad) —
+                    case KeyEvent.VK_O:
+                        if (!gameMode) {
+                            anguloZ += 5;
+                        }
                         break;
                     case KeyEvent.VK_U:
-                        anguloZ += 5;
+                        if (!gameMode) {
+                            anguloZ -= 5;
+                        }
                         break;
-                    case KeyEvent.VK_O:
-                        anguloZ -= 5;
-                        break;
-                    case KeyEvent.VK_Z:
-                        size -= 5;
-                        break;
-                    case KeyEvent.VK_X:
-                        size += 5;
-                        break;
-                    case KeyEvent.VK_B:
-                        lines = !lines;
+
+                    case KeyEvent.VK_R:
+                        if (!gameMode) {
+                            scrambleAnimation();
+                        }
                         break;
                     case KeyEvent.VK_ENTER:
                         gameMode = !gameMode;
@@ -461,136 +499,76 @@ public class Cubo extends JFrame {
                             selX = selY = selZ = -1;
                         }
                         break;
+                    case KeyEvent.VK_B:
+                        lines = !lines;
+                        break;
                     case KeyEvent.VK_E:
-                        if (!ejeSubcubo) {
-                            ejeSubcubo = true;
-                        } else {
-                            ejeSubcubo = false;
-                        }
-                        break;
-                    case KeyEvent.VK_UP:
-                        if (gameMode && selX != -1) {
-                            int[] m = mapDirection(rotateVector(new double[]{0, 1, 0}, -anguloX, -anguloY, -anguloZ));
-                            int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
-                            if (layer < 0) layer = m[1];
-                            rotateLayerAnimated(m[0], layer, false);
-                        } else if (!gameMode) {
-                            anguloX -= 5;
-                        }
-                        break;
-                    case KeyEvent.VK_DOWN:
-                        if (gameMode && selX != -1) {
-                            int[] m = mapDirection(rotateVector(new double[]{0, -1, 0}, -anguloX, -anguloY, -anguloZ));
-                            int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
-                            if (layer < 0) layer = m[1];
-                            rotateLayerAnimated(m[0], layer, true);
-                        } else if (!gameMode) {
-                            anguloX += 5;
-                        }
-                        break;
-                    case KeyEvent.VK_LEFT:
-                        if (gameMode && selX != -1) {
-                            int[] m = mapDirection(rotateVector(new double[]{-1, 0, 0}, -anguloX, -anguloY, -anguloZ));
-                            int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
-                            if (layer < 0) layer = m[1];
-                            rotateLayerAnimated(m[0], layer, true);
-                        } else if (!gameMode) {
-                            anguloY -= 5;
-                        }
-                        break;
-                    case KeyEvent.VK_RIGHT:
-                        if (gameMode && selX != -1) {
-                            int[] m = mapDirection(rotateVector(new double[]{1, 0, 0}, -anguloX, -anguloY, -anguloZ));
-                            int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
-                            if (layer < 0) layer = m[1];
-                            rotateLayerAnimated(m[0], layer, false);
-                        } else if (!gameMode) {
-                            anguloY += 5;
-                        }
-                        break;
-                    case KeyEvent.VK_R:
-                        if (!gameMode) {
-                            scrambleAnimation();
-                        }
+                        ejeSubcubo = !ejeSubcubo;
                         break;
                 }
                 moverCubo();
             }
         });
 
-        // Registrar eventos de ratón sobre el lienzo de dibujo
-        panel.addMouseListener(new java.awt.event.MouseAdapter() {
+        // --- CLICK IZQUIERDO PARA ROTAR EN MODO VISTA ---
+        panel.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent e) {
-                if (javax.swing.SwingUtilities.isRightMouseButton(e)) {
+            public void mousePressed(MouseEvent e) {
+                if (SwingUtilities.isRightMouseButton(e)) {
                     lastX = e.getX();
                     lastY = e.getY();
-                } else if (javax.swing.SwingUtilities.isLeftMouseButton(e)) {
-                    int mx = e.getX();
-                    int my = e.getY();
-                    if (gameMode) {
-                        for (int x = 0; x < 3; x++) {
-                            for (int y = 0; y < 3; y++) {
-                                for (int z = 0; z < 3; z++) {
-                                    if (cuboRubik[x][y][z].containsPoint(mx, my)) {
-                                        selX = x;
-                                        selY = y;
-                                        selZ = z;
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        int cx = 0, cy = 0;
-                        double bestDepth = -Double.MAX_VALUE;
-                        int idxX = -1, idxY = -1, idxZ = -1;
-                        for (int x = 0; x < 3; x++) {
-                            for (int y = 0; y < 3; y++) {
-                                for (int z = 0; z < 3; z++) {
-                                    Subcubo sc = cuboRubik[x][y][z];
-                                    if (sc.containsPoint(mx, my)) {
-                                        double posX = (x - 1) * size;
-                                        double posY = (y - 1) * size;
-                                        double posZ = (z - 1) * size;
-                                        double[] r = sc.rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
-                                        if (r[2] > bestDepth) {
-                                            bestDepth = r[2];
-                                            idxX = x;
-                                            idxY = y;
-                                            idxZ = z;
-                                            cx = 0;
-                                            cy = 0;
-                                            int[][] verts = sc.getScreenVertices();
-                                            for (int i = 0; i < 8; i++) {
-                                                cx += verts[i][0];
-                                                cy += verts[i][1];
-                                            }
-                                            cx /= 8;
-                                            cy /= 8;
+                } else if (SwingUtilities.isLeftMouseButton(e) && !gameMode) {
+                    int mx = e.getX(), my = e.getY();
+                    int cx = 0, cy = 0;
+                    double bestDepth = -Double.MAX_VALUE;
+                    int idxX = -1, idxY = -1, idxZ = -1;
+                    // Busco el subcubo más cercano bajo el cursor
+                    for (int x = 0; x < 3; x++) {
+                        for (int y = 0; y < 3; y++) {
+                            for (int z = 0; z < 3; z++) {
+                                Subcubo sc = cuboRubik[x][y][z];
+                                if (sc.containsPoint(mx, my)) {
+                                    double posX = (x - 1) * size, posY = (y - 1) * size, posZ = (z - 1) * size;
+                                    double[] r = sc.rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
+                                    if (r[2] > bestDepth) {
+                                        bestDepth = r[2];
+                                        idxX = x;
+                                        idxY = y;
+                                        idxZ = z;
+                                        cx = cy = 0;
+                                        int[][] verts = sc.getScreenVertices();
+                                        for (int i = 0; i < 8; i++) {
+                                            cx += verts[i][0];
+                                            cy += verts[i][1];
                                         }
+                                        cx /= 8;
+                                        cy /= 8;
                                     }
                                 }
                             }
                         }
-                        if (idxX != -1) {
-                            int dx = cx - trasX;
-                            int dy = cy - trasY;
-                            int t = size / 2;
-                            if (Math.abs(dx) > t && Math.abs(dy) > t) {
-                                if ((dx > 0 && dy < 0) || (dx < 0 && dy > 0)) {
-                                    anguloZ -= 5;
-                                } else {
-                                    anguloZ += 5;
-                                }
-                            } else if (Math.abs(dx) <= t && dy < -t) {
-                                anguloX -= 5;
-                            } else if (Math.abs(dx) <= t && dy > t) {
-                                anguloX += 5;
-                            } else if (Math.abs(dy) <= t && dx < -t) {
-                                anguloY -= 5;
-                            } else if (Math.abs(dy) <= t && dx > t) {
-                                anguloY += 5;
+                    }
+                    if (idxX != -1) {
+                        int dx = cx - trasX, dy = cy - trasY, t = size / 2;
+                        if (Math.abs(dx) > t && Math.abs(dy) > t) {
+                            // --- ESQUINA: eje Z (como O/U) ---
+                            if ((dx > 0 && dy < 0) || (dx < 0 && dy > 0)) {
+                                anguloZ += 5; // invertido (era -=5) :contentReference[oaicite:0]{index=0}
+                            } else {
+                                anguloZ -= 5; // invertido (era +=5)
                             }
+                        } else if (Math.abs(dx) <= t && dy < -t) {
+                            // --- BORDE SUPERIOR: eje X (como I/↑) ---
+                            anguloX += 5; // invertido (era -=5) :contentReference[oaicite:1]{index=1}
+                        } else if (Math.abs(dx) <= t && dy > t) {
+                            // --- BORDE INFERIOR: eje X (como K/↓) ---
+                            anguloX -= 5; // invertido (era +=5)
+                        } else if (Math.abs(dy) <= t && dx < -t) {
+                            // --- BORDE IZQUIERDA: eje Y (como J/←) ---
+                            anguloY += 5; // invertido (era -=5)
+                        } else if (Math.abs(dy) <= t && dx > t) {
+                            // --- BORDE DERECHA: eje Y (como L/→) ---
+                            anguloY -= 5; // invertido (era +=5)
                         }
                     }
                     moverCubo();
@@ -598,17 +576,14 @@ public class Cubo extends JFrame {
             }
         });
 
-        panel.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+        panel.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
-            public void mouseDragged(java.awt.event.MouseEvent e) {
-                // SwingUtilities.isRightMouseButton returns false for drag
-                // events, so check the modifiers to know if the right button
-                // is being held down
-                if (!gameMode && (e.getModifiersEx() & java.awt.event.InputEvent.BUTTON3_DOWN_MASK) != 0) {
-                    int dx = e.getX() - lastX;
-                    int dy = e.getY() - lastY;
-                    anguloY += dx / 2.0;
-                    anguloX -= dy / 2.0;
+            public void mouseDragged(MouseEvent e) {
+                if (!gameMode && (e.getModifiersEx() & InputEvent.BUTTON3_DOWN_MASK) != 0) {
+                    int dx = e.getX() - lastX, dy = e.getY() - lastY;
+                    // --- ARRASTRE DERECHO: también invertido ---
+                    anguloY -= dx / 2.0; // antes era += dx/2.0 :contentReference[oaicite:2]{index=2}
+                    anguloX += dy / 2.0; // antes era -= dy/2.0
                     lastX = e.getX();
                     lastY = e.getY();
                     moverCubo();
@@ -616,16 +591,13 @@ public class Cubo extends JFrame {
             }
         });
 
-        panel.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
-            @Override
-            public void mouseWheelMoved(java.awt.event.MouseWheelEvent e) {
-                size -= e.getWheelRotation() * 5;
-                if (size < 20) {
-                    size = 20;
-                }
-                setSubcube();
-                moverCubo();
+        panel.addMouseWheelListener(e -> {
+            size -= e.getWheelRotation() * 5;
+            if (size < 20) {
+                size = 20;
             }
+            setSubcube();
+            moverCubo();
         });
 
         setVisible(true);
