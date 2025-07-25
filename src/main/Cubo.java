@@ -69,10 +69,6 @@ public class Cubo extends JFrame {
      */
     private boolean draggingLayerZ = false;
     /**
-     * Indica si se está arrastrando la cara frontal para rotar en Z.
-     */
-    private boolean draggingFaceZ = false;
-    /**
      * Modo de juego en el que se puede seleccionar subcubos.
      */
     private boolean gameMode = false;
@@ -657,32 +653,7 @@ public class Cubo extends JFrame {
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                if (SwingUtilities.isRightMouseButton(e) && !gameMode) {
-                    int mx = e.getX(), my = e.getY();
-                    double bestDepth = -Double.MAX_VALUE;
-                    int idxX = -1, idxY = -1, idxZ = -1;
-                    for (int x = 0; x < 3; x++) {
-                        for (int y = 0; y < 3; y++) {
-                            for (int z = 0; z < 3; z++) {
-                                Subcubo sc = cuboRubik[x][y][z];
-                                if (sc.containsPoint(mx, my)) {
-                                    double posX = (x - 1) * size, posY = (y - 1) * size, posZ = (z - 1) * size;
-                                    double[] r = sc.rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
-                                    if (r[2] > bestDepth) {
-                                        bestDepth = r[2];
-                                        idxX = x;
-                                        idxY = y;
-                                        idxZ = z;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (idxX != -1 && isFrontFace(idxX, idxY, idxZ)) {
-                        draggingFaceZ = true;
-                    } else {
-                        draggingFaceZ = false;
-                    }
+                if (SwingUtilities.isRightMouseButton(e)) {
                     lastX = e.getX();
                     lastY = e.getY();
                 } else if (SwingUtilities.isLeftMouseButton(e) && !gameMode) {
@@ -775,7 +746,6 @@ public class Cubo extends JFrame {
                 draggingCorner = false;
                 draggingFace = false;
                 draggingLayerZ = false;
-                draggingFaceZ = false;
             }
         });
 
@@ -804,16 +774,6 @@ public class Cubo extends JFrame {
                     int layer = front[1] > 0 ? 2 : 0;
                     rotateLayerAnimated(axis, layer, clockwise);
                     draggingLayerZ = false;
-                } else if (!gameMode && draggingFaceZ && (e.getModifiersEx() & InputEvent.BUTTON3_DOWN_MASK) != 0) {
-                    double vx1 = lastX - trasX;
-                    double vy1 = lastY - trasY;
-                    double vx2 = e.getX() - trasX;
-                    double vy2 = e.getY() - trasY;
-                    double cross = vx1 * vy2 - vy1 * vx2;
-                    applyRotation(2, cross / 1000.0);
-                    lastX = e.getX();
-                    lastY = e.getY();
-                    moverCubo();
                 } else if (!gameMode && draggingFace && (e.getModifiersEx() & InputEvent.BUTTON1_DOWN_MASK) != 0) {
                     int dx = e.getX() - lastX, dy = e.getY() - lastY;
                     applyRotation(1, -dx / 2.0);
