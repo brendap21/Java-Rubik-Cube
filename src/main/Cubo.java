@@ -632,8 +632,11 @@ public class Cubo extends JFrame {
                         }
                     }
                     if (idxX != -1) {
-                        int dx = cx - trasX, dy = cy - trasY, t = size / 2;
-                        if (Math.abs(dx) > t && Math.abs(dy) > t) {
+                        int dx = cx - trasX, dy = cy - trasY;
+                        boolean corner = (idxX == 0 || idxX == 2) &&
+                                         (idxY == 0 || idxY == 2) &&
+                                         (idxZ == 0 || idxZ == 2);
+                        if (corner) {
                             // --- ESQUINA: eje Z (como O/U) ---
                             draggingCorner = true;
                             lastX = e.getX();
@@ -643,18 +646,25 @@ public class Cubo extends JFrame {
                             } else {
                                 applyRotation(2, -5);
                             }
-                        } else if (Math.abs(dx) <= t && dy < -t) {
-                            // --- BORDE SUPERIOR: eje X (como I/↑) ---
-                            applyRotation(0, 5);
-                        } else if (Math.abs(dx) <= t && dy > t) {
-                            // --- BORDE INFERIOR: eje X (como K/↓) ---
-                            applyRotation(0, -5);
-                        } else if (Math.abs(dy) <= t && dx < -t) {
-                            // --- BORDE IZQUIERDA: eje Y (como J/←) ---
-                            applyRotation(1, 5);
-                        } else if (Math.abs(dy) <= t && dx > t) {
-                            // --- BORDE DERECHA: eje Y (como L/→) ---
-                            applyRotation(1, -5);
+                        } else {
+                            // --- RESTO DE SUBCUBOS: ejes X/Y como flechas ---
+                            if (Math.abs(dx) >= Math.abs(dy)) {
+                                if (dx < 0) {
+                                    // Izquierda (J/←)
+                                    applyRotation(1, 5);
+                                } else {
+                                    // Derecha (L/→)
+                                    applyRotation(1, -5);
+                                }
+                            } else {
+                                if (dy < 0) {
+                                    // Arriba (I/↑)
+                                    applyRotation(0, -5);
+                                } else {
+                                    // Abajo (K/↓)
+                                    applyRotation(0, 5);
+                                }
+                            }
                         }
                     }
                     moverCubo();
