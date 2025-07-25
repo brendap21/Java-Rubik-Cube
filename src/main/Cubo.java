@@ -633,9 +633,11 @@ public class Cubo extends JFrame {
                     }
                     if (idxX != -1) {
                         int dx = cx - trasX, dy = cy - trasY;
-                        boolean corner = (idxX == 0 || idxX == 2) &&
-                                         (idxY == 0 || idxY == 2) &&
-                                         (idxZ == 0 || idxZ == 2);
+                        // Only treat the four front-face corners (F1, F3, F7, F9)
+                        // as Z-axis drag handles
+                        boolean corner = idxZ == 2 &&
+                                         (idxX == 0 || idxX == 2) &&
+                                         (idxY == 0 || idxY == 2);
                         if (corner) {
                             // --- ESQUINA: eje Z (como O/U) ---
                             draggingCorner = true;
