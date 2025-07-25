@@ -254,78 +254,48 @@ public class Cubo extends JFrame {
 
     private static final double EPS = 0.1;
 
-    // Devuelve la posición rotada del centro de un subcubo
-    private double[] rotatedCenter(int x, int y, int z) {
-        double posX = (x - 1) * size;
-        double posY = (y - 1) * size;
-        double posZ = (z - 1) * size;
-        return rotateVector(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
-    }
-
-    // Profundidad máxima (más cercana al observador) de la malla actual
-    private double frontDepth() {
-        double maxZ = -Double.MAX_VALUE;
-        for (int ix = 0; ix < 3; ix++) {
-            for (int iy = 0; iy < 3; iy++) {
-                for (int iz = 0; iz < 3; iz++) {
-                    double[] r = rotatedCenter(ix, iy, iz);
-                    if (r[2] > maxZ) {
-                        maxZ = r[2];
-                    }
-                }
+    // Determina cuál eje local está orientado hacia el observador
+    private int[] getFrontAxis() {
+        double[] dir = {rotMatrix[0][2], rotMatrix[1][2], rotMatrix[2][2]};
+        int axis = 0;
+        double max = Math.abs(dir[0]);
+        for (int i = 1; i < 3; i++) {
+            if (Math.abs(dir[i]) > max) {
+                axis = i;
+                max = Math.abs(dir[i]);
             }
         }
-        return maxZ;
+        return new int[]{axis, dir[axis] >= 0 ? 1 : -1};
     }
 
     // Comprueba si un subcubo pertenece a la cara frontal visible
     private boolean isFrontFace(int x, int y, int z) {
-        double maxZ = frontDepth();
-        double[] p = rotatedCenter(x, y, z);
-        return Math.abs(p[2] - maxZ) < EPS * size;
+        int[] front = getFrontAxis();
+        int axis = front[0];
+        int pos = front[1] > 0 ? 2 : 0;
+        switch (axis) {
+            case 0:
+                return x == pos;
+            case 1:
+                return y == pos;
+            default:
+                return z == pos;
+        }
     }
 
-    // Comprueba si un subcubo está en una esquina visible de la cara frontal
+    // Comprueba si un subcubo está en la esquina visible de la cara frontal
     private boolean isFrontCorner(int x, int y, int z) {
-        double maxZ = frontDepth();
-        // Bounding box in screen coordinates of the visible face
-        int minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE;
-        int minY = Integer.MAX_VALUE, maxY = Integer.MIN_VALUE;
-        int centerX = 0, centerY = 0;
-        boolean targetVisible = false;
-
-        for (int ix = 0; ix < 3; ix++) {
-            for (int iy = 0; iy < 3; iy++) {
-                for (int iz = 0; iz < 3; iz++) {
-                    double[] r = rotatedCenter(ix, iy, iz);
-                    if (Math.abs(r[2] - maxZ) < EPS * size) {
-                        int[][] verts = cuboRubik[ix][iy][iz].getScreenVertices();
-                        int cx = 0, cy = 0;
-                        for (int i = 0; i < 8; i++) {
-                            cx += verts[i][0];
-                            cy += verts[i][1];
-                        }
-                        cx /= 8;
-                        cy /= 8;
-
-                        if (ix == x && iy == y && iz == z) {
-                            centerX = cx;
-                            centerY = cy;
-                            targetVisible = true;
-                        }
-
-                        if (cx < minX) minX = cx;
-                        if (cx > maxX) maxX = cx;
-                        if (cy < minY) minY = cy;
-                        if (cy > maxY) maxY = cy;
-                    }
-                }
-            }
+        int[] front = getFrontAxis();
+        int axis = front[0];
+        int pos = front[1] > 0 ? 2 : 0;
+        switch (axis) {
+            case 0:
+                return x == pos && (y == 0 || y == 2) && (z == 0 || z == 2);
+            case 1:
+                return y == pos && (x == 0 || x == 2) && (z == 0 || z == 2);
+            default:
+                return z == pos && (x == 0 || x == 2) && (y == 0 || y == 2);
         }
-
-        if (!targetVisible) return false;
-        return (Math.abs(centerX - minX) < EPS * size || Math.abs(centerX - maxX) < EPS * size) &&
-               (Math.abs(centerY - minY) < EPS * size || Math.abs(centerY - maxY) < EPS * size);
     }
 
     // ----- Utilidades para el manejo de rotaciones globales -----
