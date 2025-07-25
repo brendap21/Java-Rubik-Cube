@@ -250,6 +250,50 @@ public class Cubo extends JFrame {
         }
     }
 
+    // Determina cuál eje local está orientado hacia el observador
+    private int[] getFrontAxis() {
+        double[] dir = {rotMatrix[0][2], rotMatrix[1][2], rotMatrix[2][2]};
+        int axis = 0;
+        double max = Math.abs(dir[0]);
+        for (int i = 1; i < 3; i++) {
+            if (Math.abs(dir[i]) > max) {
+                axis = i;
+                max = Math.abs(dir[i]);
+            }
+        }
+        return new int[]{axis, dir[axis] >= 0 ? 1 : -1};
+    }
+
+    // Comprueba si un subcubo está en la esquina visible de la cara frontal
+    private boolean isFrontCorner(int x, int y, int z) {
+        int[] front = getFrontAxis();
+        int axis = front[0];
+        int pos = front[1] > 0 ? 2 : 0;
+        switch (axis) {
+            case 0:
+                return x == pos && (y == 0 || y == 2) && (z == 0 || z == 2);
+            case 1:
+                return y == pos && (x == 0 || x == 2) && (z == 0 || z == 2);
+            default:
+                return z == pos && (x == 0 || x == 2) && (y == 0 || y == 2);
+        }
+    }
+
+    // Comprueba si un subcubo pertenece a la cara frontal visible
+    private boolean isFrontFace(int x, int y, int z) {
+        int[] front = getFrontAxis();
+        int axis = front[0];
+        int pos = front[1] > 0 ? 2 : 0;
+        switch (axis) {
+            case 0:
+                return x == pos;
+            case 1:
+                return y == pos;
+            default:
+                return z == pos;
+        }
+    }
+
     // ----- Utilidades para el manejo de rotaciones globales -----
 
     private double[][] matrixFromAngles(double ax, double ay, double az) {
@@ -637,11 +681,9 @@ public class Cubo extends JFrame {
                     }
                     if (idxX != -1) {
                         int dx = cx - trasX, dy = cy - trasY;
-                        // Only treat the four front-face corners (F1, F3, F7, F9)
-                        // as Z-axis drag handles
-                        boolean corner = idxZ == 2 &&
-                                         (idxX == 0 || idxX == 2) &&
-                                         (idxY == 0 || idxY == 2);
+                        // Identificar si el subcubo corresponde a una esquina
+                        // visible para rotar sobre el eje Z
+                        boolean corner = isFrontCorner(idxX, idxY, idxZ);
                         if (corner) {
                             // --- ESQUINA: eje Z (como O/U) ---
                             draggingCorner = true;
@@ -653,8 +695,8 @@ public class Cubo extends JFrame {
                             } else {
                                 applyRotation(2, -5);
                             }
-                        } else {
-                            // --- RESTO DE SUBCUBOS: ejes X/Y como flechas ---
+                        } else if (isFrontFace(idxX, idxY, idxZ)) {
+                            // --- RESTO DE SUBCUBOS DE LA CARA FRONTAL: X/Y ---
                             draggingFace = true;
                             draggingCorner = false;
                             lastX = e.getX();
