@@ -57,6 +57,10 @@ public class Cubo extends JFrame {
     private int lastX;
     private int lastY;
     /**
+     * Indica si se está arrastrando desde una esquina para rotar en Z.
+     */
+    private boolean draggingCorner = false;
+    /**
      * Modo de juego en el que se puede seleccionar subcubos.
      */
     private boolean gameMode = false;
@@ -631,6 +635,9 @@ public class Cubo extends JFrame {
                         int dx = cx - trasX, dy = cy - trasY, t = size / 2;
                         if (Math.abs(dx) > t && Math.abs(dy) > t) {
                             // --- ESQUINA: eje Z (como O/U) ---
+                            draggingCorner = true;
+                            lastX = e.getX();
+                            lastY = e.getY();
                             if ((dx > 0 && dy < 0) || (dx < 0 && dy > 0)) {
                                 applyRotation(2, 5);
                             } else {
@@ -653,12 +660,26 @@ public class Cubo extends JFrame {
                     moverCubo();
                 }
             }
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                draggingCorner = false;
+            }
         });
 
         panel.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                if (!gameMode && (e.getModifiersEx() & InputEvent.BUTTON3_DOWN_MASK) != 0) {
+                if (!gameMode && draggingCorner && (e.getModifiersEx() & InputEvent.BUTTON1_DOWN_MASK) != 0) {
+                    double vx1 = lastX - trasX;
+                    double vy1 = lastY - trasY;
+                    double vx2 = e.getX() - trasX;
+                    double vy2 = e.getY() - trasY;
+                    double cross = vx1 * vy2 - vy1 * vx2;
+                    applyRotation(2, cross / 1000.0);
+                    lastX = e.getX();
+                    lastY = e.getY();
+                    moverCubo();
+                } else if (!gameMode && (e.getModifiersEx() & InputEvent.BUTTON3_DOWN_MASK) != 0) {
                     int dx = e.getX() - lastX, dy = e.getY() - lastY;
                     // --- ARRASTRE DERECHO: también invertido ---
                     applyRotation(1, -dx / 2.0); // antes era += dx/2.0
