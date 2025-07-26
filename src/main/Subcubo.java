@@ -256,15 +256,15 @@ public class Subcubo {
     private String getFaceLabel(int face, int ix, int iy, int iz) {
         switch (face) {
             case 1: // front
-                return "A" + (iy * 3 + ix + 1);
+                return "A" + ((2 - iy) * 3 + ix + 1);
             case 5: // right
-                return "B" + (iy * 3 + (2 - iz) + 1);
+                return "B" + (iy * 3 + iz + 1);
             case 3: // top
-                return "C" + ((2 - iz) * 3 + ix + 1);
+                return "C" + (iz * 3 + ix + 1);
             case 4: // left
-                return "D" + (iy * 3 + iz + 1);
+                return "D" + (iy * 3 + (2 - iz) + 1);
             case 2: // bottom
-                return "E" + (iz * 3 + ix + 1);
+                return "E" + ((2 - iz) * 3 + ix + 1);
             case 0: // back
                 return "F" + (iy * 3 + ix + 1);
             default:
