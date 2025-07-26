@@ -582,7 +582,9 @@ public class Cubo extends JFrame {
 
         // Matriz de rotación inicial basada en los ángulos predeterminados
         rotMatrix = matrixFromAngles(anguloX, anguloY, anguloZ);
-        addKeyListener(new KeyAdapter() {
+        // Attach key events to the render panel so it receives them when
+        // focus is requested on this component.
+        panel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 switch (e.getKeyCode()) {
