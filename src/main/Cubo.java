@@ -919,7 +919,7 @@ public class Cubo extends JFrame {
         y += step;
         PixelFont.drawString(graficos, "E CHANGE AXIS", 10, y, 2, Color.WHITE);
         y += step;
-        PixelFont.drawString(graficos, "ARROWS ROTATE", 10, y, 2, Color.WHITE);
+        PixelFont.drawString(graficos, "ARROWS ROTATE (PLAY MODE)", 10, y, 2, Color.WHITE);
         y += step;
         PixelFont.drawString(graficos, "N TOGGLE LABELS", 10, y, 2, Color.WHITE);
         y += step;
