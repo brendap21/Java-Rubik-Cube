@@ -508,9 +508,11 @@ public class Cubo extends JFrame {
             double dz = selZ - 1;
             double len = Math.sqrt(dx * dx + dy * dy + dz * dz);
             if (len == 0) len = 1;
-            selTX = dx / len * amount;
-            selTY = dy / len * amount;
-            selTZ = dz / len * amount;
+            double[] dir = rotateVector(new double[]{dx / len, dy / len, dz / len},
+                    anguloX, anguloY, anguloZ);
+            selTX = dir[0] * amount;
+            selTY = dir[1] * amount;
+            selTZ = dir[2] * amount;
             moverCubo();
             step[0]++;
             if (step[0] > 10) {
