@@ -282,6 +282,12 @@ public class Cubo extends JFrame {
         return new int[]{axis, layer, cw ? 1 : 0};
     }
 
+    // Backwards-compatible overload that assumes positive rotation direction
+    private int[] mapDirection(double[] v) {
+        int[] res = mapDirection(v, false);
+        return new int[]{res[0], res[1]};
+    }
+
     // Devuelve el vector normal local de una cara según su índice
     private double[] getFaceNormal(int face) {
         switch (face) {
