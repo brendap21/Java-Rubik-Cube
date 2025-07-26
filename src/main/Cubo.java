@@ -77,6 +77,10 @@ public class Cubo extends JFrame {
      * Indica si se muestran las etiquetas de las caras.
      */
     private boolean showLabels = false;
+    /**
+     * Indica si se muestran los textos de ayuda en pantalla.
+     */
+    private boolean showControls = true;
 
     /**
      * Información auxiliar usada durante el renderizado para ordenar las piezas
@@ -737,6 +741,9 @@ public class Cubo extends JFrame {
                     case KeyEvent.VK_N:
                         showLabels = !showLabels;
                         break;
+                    case KeyEvent.VK_H:
+                        showControls = !showControls;
+                        break;
                 }
                 moverCubo();
             }
@@ -943,6 +950,9 @@ public class Cubo extends JFrame {
      * Dibuja textos y botones de ayuda sobre la imagen generada.
      */
     private void drawUI() {
+        if (!showControls) {
+            return;
+        }
         PixelFont.drawString(graficos, "RUBIK 3D", 10, 20, 5, Color.WHITE);
         PixelFont.drawString(graficos, gameMode ? "MODE: PLAY" : "MODE: VIEW", 620, 20, 2, Color.YELLOW);
 
@@ -979,6 +989,8 @@ public class Cubo extends JFrame {
         PixelFont.drawString(graficos, "E CHANGE AXIS", 10, y, 2, Color.WHITE);
         y += step;
         PixelFont.drawString(graficos, "N TOGGLE LABELS", 10, y, 2, Color.WHITE);
+        y += step;
+        PixelFont.drawString(graficos, "H TOGGLE HELP", 10, y, 2, Color.WHITE);
         y += step;
         PixelFont.drawString(graficos, "MOUSE WHEEL SCALE", 10, y, 2, Color.WHITE);
         y += step;
