@@ -600,7 +600,7 @@ public class Cubo extends JFrame {
                         break;
 
                     // — ROTACIÓN EN X (eje horizontal) —
-                    case KeyEvent.VK_I:    // “flecha arriba” o I
+                    case KeyEvent.VK_I:    // tecla I
                         if (!gameMode) {
                             applyRotation(0, -5);
                         } else if (selX != -1) {
@@ -624,7 +624,7 @@ public class Cubo extends JFrame {
                             rotateLayerAnimated(m[0], layer, true);
                         }
                         break;
-                    case KeyEvent.VK_K:    // “flecha abajo” o K
+                    case KeyEvent.VK_K:    // tecla K
                         if (!gameMode) {
                             applyRotation(0, 5);
                         } else if (selX != -1) {
@@ -650,7 +650,7 @@ public class Cubo extends JFrame {
                         break;
 
                     // — ROTACIÓN EN Y (eje vertical) —
-                    case KeyEvent.VK_J:    // “flecha izquierda” o J
+                    case KeyEvent.VK_J:    // tecla J
                         if (!gameMode) {
                             applyRotation(1, 5);  // giro a la izquierda
                         } else if (selX != -1) {
@@ -674,7 +674,7 @@ public class Cubo extends JFrame {
                             rotateLayerAnimated(m[0], layer, false);
                         }
                         break;
-                    case KeyEvent.VK_L:    // “flecha derecha” o L
+                    case KeyEvent.VK_L:    // tecla L
                         if (!gameMode) {
                             applyRotation(1, -5);  // giro a la derecha
                         } else if (selX != -1) {
