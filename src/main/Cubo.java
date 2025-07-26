@@ -775,7 +775,7 @@ public class Cubo extends JFrame {
                         selZ = idxZ;
                     }
                     moverCubo();
-                } else if (SwingUtilities.isRightMouseButton(e) && !gameMode) {
+                } else if (SwingUtilities.isRightMouseButton(e)) {
                     int mx = e.getX(), my = e.getY();
                     double bestDepth = -Double.MAX_VALUE;
                     int idxX = -1, idxY = -1, idxZ = -1;
@@ -883,7 +883,7 @@ public class Cubo extends JFrame {
         panel.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                if (!gameMode && draggingCorner && (e.getModifiersEx() & InputEvent.BUTTON3_DOWN_MASK) != 0) {
+                if (draggingCorner && (e.getModifiersEx() & InputEvent.BUTTON3_DOWN_MASK) != 0) {
                     double vx1 = lastX - trasX;
                     double vy1 = lastY - trasY;
                     double vx2 = e.getX() - trasX;
@@ -912,7 +912,7 @@ public class Cubo extends JFrame {
                     lastX = e.getX();
                     lastY = e.getY();
                     moverCubo();
-                } else if (!gameMode && (e.getModifiersEx() & InputEvent.BUTTON3_DOWN_MASK) != 0) {
+                } else if ((e.getModifiersEx() & InputEvent.BUTTON3_DOWN_MASK) != 0) {
                     int dx = e.getX() - lastX, dy = e.getY() - lastY;
                     // --- ARRASTRE DERECHO: también invertido ---
                     applyRotation(1, -dx / 2.0); // antes era += dx/2.0
