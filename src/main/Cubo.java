@@ -245,6 +245,14 @@ public class Cubo extends JFrame {
         return r;
     }
 
+    private double[] cross(double[] a, double[] b) {
+        return new double[]{
+            a[1] * b[2] - a[2] * b[1],
+            a[2] * b[0] - a[0] * b[2],
+            a[0] * b[1] - a[1] * b[0]
+        };
+    }
+
     private int[] mapDirection(double[] v) {
         double ax = Math.abs(v[0]);
         double ay = Math.abs(v[1]);
@@ -596,12 +604,28 @@ public class Cubo extends JFrame {
                     case KeyEvent.VK_UP:
                         if (!gameMode) {
                             applyRotation(0, -5);
+                        } else if (selX != -1) {
+                            double[] front = {rotMatrix[0][2], rotMatrix[1][2], rotMatrix[2][2]};
+                            double[] dir = cross(new double[]{0, -1, 0}, front);
+                            int[] m = mapDirection(dir);
+                            int axis = m[0];
+                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
+                            boolean cw = dir[axis] < 0;
+                            rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
                     case KeyEvent.VK_K:    // “flecha abajo” o K
                     case KeyEvent.VK_DOWN:
                         if (!gameMode) {
                             applyRotation(0, 5);
+                        } else if (selX != -1) {
+                            double[] front = {rotMatrix[0][2], rotMatrix[1][2], rotMatrix[2][2]};
+                            double[] dir = cross(new double[]{0, 1, 0}, front);
+                            int[] m = mapDirection(dir);
+                            int axis = m[0];
+                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
+                            boolean cw = dir[axis] < 0;
+                            rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
 
@@ -610,12 +634,28 @@ public class Cubo extends JFrame {
                     case KeyEvent.VK_LEFT:
                         if (!gameMode) {
                             applyRotation(1, 5);  // giro a la izquierda
+                        } else if (selX != -1) {
+                            double[] front = {rotMatrix[0][2], rotMatrix[1][2], rotMatrix[2][2]};
+                            double[] dir = cross(front, new double[]{-1, 0, 0});
+                            int[] m = mapDirection(dir);
+                            int axis = m[0];
+                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
+                            boolean cw = dir[axis] > 0;
+                            rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
                     case KeyEvent.VK_L:    // “flecha derecha” o L
                     case KeyEvent.VK_RIGHT:
                         if (!gameMode) {
                             applyRotation(1, -5);  // giro a la derecha
+                        } else if (selX != -1) {
+                            double[] front = {rotMatrix[0][2], rotMatrix[1][2], rotMatrix[2][2]};
+                            double[] dir = cross(front, new double[]{1, 0, 0});
+                            int[] m = mapDirection(dir);
+                            int axis = m[0];
+                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
+                            boolean cw = dir[axis] > 0;
+                            rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
 
