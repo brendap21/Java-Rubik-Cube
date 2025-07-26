@@ -755,7 +755,7 @@ public class Cubo extends JFrame {
             public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e) && gameMode) {
                     int mx = e.getX(), my = e.getY();
-                    double bestDepth = -Double.MAX_VALUE;
+                    double bestDepth = Double.MAX_VALUE;
                     int idxX = -1, idxY = -1, idxZ = -1;
                     for (int x = 0; x < 3; x++) {
                         for (int y = 0; y < 3; y++) {
@@ -764,7 +764,7 @@ public class Cubo extends JFrame {
                                 if (sc.containsPoint(mx, my)) {
                                     double posX = (x - 1) * size, posY = (y - 1) * size, posZ = (z - 1) * size;
                                     double[] r = sc.rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
-                                    if (r[2] > bestDepth) {
+                                    if (r[2] < bestDepth) {
                                         bestDepth = r[2];
                                         idxX = x;
                                         idxY = y;
@@ -782,7 +782,7 @@ public class Cubo extends JFrame {
                     moverCubo();
                 } else if (SwingUtilities.isRightMouseButton(e)) {
                     int mx = e.getX(), my = e.getY();
-                    double bestDepth = -Double.MAX_VALUE;
+                    double bestDepth = Double.MAX_VALUE;
                     int idxX = -1, idxY = -1, idxZ = -1;
                     for (int x = 0; x < 3; x++) {
                         for (int y = 0; y < 3; y++) {
@@ -791,7 +791,7 @@ public class Cubo extends JFrame {
                                 if (sc.containsPoint(mx, my)) {
                                     double posX = (x - 1) * size, posY = (y - 1) * size, posZ = (z - 1) * size;
                                     double[] r = sc.rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
-                                    if (r[2] > bestDepth) {
+                                    if (r[2] < bestDepth) {
                                         bestDepth = r[2];
                                         idxX = x;
                                         idxY = y;
@@ -812,7 +812,7 @@ public class Cubo extends JFrame {
                 } else if (SwingUtilities.isLeftMouseButton(e) && !gameMode) {
                     int mx = e.getX(), my = e.getY();
                     int cx = 0, cy = 0;
-                    double bestDepth = -Double.MAX_VALUE;
+                    double bestDepth = Double.MAX_VALUE;
                     int idxX = -1, idxY = -1, idxZ = -1;
                     // Busco el subcubo más cercano bajo el cursor
                     for (int x = 0; x < 3; x++) {
@@ -822,7 +822,7 @@ public class Cubo extends JFrame {
                                 if (sc.containsPoint(mx, my)) {
                                     double posX = (x - 1) * size, posY = (y - 1) * size, posZ = (z - 1) * size;
                                     double[] r = sc.rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
-                                    if (r[2] > bestDepth) {
+                                    if (r[2] < bestDepth) {
                                         bestDepth = r[2];
                                         idxX = x;
                                         idxY = y;
