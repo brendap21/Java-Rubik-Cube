@@ -305,24 +305,6 @@ public class Cubo extends JFrame {
         return new int[]{res[0], res[2]};
     }
 
-
-    // Devuelve el eje de rotación asociado a una cara seleccionada
-    private int getAxisFromFace(int face) {
-        switch (face) {
-            case 0: // back
-            case 1: // front
-                return 2; // eje Z
-            case 4: // left
-            case 5: // right
-                return 0; // eje X
-            case 2: // bottom
-            case 3: // top
-                return 1; // eje Y
-            default:
-                return 0;
-        }
-    }
-
     // ----- Ayudas para detectar la cara y esquinas visibles -----
     private static final double EPS = 0.1;
 
@@ -722,9 +704,12 @@ public class Cubo extends JFrame {
                         break;
                     case KeyEvent.VK_UP:
                         if (gameMode && selX != -1) {
-                            int axis = getAxisFromFace(selFace);
+                            int[] m = getArrowRotation(new double[]{0, -1, 0},
+                                    cuboRubik[selX][selY][selZ], selFace);
+                            int axis = m[0];
                             int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
-                            rotateLayerAnimated(axis, layer, true);
+                            boolean cw = m[1] == 1;
+                            rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
                     case KeyEvent.VK_K:    // tecla K
@@ -741,9 +726,12 @@ public class Cubo extends JFrame {
                         break;
                     case KeyEvent.VK_DOWN:
                         if (gameMode && selX != -1) {
-                            int axis = getAxisFromFace(selFace);
+                            int[] m = getArrowRotation(new double[]{0, 1, 0},
+                                    cuboRubik[selX][selY][selZ], selFace);
+                            int axis = m[0];
                             int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
-                            rotateLayerAnimated(axis, layer, false);
+                            boolean cw = m[1] == 1;
+                            rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
 
@@ -762,9 +750,12 @@ public class Cubo extends JFrame {
                         break;
                     case KeyEvent.VK_LEFT:
                         if (gameMode && selX != -1) {
-                            int axis = getAxisFromFace(selFace);
+                            int[] m = getArrowRotation(new double[]{-1, 0, 0},
+                                    cuboRubik[selX][selY][selZ], selFace);
+                            int axis = m[0];
                             int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
-                            rotateLayerAnimated(axis, layer, false);
+                            boolean cw = m[1] == 1;
+                            rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
                     case KeyEvent.VK_L:    // tecla L
@@ -781,9 +772,12 @@ public class Cubo extends JFrame {
                         break;
                     case KeyEvent.VK_RIGHT:
                         if (gameMode && selX != -1) {
-                            int axis = getAxisFromFace(selFace);
+                            int[] m = getArrowRotation(new double[]{1, 0, 0},
+                                    cuboRubik[selX][selY][selZ], selFace);
+                            int axis = m[0];
                             int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
-                            rotateLayerAnimated(axis, layer, true);
+                            boolean cw = m[1] == 1;
+                            rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
 
