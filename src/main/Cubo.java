@@ -8,7 +8,6 @@ import java.awt.Color;
 import java.awt.event.*;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-import javax.swing.JButton;
 
 import main.RenderPanel;
 
@@ -78,10 +77,6 @@ public class Cubo extends JFrame {
      * Indica si se muestran las etiquetas de las caras.
      */
     private boolean showLabels = false;
-    /**
-     * Indica si se muestran los controles en pantalla.
-     */
-    private boolean showControls = true;
 
     /**
      * Información auxiliar usada durante el renderizado para ordenar las piezas
@@ -583,15 +578,6 @@ public class Cubo extends JFrame {
         RenderPanel panel = new RenderPanel(graficos);
         add(panel);
 
-        JButton toggleControls = new JButton("Hide Controls");
-        toggleControls.setFocusable(false);
-        toggleControls.addActionListener(e -> {
-            showControls = !showControls;
-            toggleControls.setText(showControls ? "Hide Controls" : "Show Controls");
-            moverCubo();
-        });
-        add(toggleControls, java.awt.BorderLayout.SOUTH);
-
         // Matriz de rotación inicial basada en los ángulos predeterminados
         rotMatrix = matrixFromAngles(anguloX, anguloY, anguloZ);
         // Attach key events to the render panel so it receives them when
@@ -959,10 +945,6 @@ public class Cubo extends JFrame {
     private void drawUI() {
         PixelFont.drawString(graficos, "RUBIK 3D", 10, 20, 5, Color.WHITE);
         PixelFont.drawString(graficos, gameMode ? "MODE: PLAY" : "MODE: VIEW", 620, 20, 2, Color.YELLOW);
-
-        if (!showControls) {
-            return;
-        }
 
         int y = 60;
         int step = 24;
