@@ -197,10 +197,15 @@ public class Graficos {
      * Rellena un círculo completo comprobando cada píxel dentro del radio.
      */
     public void fillCircle(int x0, int y0, int RADIO, Color fillColor) {
+        // Calcular el cuadrado del radio una única vez
+        int rSquared = RADIO * RADIO;
+
         // Recorremos un cuadrado que circunscribe al círculo
         for (int y = y0 - RADIO; y <= y0 + RADIO; y++) {
             for (int x = x0 - RADIO; x <= x0 + RADIO; x++) {
-                if (Math.pow(x - x0, 2) + Math.pow(y - y0, 2) <= Math.pow(RADIO, 2)) {
+                int dx = x - x0;
+                int dy = y - y0;
+                if (dx * dx + dy * dy <= rSquared) {
                     putPixel(x, y, fillColor);
                 }
             }

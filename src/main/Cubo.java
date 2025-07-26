@@ -491,7 +491,6 @@ public class Cubo extends JFrame {
     private void rotateLayerAnimated(int axis, int layer, boolean clockwise) {
         rotateLayerAnimated(axis, layer, clockwise, null);
     }
-
     /**
      * Realiza una pequeña animación de selección desplazando temporalmente el
      * subcubo escogido hacia fuera.
@@ -528,7 +527,6 @@ public class Cubo extends JFrame {
         cuboRubik[x1][y1][z1] = cuboRubik[x2][y2][z2];
         cuboRubik[x2][y2][z2] = tmp;
     }
-
     /**
      * Redibuja el cubo aplicando las rotaciones y traslaciones actuales.
      */
@@ -545,14 +543,10 @@ public class Cubo extends JFrame {
             for (int x = 0; x < 3; x++) {
                 for (int y = 0; y < 3; y++) {
                     for (int z = 0; z < 3; z++) {
-                        // Calcular las nuevas coordenadas rotadas alrededor del subcubo 14
-                        int newX = centroX + (x - centroX);
-                        int newY = centroY + (y - centroY);
-                        int newZ = centroZ + (z - centroZ);
-
-                        double posX = (newX - 1) * size;
-                        double posY = (newY - 1) * size;
-                        double posZ = (newZ - 1) * size;
+                        // Posición relativa al centro del cubo
+                        double posX = (x - 1) * size;
+                        double posY = (y - 1) * size;
+                        double posZ = (z - 1) * size;
 
                         // Aplicar las rotaciones alrededor del subcubo 14
                         double[] rotatedPos = cuboRubik[x][y][z].rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
