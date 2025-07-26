@@ -153,6 +153,8 @@ public class Cubo extends JFrame {
      */
     private void rotateLayer(int axis, int layer, boolean clockwise) {
         Subcubo[][][] nuevo = new Subcubo[3][3][3];
+
+        // Copiar todas las piezas inicialmente
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
                 for (int z = 0; z < 3; z++) {
@@ -161,36 +163,46 @@ public class Cubo extends JFrame {
             }
         }
 
+        // Aplicar la rotación a la capa indicada
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
                 for (int z = 0; z < 3; z++) {
-                    if ((axis == 0 && x == layer) || (axis == 1 && y == layer) || (axis == 2 && z == layer)) {
+                    if ((axis == 0 && x == layer) ||
+                        (axis == 1 && y == layer) ||
+                        (axis == 2 && z == layer)) {
+
                         int nx = x, ny = y, nz = z;
-                        if (axis == 0) { // X
-                            if (clockwise) {
-                                ny = 2 - z;
-                                nz = y;
-                            } else {
-                                ny = z;
-                                nz = 2 - y;
-                            }
-                        } else if (axis == 1) { // Y
-                            if (clockwise) {
-                                nx = z;
-                                nz = 2 - x;
-                            } else {
-                                nx = 2 - z;
-                                nz = x;
-                            }
-                        } else { // Z
-                            if (clockwise) {
-                                nx = 2 - y;
-                                ny = x;
-                            } else {
-                                nx = y;
-                                ny = 2 - x;
-                            }
+
+                        switch (axis) {
+                            case 0: // X
+                                if (clockwise) {
+                                    ny = z;
+                                    nz = 2 - y;
+                                } else {
+                                    ny = 2 - z;
+                                    nz = y;
+                                }
+                                break;
+                            case 1: // Y
+                                if (clockwise) {
+                                    nx = 2 - z;
+                                    nz = x;
+                                } else {
+                                    nx = z;
+                                    nz = 2 - x;
+                                }
+                                break;
+                            case 2: // Z
+                                if (clockwise) {
+                                    nx = y;
+                                    ny = 2 - x;
+                                } else {
+                                    nx = 2 - y;
+                                    ny = x;
+                                }
+                                break;
                         }
+
                         nuevo[nx][ny][nz] = cuboRubik[x][y][z];
                         nuevo[nx][ny][nz].rotateColors(axis, clockwise);
                         nuevo[nx][ny][nz].rotateOrientation(axis, clockwise);

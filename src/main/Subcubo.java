@@ -101,43 +101,41 @@ public class Subcubo {
         switch (axis) {
             case 0: // X axis
                 if (clockwise) {
-                    colores[1] = c[3]; // front = top
-                    colores[2] = c[1]; // bottom = front
-                    colores[0] = c[2]; // back = bottom
-                    colores[3] = c[0]; // top = back
-                } else {
                     colores[1] = c[2];
                     colores[2] = c[0];
                     colores[0] = c[3];
                     colores[3] = c[1];
+                } else {
+                    colores[1] = c[3]; // front = top
+                    colores[2] = c[1]; // bottom = front
+                    colores[0] = c[2]; // back = bottom
+                    colores[3] = c[0]; // top = back
                 }
                 break;
             case 1: // Y axis
                 if (clockwise) {
-                    colores[5] = c[1]; // right = front
-                    colores[0] = c[5]; // back = right
-                    colores[4] = c[0]; // left = back
-                    colores[1] = c[4]; // front = left
-                } else {
                     colores[4] = c[1];
                     colores[0] = c[4];
                     colores[5] = c[0];
                     colores[1] = c[5];
+                } else {
+                    colores[5] = c[1]; // right = front
+                    colores[0] = c[5]; // back = right
+                    colores[4] = c[0]; // left = back
+                    colores[1] = c[4]; // front = left
                 }
                 break;
             case 2: // Z axis
                 if (clockwise) {
-                    // top -> right -> bottom -> left -> top
-                    colores[5] = c[3]; // right = top
-                    colores[2] = c[5]; // bottom = right
-                    colores[4] = c[2]; // left = bottom
-                    colores[3] = c[4]; // top = left
-                } else {
-                    // top -> left -> bottom -> right -> top
                     colores[4] = c[3]; // left = top
                     colores[2] = c[4]; // bottom = left
                     colores[5] = c[2]; // right = bottom
                     colores[3] = c[5]; // top = right
+                } else {
+                    colores[5] = c[3]; // right = top
+                    colores[2] = c[5]; // bottom = right
+                    colores[4] = c[2]; // left = bottom
+                    colores[3] = c[4]; // top = left
                 }
                 break;
         }
@@ -147,7 +145,7 @@ public class Subcubo {
      * Actualiza la rotación acumulada de la pieza.
      */
     public void rotateOrientation(int axis, boolean clockwise) {
-        double ang = clockwise ? 90 : -90;
+        double ang = clockwise ? -90 : 90;
         switch (axis) {
             case 0:
                 rotX = (rotX + ang) % 360;
