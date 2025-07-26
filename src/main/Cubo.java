@@ -593,29 +593,69 @@ public class Cubo extends JFrame {
 
                     // — ROTACIÓN EN X (eje horizontal) —
                     case KeyEvent.VK_I:    // “flecha arriba” o I
-                    case KeyEvent.VK_UP:
                         if (!gameMode) {
                             applyRotation(0, -5);
                         }
                         break;
+                    case KeyEvent.VK_UP:
+                        if (gameMode && selX != -1) {
+                            int[] m = mapDirection(
+                                    rotateVector(new double[]{0, 1, 0}, -anguloX, -anguloY, -anguloZ));
+                            int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
+                            if (layer < 0) {
+                                layer = m[1];
+                            }
+                            rotateLayerAnimated(m[0], layer, true);
+                        }
+                        break;
                     case KeyEvent.VK_K:    // “flecha abajo” o K
-                    case KeyEvent.VK_DOWN:
                         if (!gameMode) {
                             applyRotation(0, 5);
+                        }
+                        break;
+                    case KeyEvent.VK_DOWN:
+                        if (gameMode && selX != -1) {
+                            int[] m = mapDirection(
+                                    rotateVector(new double[]{0, -1, 0}, -anguloX, -anguloY, -anguloZ));
+                            int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
+                            if (layer < 0) {
+                                layer = m[1];
+                            }
+                            rotateLayerAnimated(m[0], layer, false);
                         }
                         break;
 
                     // — ROTACIÓN EN Y (eje vertical) —
                     case KeyEvent.VK_J:    // “flecha izquierda” o J
-                    case KeyEvent.VK_LEFT:
                         if (!gameMode) {
                             applyRotation(1, 5);  // giro a la izquierda
                         }
                         break;
+                    case KeyEvent.VK_LEFT:
+                        if (gameMode && selX != -1) {
+                            int[] m = mapDirection(
+                                    rotateVector(new double[]{-1, 0, 0}, -anguloX, -anguloY, -anguloZ));
+                            int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
+                            if (layer < 0) {
+                                layer = m[1];
+                            }
+                            rotateLayerAnimated(m[0], layer, false);
+                        }
+                        break;
                     case KeyEvent.VK_L:    // “flecha derecha” o L
-                    case KeyEvent.VK_RIGHT:
                         if (!gameMode) {
                             applyRotation(1, -5);  // giro a la derecha
+                        }
+                        break;
+                    case KeyEvent.VK_RIGHT:
+                        if (gameMode && selX != -1) {
+                            int[] m = mapDirection(
+                                    rotateVector(new double[]{1, 0, 0}, -anguloX, -anguloY, -anguloZ));
+                            int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
+                            if (layer < 0) {
+                                layer = m[1];
+                            }
+                            rotateLayerAnimated(m[0], layer, true);
                         }
                         break;
 
