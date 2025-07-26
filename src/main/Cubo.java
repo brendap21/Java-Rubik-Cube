@@ -267,7 +267,6 @@ public class Cubo extends JFrame {
     }
 
     // ----- Ayudas para detectar la cara y esquinas visibles -----
-
     private static final double EPS = 0.1;
 
     // Determina cuál eje local está orientado hacia el observador
@@ -315,7 +314,6 @@ public class Cubo extends JFrame {
     }
 
     // ----- Utilidades para el manejo de rotaciones globales -----
-
     private double[][] matrixFromAngles(double ax, double ay, double az) {
         double radX = Math.toRadians(ax);
         double radY = Math.toRadians(ay);
@@ -872,6 +870,7 @@ public class Cubo extends JFrame {
                     moverCubo();
                 }
             }
+
             @Override
             public void mouseReleased(MouseEvent e) {
                 draggingCorner = false;
@@ -951,39 +950,37 @@ public class Cubo extends JFrame {
         int step = 24;
 
         if (gameMode) {
-            PixelFont.drawString(graficos, "ARROWS ROTATE", 10, y, 2, Color.WHITE);
             y += step;
-            PixelFont.drawString(graficos, "CLICK CUBE SELECT", 10, y, 2, Color.WHITE);
+            PixelFont.drawString(graficos, "RIGHT CLICK SELECTS A SUBCUBE", 10, y, 2, Color.WHITE);
             y += step;
-            PixelFont.drawString(graficos, "ESC CLEAR", 10, y, 2, Color.WHITE);
+            PixelFont.drawString(graficos, "ESC CLEARS SUBCUBE SELECTION", 10, y, 2, Color.WHITE);
             y += step;
-            PixelFont.drawString(graficos, "RIGHT DRAG VIEW", 10, y, 2, Color.WHITE);
+            PixelFont.drawString(graficos, "PRESS ENTER TO VIEW MODE", 10, y, 2, Color.WHITE);
             y += step;
-            PixelFont.drawString(graficos, "ENTER VIEW MODE", 10, y, 2, Color.WHITE);
+            PixelFont.drawString(graficos, "R MIX CUBE", 10, y, 2, Color.WHITE);
             y += step;
         } else {
-            PixelFont.drawString(graficos, "WASD MOVE", 10, y, 2, Color.WHITE);
             y += step;
-            PixelFont.drawString(graficos, "LEFT DRAG ROTATE", 10, y, 2, Color.WHITE);
-            y += step;
-            PixelFont.drawString(graficos, "SHIFT DRAG LAYER", 10, y, 2, Color.WHITE);
-            y += step;
-            PixelFont.drawString(graficos, "RIGHT DRAG VIEW", 10, y, 2, Color.WHITE);
-            y += step;
-            PixelFont.drawString(graficos, "MOUSE WHEEL SCALE", 10, y, 2, Color.WHITE);
-            y += step;
-            PixelFont.drawString(graficos, "ENTER PLAY MODE", 10, y, 2, Color.WHITE);
+            PixelFont.drawString(graficos, "PRESS ENTER TO PLAY MODE", 10, y, 2, Color.WHITE);
             y += step;
         }
-
+        y += step;
+        PixelFont.drawString(graficos, "WASD MOVE CUBE UP LEFT DOWN RIGHT", 10, y, 2, Color.WHITE);
+        y += step;
+        PixelFont.drawString(graficos, "IJKL ROTATE CUBE UP LEFT DOWN RIGHT", 10, y, 2, Color.WHITE);
+        y += step;
+        PixelFont.drawString(graficos, "UO ROTATE CUBE IN Z DIRECTION LEFT RIGHT", 10, y, 2, Color.WHITE);
+        y += step;
+        PixelFont.drawString(graficos, "LEFT DRAG ROTATE CUBE", 10, y, 2, Color.WHITE);
+        y += step;
+        y += step;
         PixelFont.drawString(graficos, "B TOGGLE LINES", 10, y, 2, Color.WHITE);
         y += step;
         PixelFont.drawString(graficos, "E CHANGE AXIS", 10, y, 2, Color.WHITE);
         y += step;
         PixelFont.drawString(graficos, "N TOGGLE LABELS", 10, y, 2, Color.WHITE);
         y += step;
-        if (gameMode) {
-            PixelFont.drawString(graficos, "R MIX CUBE", 10, y, 2, Color.WHITE);
-        }
+        PixelFont.drawString(graficos, "MOUSE WHEEL SCALE", 10, y, 2, Color.WHITE);
+        y += step;
     }
 }
