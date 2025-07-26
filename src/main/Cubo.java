@@ -700,7 +700,7 @@ public class Cubo extends JFrame {
                         if (gameMode && selX != -1) {
                             double[] arrowVec = rotateVector(new double[]{0, 1, 0}, -anguloX, -anguloY, -anguloZ);
                             double[] normal = getFaceNormal(selFace);
-                            double[] dir = cross(normal, arrowVec);
+                            double[] dir = cross(arrowVec, normal);
                             int[] m = mapDirection(dir);
                             int axis = m[0];
                             int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
@@ -725,7 +725,7 @@ public class Cubo extends JFrame {
                         if (gameMode && selX != -1) {
                             double[] arrowVec = rotateVector(new double[]{0, -1, 0}, -anguloX, -anguloY, -anguloZ);
                             double[] normal = getFaceNormal(selFace);
-                            double[] dir = cross(normal, arrowVec);
+                            double[] dir = cross(arrowVec, normal);
                             int[] m = mapDirection(dir);
                             int axis = m[0];
                             int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
@@ -752,7 +752,7 @@ public class Cubo extends JFrame {
                         if (gameMode && selX != -1) {
                             double[] arrowVec = rotateVector(new double[]{-1, 0, 0}, -anguloX, -anguloY, -anguloZ);
                             double[] normal = getFaceNormal(selFace);
-                            double[] dir = cross(normal, arrowVec);
+                            double[] dir = cross(arrowVec, normal);
                             int[] m = mapDirection(dir);
                             int axis = m[0];
                             int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
@@ -777,7 +777,7 @@ public class Cubo extends JFrame {
                         if (gameMode && selX != -1) {
                             double[] arrowVec = rotateVector(new double[]{1, 0, 0}, -anguloX, -anguloY, -anguloZ);
                             double[] normal = getFaceNormal(selFace);
-                            double[] dir = cross(normal, arrowVec);
+                            double[] dir = cross(arrowVec, normal);
                             int[] m = mapDirection(dir);
                             int axis = m[0];
                             int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
