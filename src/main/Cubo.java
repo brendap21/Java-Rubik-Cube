@@ -73,6 +73,8 @@ public class Cubo extends JFrame {
      */
     private boolean gameMode = false;
     private int selX = -1, selY = -1, selZ = -1;
+    private double selTX = 0, selTY = 0, selTZ = 0;
+    private int selFace = -1;
     /**
      * Indica si se muestran las etiquetas de las caras.
      */
@@ -92,11 +94,14 @@ public class Cubo extends JFrame {
         final int x, y;
         final double depth;
         final double ex, ey, ez;
+        final double tx, ty, tz;
         final boolean highlight;
         final int ix, iy, iz;
 
-        RenderInfo(Subcubo c, int x, int y, double depth, double ex, double ey,
-                double ez, boolean h, int ix, int iy, int iz) {
+        RenderInfo(Subcubo c, int x, int y, double depth,
+                double ex, double ey, double ez,
+                double tx, double ty, double tz,
+                boolean h, int ix, int iy, int iz) {
             this.cubo = c;
             this.x = x;
             this.y = y;
@@ -104,6 +109,9 @@ public class Cubo extends JFrame {
             this.ex = ex;
             this.ey = ey;
             this.ez = ez;
+            this.tx = tx;
+            this.ty = ty;
+            this.tz = tz;
             this.highlight = h;
             this.ix = ix;
             this.iy = iy;
@@ -401,7 +409,6 @@ public class Cubo extends JFrame {
             for (int x = 0; x < 3; x++) {
                 for (int y = 0; y < 3; y++) {
                     for (int z = 0; z < 3; z++) {
-                        boolean highlight = gameMode && x == selX && y == selY && z == selZ;
                         double posX = (x - 1) * size;
                         double posY = (y - 1) * size;
                         double posZ = (z - 1) * size;
@@ -429,8 +436,14 @@ public class Cubo extends JFrame {
                         int finalX = (int) (rotatedPos[0] + trasX);
                         int finalY = (int) (rotatedPos[1] + trasY);
                         int finalZ = (int) (rotatedPos[2] + trasZ);
-                        infos.add(new RenderInfo(cuboRubik[x][y][z], finalX, finalY, finalZ,
-                                extraX, extraY, extraZ, highlight, x, y, z));
+                        boolean highlight = gameMode && x == selX && y == selY && z == selZ;
+                        double tX = highlight ? selTX : 0;
+                        double tY = highlight ? selTY : 0;
+                        double tZ = highlight ? selTZ : 0;
+                        double depthVal = finalZ + tZ;
+                        infos.add(new RenderInfo(cuboRubik[x][y][z], finalX, finalY, depthVal,
+                                extraX, extraY, extraZ, tX, tY, tZ,
+                                highlight, x, y, z));
                     }
                 }
             }
@@ -438,7 +451,9 @@ public class Cubo extends JFrame {
             for (RenderInfo info : infos) {
                 info.cubo.dibujar(graficos, 1.0, anguloX, anguloY, anguloZ,
                         info.x, info.y, (int) info.depth, lines, info.highlight,
-                        info.ex, info.ey, info.ez, showLabels, info.ix, info.iy, info.iz);
+                        info.ex, info.ey, info.ez,
+                        info.tx, info.ty, info.tz,
+                        showLabels, info.ix, info.iy, info.iz);
             }
             drawUI();
             graficos.render();
@@ -476,7 +491,42 @@ public class Cubo extends JFrame {
     private void rotateLayerAnimated(int axis, int layer, boolean clockwise) {
         rotateLayerAnimated(axis, layer, clockwise, null);
     }
+    /**
+     * Realiza una pequeña animación de selección desplazando temporalmente el
+     * subcubo escogido hacia fuera.
+     */
+    private void animateSelection() {
+        if (selX == -1) {
+            return;
+        }
+        final int[] step = {0};
+        javax.swing.Timer timer = new javax.swing.Timer(20, null);
+        timer.addActionListener(e -> {
+            double amount = Math.sin(Math.PI * step[0] / 10.0) * 10.0;
+            double dx = selX - 1;
+            double dy = selY - 1;
+            double dz = selZ - 1;
+            double len = Math.sqrt(dx * dx + dy * dy + dz * dz);
+            if (len == 0) len = 1;
+            selTX = dx / len * amount;
+            selTY = dy / len * amount;
+            selTZ = dz / len * amount;
+            moverCubo();
+            step[0]++;
+            if (step[0] > 10) {
+                timer.stop();
+                selTX = selTY = selTZ = 0;
+                moverCubo();
+            }
+        });
+        timer.start();
+    }
 
+    private void swapSubcubes(int x1, int y1, int z1, int x2, int y2, int z2) {
+        Subcubo tmp = cuboRubik[x1][y1][z1];
+        cuboRubik[x1][y1][z1] = cuboRubik[x2][y2][z2];
+        cuboRubik[x2][y2][z2] = tmp;
+    }
     /**
      * Redibuja el cubo aplicando las rotaciones y traslaciones actuales.
      */
@@ -507,7 +557,12 @@ public class Cubo extends JFrame {
                         int finalZ = (int) (rotatedPos[2] + trasZ);
 
                         boolean highlight = gameMode && x == selX && y == selY && z == selZ;
-                        infos.add(new RenderInfo(cuboRubik[x][y][z], finalX, finalY, finalZ, 0, 0, 0, highlight, x, y, z));
+                        double tX = highlight ? selTX : 0;
+                        double tY = highlight ? selTY : 0;
+                        double tZ = highlight ? selTZ : 0;
+                        double depthVal = finalZ + tZ;
+                        infos.add(new RenderInfo(cuboRubik[x][y][z], finalX, finalY, depthVal,
+                                0, 0, 0, tX, tY, tZ, highlight, x, y, z));
                     }
                 }
             }
@@ -515,7 +570,9 @@ public class Cubo extends JFrame {
             for (RenderInfo info : infos) {
                 info.cubo.dibujar(graficos, 1, anguloX, anguloY, anguloZ,
                         info.x, info.y, (int) info.depth, lines, info.highlight,
-                        info.ex, info.ey, info.ez, showLabels, info.ix, info.iy, info.iz);
+                        info.ex, info.ey, info.ez,
+                        info.tx, info.ty, info.tz,
+                        showLabels, info.ix, info.iy, info.iz);
             }
         } else {
             graficos.clear();
@@ -524,8 +581,13 @@ public class Cubo extends JFrame {
                 for (int y = 0; y < 3; y++) {
                     for (int z = 0; z < 3; z++) {
                         boolean highlight = gameMode && x == selX && y == selY && z == selZ;
+                        double tX = highlight ? selTX : 0;
+                        double tY = highlight ? selTY : 0;
+                        double tZ = highlight ? selTZ : 0;
                         cuboRubik[x][y][z].dibujar(graficos, 1.0, anguloX, anguloY, anguloZ,
-                                trasX, trasY, trasZ, lines, highlight, 0, 0, 0, showLabels, x, y, z);
+                                trasX, trasY, trasZ, lines, highlight, 0, 0, 0,
+                                tX, tY, tZ,
+                                showLabels, x, y, z);
                     }
                 }
             }
@@ -768,6 +830,8 @@ public class Cubo extends JFrame {
                         selX = idxX;
                         selY = idxY;
                         selZ = idxZ;
+                        selFace = cuboRubik[idxX][idxY][idxZ].faceAt(mx, my);
+                        animateSelection();
                     }
                     moverCubo();
                 } else if (SwingUtilities.isRightMouseButton(e)) {

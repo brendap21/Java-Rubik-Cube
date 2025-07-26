@@ -157,14 +157,16 @@ public class Subcubo {
 
     // Método de compatibilidad para versiones previas sin el parámetro highlight
     public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ, int trasX, int trasY, int trasZ, boolean lines) {
-        dibujar(g, escala, anguloX, anguloY, anguloZ, trasX, trasY, trasZ, lines, false, 0, 0, 0);
+        dibujar(g, escala, anguloX, anguloY, anguloZ, trasX, trasY, trasZ, lines,
+                false, 0, 0, 0, 0, 0, 0, false, 0, 0, 0);
     }
 
     /**
      * Dibuja el subcubo aplicando las transformaciones indicadas.
      */
     public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ, int trasX, int trasY, int trasZ, boolean lines, boolean highlight) {
-        dibujar(g, escala, anguloX, anguloY, anguloZ, trasX, trasY, trasZ, lines, highlight, 0, 0, 0);
+        dibujar(g, escala, anguloX, anguloY, anguloZ, trasX, trasY, trasZ, lines,
+                highlight, 0, 0, 0, 0, 0, 0, false, 0, 0, 0);
     }
 
     /**
@@ -176,12 +178,14 @@ public class Subcubo {
             double extraRotX, double extraRotY, double extraRotZ) {
         dibujar(g, escala, anguloX, anguloY, anguloZ, trasX, trasY, trasZ,
                 lines, highlight, extraRotX, extraRotY, extraRotZ,
+                0, 0, 0,
                 false, 0, 0, 0);
     }
 
     public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ,
             int trasX, int trasY, int trasZ, boolean lines, boolean highlight,
             double extraRotX, double extraRotY, double extraRotZ,
+            double extraTX, double extraTY, double extraTZ,
             boolean showLabels, int idxX, int idxY, int idxZ) {
         double[][] rotadas = new double[8][3];
         for (int i = 0; i < 8; i++) {
@@ -192,9 +196,9 @@ public class Subcubo {
         // Aplicar traslación a los vértices rotados
         double[][] trasladadas = new double[8][3];
         for (int i = 0; i < 8; i++) {
-            trasladadas[i][0] = rotadas[i][0] * escala + trasX;
-            trasladadas[i][1] = rotadas[i][1] * escala + trasY;
-            trasladadas[i][2] = rotadas[i][2] * escala + trasZ;
+            trasladadas[i][0] = rotadas[i][0] * escala + trasX + extraTX;
+            trasladadas[i][1] = rotadas[i][1] * escala + trasY + extraTY;
+            trasladadas[i][2] = rotadas[i][2] * escala + trasZ + extraTZ;
             screenVertices[i][0] = (int) trasladadas[i][0];
             screenVertices[i][1] = (int) trasladadas[i][1];
         }
@@ -208,6 +212,15 @@ public class Subcubo {
         Integer[] indices = {0, 1, 2, 3, 4, 5};
         Arrays.sort(indices, (a, b) -> Double.compare(profundidades[b], profundidades[a]));
 
+        int brightestFace = 0;
+        double minDepth = profundidades[0];
+        for (int f = 1; f < 6; f++) {
+            if (profundidades[f] < minDepth) {
+                minDepth = profundidades[f];
+                brightestFace = f;
+            }
+        }
+
         for (int i : indices) {
             int[] xPoints = new int[4];
             int[] yPoints = new int[4];
@@ -215,7 +228,14 @@ public class Subcubo {
                 xPoints[j] = (int) trasladadas[caras[i][j]][0];
                 yPoints[j] = (int) trasladadas[caras[i][j]][1];
             }
-            g.fillPolygon(xPoints, yPoints, 4, colores[i]); // Pintar caras
+            Color c = colores[i];
+            if (highlight) {
+                c = c.darker();
+                if (i == brightestFace) {
+                    c = c.brighter();
+                }
+            }
+            g.fillPolygon(xPoints, yPoints, 4, c); // Pintar caras
             if (lines) {
                 for (int j = 0; j < 4; j++) {
                     int next = (j + 1) % 4;
@@ -230,26 +250,6 @@ public class Subcubo {
                     PixelFont.drawString(g, label, cx - 4, cy - 4, 1, Color.BLACK);
                 }
             }
-        }
-
-        if (highlight) {
-            int minX = screenVertices[0][0], maxX = screenVertices[0][0];
-            int minY = screenVertices[0][1], maxY = screenVertices[0][1];
-            for (int i = 1; i < 8; i++) {
-                if (screenVertices[i][0] < minX) {
-                    minX = screenVertices[i][0];
-                }
-                if (screenVertices[i][0] > maxX) {
-                    maxX = screenVertices[i][0];
-                }
-                if (screenVertices[i][1] < minY) {
-                    minY = screenVertices[i][1];
-                }
-                if (screenVertices[i][1] > maxY) {
-                    maxY = screenVertices[i][1];
-                }
-            }
-            g.drawRect(minX, minY, maxX, maxY, Color.YELLOW);
         }
     }
 
@@ -329,6 +329,25 @@ public class Subcubo {
             }
         }
         return inside;
+    }
+
+    /**
+     * Devuelve el índice de la cara que contiene el punto dado o -1 si ninguna
+     * coincide.
+     */
+    public int faceAt(int px, int py) {
+        for (int faceIdx = 0; faceIdx < caras.length; faceIdx++) {
+            int[] xs = new int[4];
+            int[] ys = new int[4];
+            for (int i = 0; i < 4; i++) {
+                xs[i] = screenVertices[caras[faceIdx][i]][0];
+                ys[i] = screenVertices[caras[faceIdx][i]][1];
+            }
+            if (pointInPolygon(px, py, xs, ys)) {
+                return faceIdx;
+            }
+        }
+        return -1;
     }
 
     /**
