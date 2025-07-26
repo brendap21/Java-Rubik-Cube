@@ -325,6 +325,11 @@ public class Cubo extends JFrame {
         }
     }
 
+    // Comprueba si un subcubo es una esquina del cubo independientemente de la cara visible
+    private boolean isCorner(int x, int y, int z) {
+        return (x == 0 || x == 2) && (y == 0 || y == 2) && (z == 0 || z == 2);
+    }
+
     // ----- Utilidades para el manejo de rotaciones globales -----
     private double[][] matrixFromAngles(double ax, double ay, double az) {
         double radX = Math.toRadians(ax);
@@ -857,7 +862,7 @@ public class Cubo extends JFrame {
                             }
                         }
                     }
-                    if (idxX != -1 && isFrontCorner(idxX, idxY, idxZ)) {
+                    if (idxX != -1 && isCorner(idxX, idxY, idxZ)) {
                         draggingCorner = true;
                         draggingFace = draggingLayerZ = false;
                     } else {
@@ -951,7 +956,9 @@ public class Cubo extends JFrame {
                     double vx2 = e.getX() - trasX;
                     double vy2 = e.getY() - trasY;
                     double cross = vx1 * vy2 - vy1 * vx2;
-                    applyRotation(2, cross / 1000.0);
+                    double dot = vx1 * vx2 + vy1 * vy2;
+                    double angle = Math.toDegrees(Math.atan2(cross, dot));
+                    applyRotation(2, angle);
                     lastX = e.getX();
                     lastY = e.getY();
                     moverCubo();
@@ -961,7 +968,9 @@ public class Cubo extends JFrame {
                     double vx2 = e.getX() - trasX;
                     double vy2 = e.getY() - trasY;
                     double cross = vx1 * vy2 - vy1 * vx2;
-                    boolean clockwise = cross > 0;
+                    double dot = vx1 * vx2 + vy1 * vy2;
+                    double angle = Math.toDegrees(Math.atan2(cross, dot));
+                    boolean clockwise = angle > 0;
                     int[] front = getFrontAxis();
                     int axis = front[0];
                     int layer = front[1] > 0 ? 2 : 0;
