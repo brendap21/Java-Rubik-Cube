@@ -714,7 +714,7 @@ public class Cubo extends JFrame {
                         break;
 
                     case KeyEvent.VK_R:
-                        if (!gameMode) {
+                        if (gameMode) {
                             scrambleAnimation();
                         }
                         break;
@@ -982,6 +982,12 @@ public class Cubo extends JFrame {
         y += step;
         PixelFont.drawString(graficos, "N TOGGLE LABELS", 10, y, 2, Color.WHITE);
         y += step;
+<<<<<<< HEAD
         PixelFont.drawString(graficos, "R MIX CUBE", 10, y, 2, Color.WHITE);
+=======
+        if (gameMode) {
+            PixelFont.drawString(graficos, "R MIX CUBE", 10, y, 3, Color.WHITE);
+        }
+>>>>>>> c0cc31a72300438893e9f27f73a3e6105632571a
     }
 }
