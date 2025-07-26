@@ -278,6 +278,26 @@ public class Cubo extends JFrame {
         }
     }
 
+    // Devuelve el vector normal local de una cara según su índice
+    private double[] getFaceNormal(int face) {
+        switch (face) {
+            case 0: // back
+                return new double[]{0, 0, -1};
+            case 1: // front
+                return new double[]{0, 0, 1};
+            case 2: // bottom
+                return new double[]{0, 1, 0};
+            case 3: // top
+                return new double[]{0, -1, 0};
+            case 4: // left
+                return new double[]{-1, 0, 0};
+            case 5: // right
+                return new double[]{1, 0, 0};
+            default:
+                return new double[]{0, 0, 0};
+        }
+    }
+
     // ----- Ayudas para detectar la cara y esquinas visibles -----
     private static final double EPS = 0.1;
 
@@ -678,13 +698,14 @@ public class Cubo extends JFrame {
                         break;
                     case KeyEvent.VK_UP:
                         if (gameMode && selX != -1) {
-                            int[] m = mapDirection(
-                                    rotateVector(new double[]{0, 1, 0}, -anguloX, -anguloY, -anguloZ));
-                            int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
-                            if (layer < 0) {
-                                layer = m[1];
-                            }
-                            rotateLayerAnimated(m[0], layer, true);
+                            double[] arrowVec = rotateVector(new double[]{0, 1, 0}, -anguloX, -anguloY, -anguloZ);
+                            double[] normal = getFaceNormal(selFace);
+                            double[] dir = cross(normal, arrowVec);
+                            int[] m = mapDirection(dir);
+                            int axis = m[0];
+                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
+                            boolean cw = dir[axis] < 0;
+                            rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
                     case KeyEvent.VK_K:    // tecla K
@@ -702,13 +723,14 @@ public class Cubo extends JFrame {
                         break;
                     case KeyEvent.VK_DOWN:
                         if (gameMode && selX != -1) {
-                            int[] m = mapDirection(
-                                    rotateVector(new double[]{0, -1, 0}, -anguloX, -anguloY, -anguloZ));
-                            int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
-                            if (layer < 0) {
-                                layer = m[1];
-                            }
-                            rotateLayerAnimated(m[0], layer, false);
+                            double[] arrowVec = rotateVector(new double[]{0, -1, 0}, -anguloX, -anguloY, -anguloZ);
+                            double[] normal = getFaceNormal(selFace);
+                            double[] dir = cross(normal, arrowVec);
+                            int[] m = mapDirection(dir);
+                            int axis = m[0];
+                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
+                            boolean cw = dir[axis] < 0;
+                            rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
 
@@ -728,13 +750,14 @@ public class Cubo extends JFrame {
                         break;
                     case KeyEvent.VK_LEFT:
                         if (gameMode && selX != -1) {
-                            int[] m = mapDirection(
-                                    rotateVector(new double[]{-1, 0, 0}, -anguloX, -anguloY, -anguloZ));
-                            int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
-                            if (layer < 0) {
-                                layer = m[1];
-                            }
-                            rotateLayerAnimated(m[0], layer, false);
+                            double[] arrowVec = rotateVector(new double[]{-1, 0, 0}, -anguloX, -anguloY, -anguloZ);
+                            double[] normal = getFaceNormal(selFace);
+                            double[] dir = cross(normal, arrowVec);
+                            int[] m = mapDirection(dir);
+                            int axis = m[0];
+                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
+                            boolean cw = dir[axis] > 0;
+                            rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
                     case KeyEvent.VK_L:    // tecla L
@@ -752,13 +775,14 @@ public class Cubo extends JFrame {
                         break;
                     case KeyEvent.VK_RIGHT:
                         if (gameMode && selX != -1) {
-                            int[] m = mapDirection(
-                                    rotateVector(new double[]{1, 0, 0}, -anguloX, -anguloY, -anguloZ));
-                            int layer = (m[0] == 0) ? selX : (m[0] == 1) ? selY : selZ;
-                            if (layer < 0) {
-                                layer = m[1];
-                            }
-                            rotateLayerAnimated(m[0], layer, true);
+                            double[] arrowVec = rotateVector(new double[]{1, 0, 0}, -anguloX, -anguloY, -anguloZ);
+                            double[] normal = getFaceNormal(selFace);
+                            double[] dir = cross(normal, arrowVec);
+                            int[] m = mapDirection(dir);
+                            int axis = m[0];
+                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
+                            boolean cw = dir[axis] > 0;
+                            rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
 
