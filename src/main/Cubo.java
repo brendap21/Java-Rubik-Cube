@@ -944,46 +944,46 @@ public class Cubo extends JFrame {
      * Dibuja textos y botones de ayuda sobre la imagen generada.
      */
     private void drawUI() {
-        PixelFont.drawString(graficos, "RUBIK 3D", 10, 20, 4, Color.WHITE);
-        PixelFont.drawString(graficos, gameMode ? "MODE: PLAY" : "MODE: VIEW", 620, 20, 3, Color.YELLOW);
+        PixelFont.drawString(graficos, "RUBIK 3D", 10, 20, 5, Color.WHITE);
+        PixelFont.drawString(graficos, gameMode ? "MODE: PLAY" : "MODE: VIEW", 620, 20, 2, Color.YELLOW);
 
         int y = 60;
         int step = 24;
 
         if (gameMode) {
-            PixelFont.drawString(graficos, "ARROWS ROTATE", 10, y, 3, Color.WHITE);
+            PixelFont.drawString(graficos, "ARROWS ROTATE", 10, y, 2, Color.WHITE);
             y += step;
-            PixelFont.drawString(graficos, "CLICK CUBE SELECT", 10, y, 3, Color.WHITE);
+            PixelFont.drawString(graficos, "CLICK CUBE SELECT", 10, y, 2, Color.WHITE);
             y += step;
-            PixelFont.drawString(graficos, "ESC CLEAR", 10, y, 3, Color.WHITE);
+            PixelFont.drawString(graficos, "ESC CLEAR", 10, y, 2, Color.WHITE);
             y += step;
-            PixelFont.drawString(graficos, "RIGHT DRAG VIEW", 10, y, 3, Color.WHITE);
+            PixelFont.drawString(graficos, "RIGHT DRAG VIEW", 10, y, 2, Color.WHITE);
             y += step;
-            PixelFont.drawString(graficos, "ENTER VIEW MODE", 10, y, 3, Color.WHITE);
+            PixelFont.drawString(graficos, "ENTER VIEW MODE", 10, y, 2, Color.WHITE);
             y += step;
         } else {
-            PixelFont.drawString(graficos, "WASD MOVE", 10, y, 3, Color.WHITE);
+            PixelFont.drawString(graficos, "WASD MOVE", 10, y, 2, Color.WHITE);
             y += step;
-            PixelFont.drawString(graficos, "LEFT DRAG ROTATE", 10, y, 3, Color.WHITE);
+            PixelFont.drawString(graficos, "LEFT DRAG ROTATE", 10, y, 2, Color.WHITE);
             y += step;
-            PixelFont.drawString(graficos, "SHIFT DRAG LAYER", 10, y, 3, Color.WHITE);
+            PixelFont.drawString(graficos, "SHIFT DRAG LAYER", 10, y, 2, Color.WHITE);
             y += step;
-            PixelFont.drawString(graficos, "RIGHT DRAG VIEW", 10, y, 3, Color.WHITE);
+            PixelFont.drawString(graficos, "RIGHT DRAG VIEW", 10, y, 2, Color.WHITE);
             y += step;
-            PixelFont.drawString(graficos, "MOUSE WHEEL SCALE", 10, y, 3, Color.WHITE);
+            PixelFont.drawString(graficos, "MOUSE WHEEL SCALE", 10, y, 2, Color.WHITE);
             y += step;
-            PixelFont.drawString(graficos, "ENTER PLAY MODE", 10, y, 3, Color.WHITE);
+            PixelFont.drawString(graficos, "ENTER PLAY MODE", 10, y, 2, Color.WHITE);
             y += step;
         }
 
-        PixelFont.drawString(graficos, "B TOGGLE LINES", 10, y, 3, Color.WHITE);
+        PixelFont.drawString(graficos, "B TOGGLE LINES", 10, y, 2, Color.WHITE);
         y += step;
-        PixelFont.drawString(graficos, "E CHANGE AXIS", 10, y, 3, Color.WHITE);
+        PixelFont.drawString(graficos, "E CHANGE AXIS", 10, y, 2, Color.WHITE);
         y += step;
-        PixelFont.drawString(graficos, "N TOGGLE LABELS", 10, y, 3, Color.WHITE);
+        PixelFont.drawString(graficos, "N TOGGLE LABELS", 10, y, 2, Color.WHITE);
         y += step;
         if (gameMode) {
-            PixelFont.drawString(graficos, "R MIX CUBE", 10, y, 3, Color.WHITE);
+            PixelFont.drawString(graficos, "R MIX CUBE", 10, y, 2, Color.WHITE);
         }
     }
 }
