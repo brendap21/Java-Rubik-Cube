@@ -277,10 +277,15 @@ public class Cubo extends JFrame {
         };
     }
 
-    private int[] mapDirection(double[] v, boolean negClockwise) {
-        double ax = Math.abs(v[0]);
-        double ay = Math.abs(v[1]);
-        double az = Math.abs(v[2]);
+    // Calcula el eje y sentido de rotación a partir de un vector de flecha en
+    // pantalla y la cara seleccionada de un subcubo
+    private int[] getArrowRotation(double[] arrowVec, Subcubo sc, int face) {
+        double[] rArrow = rotateVector(arrowVec, -anguloX, -anguloY, -anguloZ);
+        double[] normal = sc.getFaceNormalWorld(face);
+        double[] axisVec = cross(rArrow, normal);
+        double ax = Math.abs(axisVec[0]);
+        double ay = Math.abs(axisVec[1]);
+        double az = Math.abs(axisVec[2]);
         int axis;
         if (ax >= ay && ax >= az) {
             axis = 0;
@@ -289,36 +294,10 @@ public class Cubo extends JFrame {
         } else {
             axis = 2;
         }
-        int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
-        boolean cw = negClockwise ? v[axis] < 0 : v[axis] > 0;
-        return new int[]{axis, layer, cw ? 1 : 0};
+        boolean cw = axisVec[axis] < 0;
+        return new int[]{axis, cw ? 1 : 0};
     }
 
-    // Backwards-compatible overload that assumes positive rotation direction
-    private int[] mapDirection(double[] v) {
-        int[] res = mapDirection(v, false);
-        return new int[]{res[0], res[1]};
-    }
-
-    // Devuelve el vector normal local de una cara según su índice
-    private double[] getFaceNormal(int face) {
-        switch (face) {
-            case 0: // back
-                return new double[]{0, 0, -1};
-            case 1: // front
-                return new double[]{0, 0, 1};
-            case 2: // bottom
-                return new double[]{0, 1, 0};
-            case 3: // top
-                return new double[]{0, -1, 0};
-            case 4: // left
-                return new double[]{-1, 0, 0};
-            case 5: // right
-                return new double[]{1, 0, 0};
-            default:
-                return new double[]{0, 0, 0};
-        }
-    }
 
     // Devuelve el eje de rotación asociado a una cara seleccionada
     private int getAxisFromFace(int face) {
@@ -726,12 +705,11 @@ public class Cubo extends JFrame {
                         if (!gameMode) {
                             applyRotation(0, -5);
                         } else if (selX != -1) {
-                            double[] front = {rotMatrix[0][2], rotMatrix[1][2], rotMatrix[2][2]};
-                            double[] dir = cross(new double[]{0, -1, 0}, front);
-                            int[] m = mapDirection(dir, true);
+                            int[] m = getArrowRotation(new double[]{0, -1, 0},
+                                    cuboRubik[selX][selY][selZ], selFace);
                             int axis = m[0];
-                            int layer = m[1];
-                            boolean cw = m[2] == 1;
+                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
+                            boolean cw = m[1] == 1;
                             rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
@@ -746,12 +724,11 @@ public class Cubo extends JFrame {
                         if (!gameMode) {
                             applyRotation(0, 5);
                         } else if (selX != -1) {
-                            double[] front = {rotMatrix[0][2], rotMatrix[1][2], rotMatrix[2][2]};
-                            double[] dir = cross(new double[]{0, 1, 0}, front);
-                            int[] m = mapDirection(dir, true);
+                            int[] m = getArrowRotation(new double[]{0, 1, 0},
+                                    cuboRubik[selX][selY][selZ], selFace);
                             int axis = m[0];
-                            int layer = m[1];
-                            boolean cw = m[2] == 1;
+                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
+                            boolean cw = m[1] == 1;
                             rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
@@ -768,12 +745,11 @@ public class Cubo extends JFrame {
                         if (!gameMode) {
                             applyRotation(1, 5);  // giro a la izquierda
                         } else if (selX != -1) {
-                            double[] front = {rotMatrix[0][2], rotMatrix[1][2], rotMatrix[2][2]};
-                            double[] dir = cross(front, new double[]{-1, 0, 0});
-                            int[] m = mapDirection(dir, false);
+                            int[] m = getArrowRotation(new double[]{-1, 0, 0},
+                                    cuboRubik[selX][selY][selZ], selFace);
                             int axis = m[0];
-                            int layer = m[1];
-                            boolean cw = m[2] == 1;
+                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
+                            boolean cw = m[1] == 1;
                             rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
@@ -788,12 +764,11 @@ public class Cubo extends JFrame {
                         if (!gameMode) {
                             applyRotation(1, -5);  // giro a la derecha
                         } else if (selX != -1) {
-                            double[] front = {rotMatrix[0][2], rotMatrix[1][2], rotMatrix[2][2]};
-                            double[] dir = cross(front, new double[]{1, 0, 0});
-                            int[] m = mapDirection(dir, false);
+                            int[] m = getArrowRotation(new double[]{1, 0, 0},
+                                    cuboRubik[selX][selY][selZ], selFace);
                             int axis = m[0];
-                            int layer = m[1];
-                            boolean cw = m[2] == 1;
+                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
+                            boolean cw = m[1] == 1;
                             rotateLayerAnimated(axis, layer, cw);
                         }
                         break;

@@ -159,6 +159,37 @@ public class Subcubo {
         }
     }
 
+    /**
+     * Devuelve el vector normal local de una cara según su índice.
+     */
+    public static double[] getFaceNormal(int face) {
+        switch (face) {
+            case 0: // back
+                return new double[]{0, 0, -1};
+            case 1: // front
+                return new double[]{0, 0, 1};
+            case 2: // bottom
+                return new double[]{0, 1, 0};
+            case 3: // top
+                return new double[]{0, -1, 0};
+            case 4: // left
+                return new double[]{-1, 0, 0};
+            case 5: // right
+                return new double[]{1, 0, 0};
+            default:
+                return new double[]{0, 0, 0};
+        }
+    }
+
+    /**
+     * Devuelve la normal de una cara en coordenadas mundiales teniendo en cuenta
+     * la orientación actual del subcubo.
+     */
+    public double[] getFaceNormalWorld(int face) {
+        double[] local = getFaceNormal(face);
+        return rotar(local, rotX, rotY, rotZ);
+    }
+
     // Método de compatibilidad para versiones previas sin el parámetro highlight
     public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ, int trasX, int trasY, int trasZ, boolean lines) {
         dibujar(g, escala, anguloX, anguloY, anguloZ, trasX, trasY, trasZ, lines,
