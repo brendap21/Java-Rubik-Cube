@@ -742,11 +742,38 @@ public class Cubo extends JFrame {
             }
         });
 
-        // --- CLICK IZQUIERDO PARA ROTAR EN MODO VISTA ---
+        // --- CLICK IZQUIERDO: SELECCIONAR EN MODO JUEGO O ROTAR EN MODO VISTA ---
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                if (SwingUtilities.isRightMouseButton(e) && !gameMode) {
+                if (SwingUtilities.isLeftMouseButton(e) && gameMode) {
+                    int mx = e.getX(), my = e.getY();
+                    double bestDepth = -Double.MAX_VALUE;
+                    int idxX = -1, idxY = -1, idxZ = -1;
+                    for (int x = 0; x < 3; x++) {
+                        for (int y = 0; y < 3; y++) {
+                            for (int z = 0; z < 3; z++) {
+                                Subcubo sc = cuboRubik[x][y][z];
+                                if (sc.containsPoint(mx, my)) {
+                                    double posX = (x - 1) * size, posY = (y - 1) * size, posZ = (z - 1) * size;
+                                    double[] r = sc.rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
+                                    if (r[2] > bestDepth) {
+                                        bestDepth = r[2];
+                                        idxX = x;
+                                        idxY = y;
+                                        idxZ = z;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (idxX != -1) {
+                        selX = idxX;
+                        selY = idxY;
+                        selZ = idxZ;
+                    }
+                    moverCubo();
+                } else if (SwingUtilities.isRightMouseButton(e) && !gameMode) {
                     int mx = e.getX(), my = e.getY();
                     double bestDepth = -Double.MAX_VALUE;
                     int idxX = -1, idxY = -1, idxZ = -1;
