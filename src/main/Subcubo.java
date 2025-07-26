@@ -34,6 +34,11 @@ public class Subcubo {
      * Coordenadas proyectadas en pantalla de cada vértice.
      */
     private final int[][] screenVertices;
+    /**
+     * Profundidad promedio de cada cara en la última proyección realizada.
+     * Se usa para determinar la cara visible más cercana al hacer clic.
+     */
+    private final double[] faceDepths;
 
     /**
      * Rotaciones acumuladas alrededor de cada eje.
@@ -85,6 +90,7 @@ public class Subcubo {
         };
 
         screenVertices = new int[8][2];
+        faceDepths = new double[6];
     }
 
     /**
@@ -206,7 +212,9 @@ public class Subcubo {
         // Algoritmo del pintor
         double[] profundidades = new double[6];
         for (int i = 0; i < 6; i++) {
-            profundidades[i] = (trasladadas[caras[i][0]][2] + trasladadas[caras[i][1]][2] + trasladadas[caras[i][2]][2] + trasladadas[caras[i][3]][2]) / 2.0;
+            profundidades[i] = (trasladadas[caras[i][0]][2] + trasladadas[caras[i][1]][2]
+                    + trasladadas[caras[i][2]][2] + trasladadas[caras[i][3]][2]) / 2.0;
+            faceDepths[i] = profundidades[i];
         }
 
         Integer[] indices = {0, 1, 2, 3, 4, 5};
@@ -336,6 +344,8 @@ public class Subcubo {
      * coincide.
      */
     public int faceAt(int px, int py) {
+        int selected = -1;
+        double bestDepth = Double.MAX_VALUE;
         for (int faceIdx = 0; faceIdx < caras.length; faceIdx++) {
             int[] xs = new int[4];
             int[] ys = new int[4];
@@ -344,10 +354,14 @@ public class Subcubo {
                 ys[i] = screenVertices[caras[faceIdx][i]][1];
             }
             if (pointInPolygon(px, py, xs, ys)) {
-                return faceIdx;
+                double depth = faceDepths[faceIdx];
+                if (selected == -1 || depth < bestDepth) {
+                    bestDepth = depth;
+                    selected = faceIdx;
+                }
             }
         }
-        return -1;
+        return selected;
     }
 
     /**
