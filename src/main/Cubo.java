@@ -898,6 +898,10 @@ public class Cubo extends JFrame {
             moverCubo();
         });
 
+        // El panel debe poder enfocarse para captar las teclas
+        panel.setFocusable(true);
+        panel.requestFocusInWindow(); // Asegura la recepción de eventos de teclado
+
         setVisible(true);
     }
 
