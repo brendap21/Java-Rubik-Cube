@@ -477,12 +477,6 @@ public class Cubo extends JFrame {
         rotateLayerAnimated(axis, layer, clockwise, null);
     }
 
-    private void swapSubcubes(int x1, int y1, int z1, int x2, int y2, int z2) {
-        Subcubo tmp = cuboRubik[x1][y1][z1];
-        cuboRubik[x1][y1][z1] = cuboRubik[x2][y2][z2];
-        cuboRubik[x2][y2][z2] = tmp;
-    }
-
     /**
      * Redibuja el cubo aplicando las rotaciones y traslaciones actuales.
      */
