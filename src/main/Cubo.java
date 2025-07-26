@@ -951,6 +951,8 @@ public class Cubo extends JFrame {
      */
     private void drawUI() {
         if (!showControls) {
+            PixelFont.drawString(graficos, "RUBIK 3D", 10, 20, 5, Color.WHITE);
+            PixelFont.drawString(graficos, gameMode ? "MODE: PLAY" : "MODE: VIEW", 620, 20, 2, Color.YELLOW);
             return;
         }
         PixelFont.drawString(graficos, "RUBIK 3D", 10, 20, 5, Color.WHITE);
@@ -983,6 +985,8 @@ public class Cubo extends JFrame {
         y += step;
         PixelFont.drawString(graficos, "LEFT DRAG ROTATE CUBE", 10, y, 2, Color.WHITE);
         y += step;
+        PixelFont.drawString(graficos, "MOUSE WHEEL SCALE", 10, y, 2, Color.WHITE);
+        y += step;
         y += step;
         PixelFont.drawString(graficos, "B TOGGLE LINES", 10, y, 2, Color.WHITE);
         y += step;
@@ -990,9 +994,8 @@ public class Cubo extends JFrame {
         y += step;
         PixelFont.drawString(graficos, "N TOGGLE LABELS", 10, y, 2, Color.WHITE);
         y += step;
-        PixelFont.drawString(graficos, "H TOGGLE HELP", 10, y, 2, Color.WHITE);
+        PixelFont.drawString(graficos, "H SHOW CONTROLLS", 10, y, 2, Color.WHITE);
         y += step;
-        PixelFont.drawString(graficos, "MOUSE WHEEL SCALE", 10, y, 2, Color.WHITE);
-        y += step;
+
     }
 }
