@@ -256,7 +256,7 @@ public class Subcubo {
     private String getFaceLabel(int face, int ix, int iy, int iz) {
         switch (face) {
             case 1: // front
-                return "A" + (iy * 3 + ix + 1);
+                return "A" + (iy * 3 + (2 - ix) + 1);
             case 5: // right
                 return "B" + (iy * 3 + iz + 1);
             case 3: // top
