@@ -57,6 +57,13 @@ public class Cubo extends JFrame {
     private int lastX;
     private int lastY;
     /**
+     * Último ángulo registrado durante el arrastre de la esquina para
+     * rotar en Z. Permite calcular la diferencia de ángulos entre
+     * movimientos sucesivos del ratón y aplicar así una rotación
+     * proporcional al giro realizado.
+     */
+    private double lastCornerAngle = 0;
+    /**
      * Indica si se está arrastrando desde una esquina para rotar en Z.
      */
     private boolean draggingCorner = false;
@@ -860,6 +867,7 @@ public class Cubo extends JFrame {
                     if (idxX != -1 && isFrontCorner(idxX, idxY, idxZ)) {
                         draggingCorner = true;
                         draggingFace = draggingLayerZ = false;
+                        lastCornerAngle = Math.atan2(my - trasY, mx - trasX);
                     } else {
                         draggingCorner = false;
                     }
@@ -946,12 +954,10 @@ public class Cubo extends JFrame {
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (draggingCorner && (e.getModifiersEx() & InputEvent.BUTTON3_DOWN_MASK) != 0) {
-                    double vx1 = lastX - trasX;
-                    double vy1 = lastY - trasY;
-                    double vx2 = e.getX() - trasX;
-                    double vy2 = e.getY() - trasY;
-                    double cross = vx1 * vy2 - vy1 * vx2;
-                    applyRotation(2, cross / 1000.0);
+                    double angle = Math.atan2(e.getY() - trasY, e.getX() - trasX);
+                    double delta = Math.toDegrees(angle - lastCornerAngle);
+                    applyRotation(2, delta);
+                    lastCornerAngle = angle;
                     lastX = e.getX();
                     lastY = e.getY();
                     moverCubo();
