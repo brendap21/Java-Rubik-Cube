@@ -265,17 +265,21 @@ public class Cubo extends JFrame {
         };
     }
 
-    private int[] mapDirection(double[] v) {
+    private int[] mapDirection(double[] v, boolean negClockwise) {
         double ax = Math.abs(v[0]);
         double ay = Math.abs(v[1]);
         double az = Math.abs(v[2]);
+        int axis;
         if (ax >= ay && ax >= az) {
-            return new int[]{0, v[0] >= 0 ? 2 : 0};
+            axis = 0;
         } else if (ay >= ax && ay >= az) {
-            return new int[]{1, v[1] >= 0 ? 2 : 0};
+            axis = 1;
         } else {
-            return new int[]{2, v[2] >= 0 ? 2 : 0};
+            axis = 2;
         }
+        int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
+        boolean cw = negClockwise ? v[axis] < 0 : v[axis] > 0;
+        return new int[]{axis, layer, cw ? 1 : 0};
     }
 
     // Devuelve el vector normal local de una cara según su índice
@@ -689,10 +693,10 @@ public class Cubo extends JFrame {
                         } else if (selX != -1) {
                             double[] front = {rotMatrix[0][2], rotMatrix[1][2], rotMatrix[2][2]};
                             double[] dir = cross(new double[]{0, -1, 0}, front);
-                            int[] m = mapDirection(dir);
+                            int[] m = mapDirection(dir, true);
                             int axis = m[0];
-                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
-                            boolean cw = dir[axis] < 0;
+                            int layer = m[1];
+                            boolean cw = m[2] == 1;
                             rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
@@ -701,10 +705,10 @@ public class Cubo extends JFrame {
                             double[] arrowVec = rotateVector(new double[]{0, 1, 0}, -anguloX, -anguloY, -anguloZ);
                             double[] normal = getFaceNormal(selFace);
                             double[] dir = cross(normal, arrowVec);
-                            int[] m = mapDirection(dir);
+                            int[] m = mapDirection(dir, true);
                             int axis = m[0];
-                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
-                            boolean cw = dir[axis] < 0;
+                            int layer = m[1];
+                            boolean cw = m[2] == 1;
                             rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
@@ -714,10 +718,10 @@ public class Cubo extends JFrame {
                         } else if (selX != -1) {
                             double[] front = {rotMatrix[0][2], rotMatrix[1][2], rotMatrix[2][2]};
                             double[] dir = cross(new double[]{0, 1, 0}, front);
-                            int[] m = mapDirection(dir);
+                            int[] m = mapDirection(dir, true);
                             int axis = m[0];
-                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
-                            boolean cw = dir[axis] < 0;
+                            int layer = m[1];
+                            boolean cw = m[2] == 1;
                             rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
@@ -726,10 +730,10 @@ public class Cubo extends JFrame {
                             double[] arrowVec = rotateVector(new double[]{0, -1, 0}, -anguloX, -anguloY, -anguloZ);
                             double[] normal = getFaceNormal(selFace);
                             double[] dir = cross(normal, arrowVec);
-                            int[] m = mapDirection(dir);
+                            int[] m = mapDirection(dir, true);
                             int axis = m[0];
-                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
-                            boolean cw = dir[axis] < 0;
+                            int layer = m[1];
+                            boolean cw = m[2] == 1;
                             rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
@@ -741,10 +745,10 @@ public class Cubo extends JFrame {
                         } else if (selX != -1) {
                             double[] front = {rotMatrix[0][2], rotMatrix[1][2], rotMatrix[2][2]};
                             double[] dir = cross(front, new double[]{-1, 0, 0});
-                            int[] m = mapDirection(dir);
+                            int[] m = mapDirection(dir, false);
                             int axis = m[0];
-                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
-                            boolean cw = dir[axis] > 0;
+                            int layer = m[1];
+                            boolean cw = m[2] == 1;
                             rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
@@ -753,10 +757,10 @@ public class Cubo extends JFrame {
                             double[] arrowVec = rotateVector(new double[]{-1, 0, 0}, -anguloX, -anguloY, -anguloZ);
                             double[] normal = getFaceNormal(selFace);
                             double[] dir = cross(normal, arrowVec);
-                            int[] m = mapDirection(dir);
+                            int[] m = mapDirection(dir, false);
                             int axis = m[0];
-                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
-                            boolean cw = dir[axis] > 0;
+                            int layer = m[1];
+                            boolean cw = m[2] == 1;
                             rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
@@ -766,10 +770,10 @@ public class Cubo extends JFrame {
                         } else if (selX != -1) {
                             double[] front = {rotMatrix[0][2], rotMatrix[1][2], rotMatrix[2][2]};
                             double[] dir = cross(front, new double[]{1, 0, 0});
-                            int[] m = mapDirection(dir);
+                            int[] m = mapDirection(dir, false);
                             int axis = m[0];
-                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
-                            boolean cw = dir[axis] > 0;
+                            int layer = m[1];
+                            boolean cw = m[2] == 1;
                             rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
@@ -778,10 +782,10 @@ public class Cubo extends JFrame {
                             double[] arrowVec = rotateVector(new double[]{1, 0, 0}, -anguloX, -anguloY, -anguloZ);
                             double[] normal = getFaceNormal(selFace);
                             double[] dir = cross(normal, arrowVec);
-                            int[] m = mapDirection(dir);
+                            int[] m = mapDirection(dir, false);
                             int axis = m[0];
-                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
-                            boolean cw = dir[axis] > 0;
+                            int layer = m[1];
+                            boolean cw = m[2] == 1;
                             rotateLayerAnimated(axis, layer, cw);
                         }
                         break;
