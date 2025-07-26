@@ -277,15 +277,10 @@ public class Cubo extends JFrame {
         };
     }
 
-    // Calcula el eje y sentido de rotación a partir de un vector de flecha en
-    // pantalla y la cara seleccionada de un subcubo
-    private int[] getArrowRotation(double[] arrowVec, Subcubo sc, int face) {
-        double[] rArrow = rotateVector(arrowVec, -anguloX, -anguloY, -anguloZ);
-        double[] normal = sc.getFaceNormalWorld(face);
-        double[] axisVec = cross(rArrow, normal);
-        double ax = Math.abs(axisVec[0]);
-        double ay = Math.abs(axisVec[1]);
-        double az = Math.abs(axisVec[2]);
+    private int[] mapDirection(double[] v, boolean negClockwise) {
+        double ax = Math.abs(v[0]);
+        double ay = Math.abs(v[1]);
+        double az = Math.abs(v[2]);
         int axis;
         if (ax >= ay && ax >= az) {
             axis = 0;
@@ -294,8 +289,20 @@ public class Cubo extends JFrame {
         } else {
             axis = 2;
         }
-        boolean cw = axisVec[axis] < 0;
-        return new int[]{axis, cw ? 1 : 0};
+        int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
+        boolean cw = negClockwise ? v[axis] < 0 : v[axis] > 0;
+        return new int[]{axis, layer, cw ? 1 : 0};
+    }
+
+
+    // Calcula el eje y sentido de rotación a partir de un vector de flecha en
+    // pantalla y la cara seleccionada de un subcubo
+    private int[] getArrowRotation(double[] arrowVec, Subcubo sc, int face) {
+        double[] rArrow = rotateVector(arrowVec, -anguloX, -anguloY, -anguloZ);
+        double[] normal = sc.getFaceNormalWorld(face);
+        double[] axisVec = cross(rArrow, normal);
+        int[] res = mapDirection(axisVec, true);
+        return new int[]{res[0], res[2]};
     }
 
 
