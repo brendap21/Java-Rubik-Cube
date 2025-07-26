@@ -73,6 +73,10 @@ public class Cubo extends JFrame {
      */
     private boolean gameMode = false;
     private int selX = -1, selY = -1, selZ = -1;
+    /**
+     * Indica si se muestran las etiquetas de las caras.
+     */
+    private boolean showLabels = false;
 
     /**
      * Información auxiliar usada durante el renderizado para ordenar las piezas
@@ -424,7 +428,7 @@ public class Cubo extends JFrame {
             for (RenderInfo info : infos) {
                 info.cubo.dibujar(graficos, 1.0, anguloX, anguloY, anguloZ,
                         info.x, info.y, (int) info.depth, lines, info.highlight,
-                        info.ex, info.ey, info.ez, true, info.ix, info.iy, info.iz);
+                        info.ex, info.ey, info.ez, showLabels, info.ix, info.iy, info.iz);
             }
             drawUI();
             graficos.render();
@@ -511,7 +515,7 @@ public class Cubo extends JFrame {
             for (RenderInfo info : infos) {
                 info.cubo.dibujar(graficos, 1, anguloX, anguloY, anguloZ,
                         info.x, info.y, (int) info.depth, lines, info.highlight,
-                        info.ex, info.ey, info.ez, true, info.ix, info.iy, info.iz);
+                        info.ex, info.ey, info.ez, showLabels, info.ix, info.iy, info.iz);
             }
         } else {
             graficos.clear();
@@ -521,7 +525,7 @@ public class Cubo extends JFrame {
                     for (int z = 0; z < 3; z++) {
                         boolean highlight = gameMode && x == selX && y == selY && z == selZ;
                         cuboRubik[x][y][z].dibujar(graficos, 1.0, anguloX, anguloY, anguloZ,
-                                trasX, trasY, trasZ, lines, highlight, 0, 0, 0, true, x, y, z);
+                                trasX, trasY, trasZ, lines, highlight, 0, 0, 0, showLabels, x, y, z);
                     }
                 }
             }
@@ -643,6 +647,9 @@ public class Cubo extends JFrame {
                         break;
                     case KeyEvent.VK_E:
                         ejeSubcubo = !ejeSubcubo;
+                        break;
+                    case KeyEvent.VK_N:
+                        showLabels = !showLabels;
                         break;
                 }
                 moverCubo();
@@ -833,6 +840,8 @@ public class Cubo extends JFrame {
         PixelFont.drawString(graficos, "E CHANGE AXIS", 10, y, 2, Color.WHITE);
         y += step;
         PixelFont.drawString(graficos, "ARROWS ROTATE", 10, y, 2, Color.WHITE);
+        y += step;
+        PixelFont.drawString(graficos, "N TOGGLE LABELS", 10, y, 2, Color.WHITE);
         y += step;
         PixelFont.drawString(graficos, "ENTER PLAY MODE", 10, y, 2, Color.WHITE);
         y += step;
