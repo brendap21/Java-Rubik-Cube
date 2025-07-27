@@ -306,7 +306,10 @@ public class Cubo extends JFrame {
     private int[] getArrowRotation(double[] arrowVec, Subcubo sc, int face) {
         double[] rArrow = rotateVector(arrowVec, -anguloX, -anguloY, -anguloZ);
         double[] normal = sc.getFaceNormalWorld(face);
-        double[] axisVec = cross(rArrow, normal);
+        // Use the face normal and arrow to obtain the rotation axis so that
+        // pressing an arrow key rotates the selected layer following the
+        // arrow direction regardless of the cube orientation.
+        double[] axisVec = cross(normal, rArrow);
         int[] res = mapDirection(axisVec, true);
         return new int[]{res[0], res[2]};
     }
