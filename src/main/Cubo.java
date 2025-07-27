@@ -85,6 +85,11 @@ public class Cubo extends JFrame {
     private boolean showControls = true;
 
     /**
+     * True mientras se ejecuta una animación de rotación.
+     */
+    private boolean animating = false;
+
+    /**
      * Información auxiliar usada durante el renderizado para ordenar las piezas
      * por profundidad.
      */
@@ -431,6 +436,10 @@ public class Cubo extends JFrame {
      * Rota una capa con animación y ejecuta una acción al finalizar.
      */
     private void rotateLayerAnimated(int axis, int layer, boolean clockwise, Runnable done) {
+        if (animating) {
+            return;
+        }
+        animating = true;
         int dir = clockwise ? 1 : -1;
         double offset = (layer - 1) * size;
 
@@ -513,6 +522,7 @@ public class Cubo extends JFrame {
                     }
                 }
                 moverCubo();
+                animating = false;
                 if (done != null) {
                     done.run();
                 }
@@ -692,6 +702,7 @@ public class Cubo extends JFrame {
 
                     // — ROTACIÓN EN X (eje horizontal) —
                     case KeyEvent.VK_I:    // tecla I
+                        if (animating) break;
                         if (!gameMode) {
                             applyRotation(0, -5);
                         } else if (selX != -1) {
@@ -704,6 +715,7 @@ public class Cubo extends JFrame {
                         }
                         break;
                     case KeyEvent.VK_UP:
+                        if (animating) break;
                         if (gameMode && selX != -1) {
                             int[] m = getArrowRotation(new double[]{0, -1, 0},
                                     cuboRubik[selX][selY][selZ], selFace);
@@ -714,6 +726,7 @@ public class Cubo extends JFrame {
                         }
                         break;
                     case KeyEvent.VK_K:    // tecla K
+                        if (animating) break;
                         if (!gameMode) {
                             applyRotation(0, 5);
                         } else if (selX != -1) {
@@ -726,6 +739,7 @@ public class Cubo extends JFrame {
                         }
                         break;
                     case KeyEvent.VK_DOWN:
+                        if (animating) break;
                         if (gameMode && selX != -1) {
                             int[] m = getArrowRotation(new double[]{0, 1, 0},
                                     cuboRubik[selX][selY][selZ], selFace);
@@ -738,6 +752,7 @@ public class Cubo extends JFrame {
 
                     // — ROTACIÓN EN Y (eje vertical) —
                     case KeyEvent.VK_J:    // tecla J
+                        if (animating) break;
                         if (!gameMode) {
                             applyRotation(1, 5);  // giro a la izquierda
                         } else if (selX != -1) {
@@ -750,6 +765,7 @@ public class Cubo extends JFrame {
                         }
                         break;
                     case KeyEvent.VK_LEFT:
+                        if (animating) break;
                         if (gameMode && selX != -1) {
                             int[] m = getArrowRotation(new double[]{-1, 0, 0},
                                     cuboRubik[selX][selY][selZ], selFace);
@@ -760,6 +776,7 @@ public class Cubo extends JFrame {
                         }
                         break;
                     case KeyEvent.VK_L:    // tecla L
+                        if (animating) break;
                         if (!gameMode) {
                             applyRotation(1, -5);  // giro a la derecha
                         } else if (selX != -1) {
@@ -772,6 +789,7 @@ public class Cubo extends JFrame {
                         }
                         break;
                     case KeyEvent.VK_RIGHT:
+                        if (animating) break;
                         if (gameMode && selX != -1) {
                             int[] m = getArrowRotation(new double[]{1, 0, 0},
                                     cuboRubik[selX][selY][selZ], selFace);
@@ -784,17 +802,20 @@ public class Cubo extends JFrame {
 
                     // — ROTACIÓN EN Z (profundidad) —
                     case KeyEvent.VK_O:
+                        if (animating) break;
                         if (!gameMode) {
                             applyRotation(2, 5);
                         }
                         break;
                     case KeyEvent.VK_U:
+                        if (animating) break;
                         if (!gameMode) {
                             applyRotation(2, -5);
                         }
                         break;
 
                     case KeyEvent.VK_R:
+                        if (animating) break;
                         if (gameMode) {
                             scrambleAnimation();
                         }
