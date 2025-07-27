@@ -48,7 +48,7 @@ public class Subcubo {
     /**
      * Crea un subcubo en la posición indicada dentro del cubo de Rubik.
      */
-    public Subcubo(int x, int y, int z, int size, int xIndex, int yIndex, int zIndex) {
+    public Subcubo(int x, int y, int z, int size) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -80,72 +80,17 @@ public class Subcubo {
             {1, 2, 6, 5} // right
         };
 
-        Color neutral = new Color(30, 30, 30);
-        Color back = new Color(114, 176, 29);
-        Color front = new Color(8, 127, 140);
-        Color bottom = new Color(246, 247, 235);
-        Color top = new Color(97, 41, 64);
-        Color left = new Color(242, 92, 84);
-        Color right = new Color(222, 26, 26);
-
-        colores = new Color[6];
-        colores[0] = zIndex == 0 ? back : neutral;
-        colores[1] = zIndex == 2 ? front : neutral;
-        colores[2] = yIndex == 0 ? bottom : neutral;
-        colores[3] = yIndex == 2 ? top : neutral;
-        colores[4] = xIndex == 0 ? left : neutral;
-        colores[5] = xIndex == 2 ? right : neutral;
+        colores = new Color[]{
+            new Color(114, 176, 29), // verde
+            new Color(8, 127, 140), // azul 
+            new Color(246, 247, 235), // blanco
+            new Color(97, 41, 64), // morado
+            new Color(242, 92, 84), 
+            new Color(222, 26, 26) // rojo
+        };
 
         screenVertices = new int[8][2];
         faceDepths = new double[6];
-    }
-
-    /**
-     * Rota los colores de las caras cuando la pieza gira alrededor de un eje.
-     */
-    public void rotateColors(int axis, boolean clockwise) {
-        Color[] c = Arrays.copyOf(colores, colores.length);
-        switch (axis) {
-            case 0: // X axis
-                if (clockwise) {
-                    colores[1] = c[2];
-                    colores[2] = c[0];
-                    colores[0] = c[3];
-                    colores[3] = c[1];
-                } else {
-                    colores[1] = c[3]; // front = top
-                    colores[2] = c[1]; // bottom = front
-                    colores[0] = c[2]; // back = bottom
-                    colores[3] = c[0]; // top = back
-                }
-                break;
-            case 1: // Y axis
-                if (clockwise) {
-                    colores[4] = c[1];
-                    colores[0] = c[4];
-                    colores[5] = c[0];
-                    colores[1] = c[5];
-                } else {
-                    colores[5] = c[1]; // right = front
-                    colores[0] = c[5]; // back = right
-                    colores[4] = c[0]; // left = back
-                    colores[1] = c[4]; // front = left
-                }
-                break;
-            case 2: // Z axis
-                if (clockwise) {
-                    colores[4] = c[3]; // left = top
-                    colores[2] = c[4]; // bottom = left
-                    colores[5] = c[2]; // right = bottom
-                    colores[3] = c[5]; // top = right
-                } else {
-                    colores[5] = c[3]; // right = top
-                    colores[2] = c[5]; // bottom = right
-                    colores[4] = c[2]; // left = bottom
-                    colores[3] = c[4]; // top = left
-                }
-                break;
-        }
     }
 
     /**
