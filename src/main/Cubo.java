@@ -140,7 +140,7 @@ public class Cubo extends JFrame {
                     int posX = (int) ((x - 1) * size * escala);
                     int posY = (int) ((y - 1) * size * escala);
                     int posZ = (int) ((z - 1) * size * escala);
-                    cuboRubik[x][y][z] = new Subcubo(posX, posY, posZ, size, x, y, z);
+                    cuboRubik[x][y][z] = new Subcubo(posX, posY, posZ, size);
                 }
             }
         }
@@ -204,7 +204,8 @@ public class Cubo extends JFrame {
                         }
 
                         nuevo[nx][ny][nz] = cuboRubik[x][y][z];
-                        nuevo[nx][ny][nz].rotateColors(axis, clockwise);
+                        // Colors will be scrambled; orientation only
+                        // nuevo[nx][ny][nz].rotateColors(axis, clockwise);
                         nuevo[nx][ny][nz].rotateOrientation(axis, clockwise);
                     }
                 }
