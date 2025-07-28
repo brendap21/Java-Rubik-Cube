@@ -75,6 +75,7 @@ public class Cubo extends JFrame {
     private int selX = -1, selY = -1, selZ = -1;
     private double selTX = 0, selTY = 0, selTZ = 0;
     private int selFace = -1;
+    private int selMX = -1, selMY = -1;
     /**
      * Indica si se muestran las etiquetas de las caras.
      */
@@ -525,6 +526,9 @@ public class Cubo extends JFrame {
                     }
                 }
                 moverCubo();
+                if (selected != null && selMX != -1) {
+                    selFace = cuboRubik[selX][selY][selZ].faceAt(selMX, selMY);
+                }
                 animating = false;
                 if (done != null) {
                     done.run();
@@ -882,6 +886,8 @@ public class Cubo extends JFrame {
                         selY = idxY;
                         selZ = idxZ;
                         selFace = cuboRubik[idxX][idxY][idxZ].faceAt(mx, my);
+                        selMX = mx;
+                        selMY = my;
                         animateSelection();
                     }
                     moverCubo();
