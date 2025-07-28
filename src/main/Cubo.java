@@ -284,6 +284,10 @@ public class Cubo extends JFrame {
         };
     }
 
+    private double dot(double[] a, double[] b) {
+        return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    }
+
     private int[] mapDirection(double[] v, boolean negClockwise) {
         double ax = Math.abs(v[0]);
         double ay = Math.abs(v[1]);
@@ -311,6 +315,21 @@ public class Cubo extends JFrame {
         // pressing an arrow key rotates the selected layer following the
         // arrow direction regardless of the cube orientation.
         double[] axisVec = cross(normal, rArrow);
+        double thr = 1e-6;
+        if (Math.abs(axisVec[0]) < thr && Math.abs(axisVec[1]) < thr && Math.abs(axisVec[2]) < thr) {
+            double[] up = {-rotMatrix[0][1], -rotMatrix[1][1], -rotMatrix[2][1]};
+            axisVec = cross(normal, up);
+            if (Math.abs(axisVec[0]) < thr && Math.abs(axisVec[1]) < thr && Math.abs(axisVec[2]) < thr) {
+                double[] right = {rotMatrix[0][0], rotMatrix[1][0], rotMatrix[2][0]};
+                axisVec = cross(normal, right);
+            }
+            int[] res = mapDirection(axisVec, true);
+            boolean cw = res[2] == 1;
+            if (dot(rArrow, normal) < 0) {
+                cw = !cw;
+            }
+            return new int[]{res[0], cw ? 1 : 0};
+        }
         int[] res = mapDirection(axisVec, true);
         return new int[]{res[0], res[2]};
     }
