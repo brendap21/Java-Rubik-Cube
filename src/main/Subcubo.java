@@ -100,13 +100,13 @@ public class Subcubo {
         double ang = clockwise ? -90 : 90;
         switch (axis) {
             case 0:
-                rotX = (rotX + ang) % 360;
+                rotX = (rotX + ang + 360) % 360;
                 break;
             case 1:
-                rotY = (rotY + ang) % 360;
+                rotY = (rotY + ang + 360) % 360;
                 break;
             case 2:
-                rotZ = (rotZ + ang) % 360;
+                rotZ = (rotZ + ang + 360) % 360;
                 break;
         }
     }
