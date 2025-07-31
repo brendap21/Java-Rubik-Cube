@@ -210,8 +210,7 @@ public class Cubo extends JFrame {
                         }
 
                         nuevo[nx][ny][nz] = cuboRubik[x][y][z];
-                        // Colors will be scrambled; orientation only
-                        // nuevo[nx][ny][nz].rotateColors(axis, clockwise);
+                        nuevo[nx][ny][nz].rotateColors(axis, clockwise);
                         nuevo[nx][ny][nz].rotateOrientation(axis, clockwise);
                     }
                 }
