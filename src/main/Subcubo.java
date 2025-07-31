@@ -194,7 +194,7 @@ public class Subcubo {
         double[] profundidades = new double[6];
         for (int i = 0; i < 6; i++) {
             profundidades[i] = (trasladadas[caras[i][0]][2] + trasladadas[caras[i][1]][2]
-                    + trasladadas[caras[i][2]][2] + trasladadas[caras[i][3]][2]) / 2.0;
+                    + trasladadas[caras[i][2]][2] + trasladadas[caras[i][3]][2]) / 4.0;
             faceDepths[i] = profundidades[i];
         }
 
