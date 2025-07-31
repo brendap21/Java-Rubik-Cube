@@ -112,6 +112,71 @@ public class Subcubo {
     }
 
     /**
+     * Reordena los colores de las caras tras una rotación alrededor de un eje.
+     *
+     * @param axis      eje de rotación (0=X, 1=Y, 2=Z)
+     * @param clockwise sentido horario si es {@code true}
+     */
+    public void rotateColors(int axis, boolean clockwise) {
+        switch (axis) {
+            case 0: { // X axis
+                Color back = colores[0];
+                Color front = colores[1];
+                Color bottom = colores[2];
+                Color top = colores[3];
+                if (clockwise) {
+                    colores[0] = bottom; // back
+                    colores[1] = top;    // front
+                    colores[2] = front;  // bottom
+                    colores[3] = back;   // top
+                } else {
+                    colores[0] = top;    // back
+                    colores[1] = bottom; // front
+                    colores[2] = back;   // bottom
+                    colores[3] = front;  // top
+                }
+                break;
+            }
+            case 1: { // Y axis
+                Color back = colores[0];
+                Color front = colores[1];
+                Color left = colores[4];
+                Color right = colores[5];
+                if (clockwise) {
+                    colores[5] = back;   // right
+                    colores[1] = right;  // front
+                    colores[4] = front;  // left
+                    colores[0] = left;   // back
+                } else {
+                    colores[4] = back;   // left
+                    colores[1] = left;   // front
+                    colores[5] = front;  // right
+                    colores[0] = right;  // back
+                }
+                break;
+            }
+            case 2: { // Z axis
+                Color top = colores[3];
+                Color bottom = colores[2];
+                Color left = colores[4];
+                Color right = colores[5];
+                if (clockwise) {
+                    colores[4] = top;    // left
+                    colores[2] = left;   // bottom
+                    colores[5] = bottom; // right
+                    colores[3] = right;  // top
+                } else {
+                    colores[5] = top;    // right
+                    colores[2] = right;  // bottom
+                    colores[4] = bottom; // left
+                    colores[3] = left;   // top
+                }
+                break;
+            }
+        }
+    }
+
+    /**
      * Devuelve el vector normal local de una cara según su índice.
      */
     public static double[] getFaceNormal(int face) {
