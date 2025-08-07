@@ -715,7 +715,7 @@ public class Cubo extends JFrame {
     }
 
     public static void main(String[] args) {
-        new Cubo();
+        SwingUtilities.invokeLater(Cubo::new);
     }
 
     private void initComponents() {
