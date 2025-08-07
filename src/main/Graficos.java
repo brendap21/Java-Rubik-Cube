@@ -10,6 +10,7 @@ package main;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 
 public class Graficos {
 
@@ -114,15 +115,7 @@ public class Graficos {
 
             // Ordenar nodos
             // Ordenar las intersecciones de izquierda a derecha
-            for (int i = 0; i < nodesCount - 1; i++) {
-                for (int k = i + 1; k < nodesCount; k++) {
-                    if (nodes[i] > nodes[k]) {
-                        int temp = nodes[i];
-                        nodes[i] = nodes[k];
-                        nodes[k] = temp;
-                    }
-                }
-            }
+            Arrays.sort(nodes, 0, nodesCount);
 
             // Dibujar las líneas entre los pares de nodos
             // Rellenar la línea entre cada par de intersecciones
