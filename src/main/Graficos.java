@@ -90,13 +90,21 @@ public class Graficos {
      */
     public void fillPolygon(int[] xPoints, int[] yPoints, int nPoints, Color color) {
         if (nPoints < 3) return;
+        
+        // Aplicar la traslación a todos los puntos para trabajar con
+        // coordenadas absolutas, manteniendo coherencia con otros métodos
+        int[] tx = new int[nPoints];
+        int[] ty = new int[nPoints];
+        for (int i = 0; i < nPoints; i++) {
+            tx[i] = xPoints[i] + translateX;
+            ty[i] = yPoints[i] + translateY;
+        }
 
-        // Encontrar el límite del polígono
-        // Determinar el rango vertical del polígono
+        // Determinar el rango vertical del polígono usando los puntos traducidos
         int minY = HEIGHT - 1, maxY = 0;
         for (int i = 0; i < nPoints; i++) {
-            if (yPoints[i] < minY) minY = yPoints[i];
-            if (yPoints[i] > maxY) maxY = yPoints[i];
+            if (ty[i] < minY) minY = ty[i];
+            if (ty[i] > maxY) maxY = ty[i];
         }
 
         // Escanear líneas
@@ -107,8 +115,8 @@ public class Graficos {
             int j = nPoints - 1;
             for (int i = 0; i < nPoints; i++) {
                 // Comprobar si la arista cruza la línea actual
-                if ((yPoints[i] < y && yPoints[j] >= y) || (yPoints[j] < y && yPoints[i] >= y)) {
-                    nodes[nodesCount++] = (xPoints[i] + (y - yPoints[i]) * (xPoints[j] - xPoints[i]) / (yPoints[j] - yPoints[i]));
+                if ((ty[i] < y && ty[j] >= y) || (ty[j] < y && ty[i] >= y)) {
+                    nodes[nodesCount++] = (tx[i] + (y - ty[i]) * (tx[j] - tx[i]) / (ty[j] - ty[i]));
                 }
                 j = i;
             }
