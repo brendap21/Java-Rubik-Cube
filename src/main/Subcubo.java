@@ -207,38 +207,26 @@ public class Subcubo {
         return rotar(local, rotX, rotY, rotZ);
     }
 
-    // Método de compatibilidad para versiones previas sin el parámetro highlight
-    public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ, int trasX, int trasY, int trasZ, boolean lines) {
-        dibujar(g, escala, anguloX, anguloY, anguloZ, trasX, trasY, trasZ, lines,
-                false, 0, 0, 0, 0, 0, 0, false, 0, 0, 0);
-    }
-
     /**
      * Dibuja el subcubo aplicando las transformaciones indicadas.
      */
-    public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ, int trasX, int trasY, int trasZ, boolean lines, boolean highlight) {
-        dibujar(g, escala, anguloX, anguloY, anguloZ, trasX, trasY, trasZ, lines,
-                highlight, 0, 0, 0, 0, 0, 0, false, 0, 0, 0);
-    }
-
-    /**
-     * Dibuja el subcubo con rotaciones adicionales opcionales utilizadas para
-     * animaciones.
-     */
     public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ,
-            int trasX, int trasY, int trasZ, boolean lines, boolean highlight,
-            double extraRotX, double extraRotY, double extraRotZ) {
-        dibujar(g, escala, anguloX, anguloY, anguloZ, trasX, trasY, trasZ,
-                lines, highlight, extraRotX, extraRotY, extraRotZ,
-                0, 0, 0,
-                false, 0, 0, 0);
-    }
+            int trasX, int trasY, int trasZ, boolean lines, RenderOptions opt) {
+        if (opt == null) {
+            opt = new RenderOptions();
+        }
+        boolean highlight = opt.highlight;
+        double extraRotX = opt.extraRotX;
+        double extraRotY = opt.extraRotY;
+        double extraRotZ = opt.extraRotZ;
+        double extraTX = opt.extraTX;
+        double extraTY = opt.extraTY;
+        double extraTZ = opt.extraTZ;
+        boolean showLabels = opt.showLabels;
+        int idxX = opt.idxX;
+        int idxY = opt.idxY;
+        int idxZ = opt.idxZ;
 
-    public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ,
-            int trasX, int trasY, int trasZ, boolean lines, boolean highlight,
-            double extraRotX, double extraRotY, double extraRotZ,
-            double extraTX, double extraTY, double extraTZ,
-            boolean showLabels, int idxX, int idxY, int idxZ) {
         double[][] rotadas = new double[8][3];
         for (int i = 0; i < 8; i++) {
             double[] local = rotar(vertices[i], rotX + extraRotX, rotY + extraRotY, rotZ + extraRotZ);

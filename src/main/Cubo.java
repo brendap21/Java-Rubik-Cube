@@ -513,11 +513,20 @@ public class Cubo extends JFrame {
             }
             infos.sort((aInfo, bInfo) -> Double.compare(bInfo.depth, aInfo.depth));
             for (RenderInfo info : infos) {
+                RenderOptions opt = new RenderOptions();
+                opt.highlight = info.highlight;
+                opt.extraRotX = info.ex;
+                opt.extraRotY = info.ey;
+                opt.extraRotZ = info.ez;
+                opt.extraTX = info.tx;
+                opt.extraTY = info.ty;
+                opt.extraTZ = info.tz;
+                opt.showLabels = showLabels;
+                opt.idxX = info.ix;
+                opt.idxY = info.iy;
+                opt.idxZ = info.iz;
                 info.cubo.dibujar(graficos, 1.0, anguloX, anguloY, anguloZ,
-                        info.x, info.y, (int) info.depth, lines, info.highlight,
-                        info.ex, info.ey, info.ez,
-                        info.tx, info.ty, info.tz,
-                        showLabels, info.ix, info.iy, info.iz);
+                        info.x, info.y, (int) info.depth, lines, opt);
             }
             drawUI();
             graficos.render();
@@ -638,11 +647,20 @@ public class Cubo extends JFrame {
             }
             infos.sort((a, b) -> Double.compare(b.depth, a.depth));
             for (RenderInfo info : infos) {
+                RenderOptions opt = new RenderOptions();
+                opt.highlight = info.highlight;
+                opt.extraRotX = info.ex;
+                opt.extraRotY = info.ey;
+                opt.extraRotZ = info.ez;
+                opt.extraTX = info.tx;
+                opt.extraTY = info.ty;
+                opt.extraTZ = info.tz;
+                opt.showLabels = showLabels;
+                opt.idxX = info.ix;
+                opt.idxY = info.iy;
+                opt.idxZ = info.iz;
                 info.cubo.dibujar(graficos, 1, anguloX, anguloY, anguloZ,
-                        info.x, info.y, (int) info.depth, lines, info.highlight,
-                        info.ex, info.ey, info.ez,
-                        info.tx, info.ty, info.tz,
-                        showLabels, info.ix, info.iy, info.iz);
+                        info.x, info.y, (int) info.depth, lines, opt);
             }
         } else {
             graficos.clear();
@@ -654,10 +672,17 @@ public class Cubo extends JFrame {
                         double tX = highlight ? selTX : 0;
                         double tY = highlight ? selTY : 0;
                         double tZ = highlight ? selTZ : 0;
+                        RenderOptions opt = new RenderOptions();
+                        opt.highlight = highlight;
+                        opt.extraTX = tX;
+                        opt.extraTY = tY;
+                        opt.extraTZ = tZ;
+                        opt.showLabels = showLabels;
+                        opt.idxX = x;
+                        opt.idxY = y;
+                        opt.idxZ = z;
                         cuboRubik[x][y][z].dibujar(graficos, 1.0, anguloX, anguloY, anguloZ,
-                                trasX, trasY, trasZ, lines, highlight, 0, 0, 0,
-                                tX, tY, tZ,
-                                showLabels, x, y, z);
+                                trasX, trasY, trasZ, lines, opt);
                     }
                 }
             }
