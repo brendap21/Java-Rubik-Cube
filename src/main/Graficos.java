@@ -183,9 +183,17 @@ public class Graficos {
         int dx = x1 - x0;
         int dy = y1 - y0;
         double distance = Math.sqrt(dx * dx + dy * dy);
+        int halfThickness = thickness / 2;
+
+        // Si la distancia es cero, dibuja un pequeño cuadrado y termina
+        if (distance == 0) {
+            fillRect(x0 - halfThickness, y0 - halfThickness,
+                     x0 + halfThickness, y0 + halfThickness, color);
+            return;
+        }
+
         double unitDx = dx / distance;
         double unitDy = dy / distance;
-        int halfThickness = thickness / 2;
 
         for (int i = -halfThickness; i <= halfThickness; i++) {
             int xOffset = (int) (i * unitDy);   // desplazamiento perpendicular en X
