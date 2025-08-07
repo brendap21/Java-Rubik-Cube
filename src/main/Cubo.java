@@ -4,12 +4,14 @@ package main;
  * Ventana principal que gestiona la interacción con el usuario y el renderizado
  * completo del cubo de Rubik.
  */
-import java.awt.Color;
 import java.awt.event.*;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import main.RenderPanel;
+import main.CubeModel;
+import main.CubeRenderer;
+import main.InputController;
 
 public class Cubo extends JFrame {
 
@@ -17,10 +19,18 @@ public class Cubo extends JFrame {
      * Contenedor de utilidades de dibujo.
      */
     private Graficos graficos;
+    /** Modelo que contiene el estado del cubo. */
+    private CubeModel model;
     /**
      * Matriz de subcubos que conforman el cubo de Rubik.
      */
     private Subcubo[][][] cuboRubik;
+    /** Encargado de renderizar el cubo. */
+    private CubeRenderer renderer;
+    /** Controlador de entradas. */
+    private InputController inputController;
+    /** Panel de render. */
+    private RenderPanel panel;
     /**
      * Rotaciones globales del cubo.
      */
@@ -130,96 +140,23 @@ public class Cubo extends JFrame {
      */
     public Cubo() {
         initComponents();
-        setSubcube();
+        model = new CubeModel(size);
+        cuboRubik = model.getCube();
+        renderer = new CubeRenderer(graficos);
+        inputController = new InputController(model, renderer, this);
+        panel.addKeyListener(inputController);
+        panel.addMouseListener(inputController);
+        panel.addMouseMotionListener(inputController);
+        panel.addMouseWheelListener(inputController);
+        panel.setFocusable(true);
+        panel.requestFocusInWindow();
         moverCubo();
-    }
-
-    /**
-     * Crea todas las piezas del cubo de Rubik en sus posiciones iniciales.
-     */
-    private void setSubcube() {
-        cuboRubik = new Subcubo[3][3][3];
-
-        for (int x = 0; x < 3; x++) {
-            for (int y = 0; y < 3; y++) {
-                for (int z = 0; z < 3; z++) {
-                    int posX = (int) ((x - 1) * size * escala);
-                    int posY = (int) ((y - 1) * size * escala);
-                    int posZ = (int) ((z - 1) * size * escala);
-                    cuboRubik[x][y][z] = new Subcubo(posX, posY, posZ, size);
-                }
-            }
-        }
-
     }
 
     /**
      * Rota una capa completa del cubo modificando orientación y colores de las
      * piezas que la componen.
      */
-    private void rotateLayer(int axis, int layer, boolean clockwise) {
-        Subcubo[][][] nuevo = new Subcubo[3][3][3];
-
-        // Copiar todas las piezas inicialmente
-        for (int x = 0; x < 3; x++) {
-            for (int y = 0; y < 3; y++) {
-                for (int z = 0; z < 3; z++) {
-                    nuevo[x][y][z] = cuboRubik[x][y][z];
-                }
-            }
-        }
-
-        // Aplicar la rotación a la capa indicada
-        for (int x = 0; x < 3; x++) {
-            for (int y = 0; y < 3; y++) {
-                for (int z = 0; z < 3; z++) {
-                    if ((axis == 0 && x == layer) ||
-                        (axis == 1 && y == layer) ||
-                        (axis == 2 && z == layer)) {
-
-                        int nx = x, ny = y, nz = z;
-
-                        switch (axis) {
-                            case 0: // X
-                                if (clockwise) {
-                                    ny = z;
-                                    nz = 2 - y;
-                                } else {
-                                    ny = 2 - z;
-                                    nz = y;
-                                }
-                                break;
-                            case 1: // Y
-                                if (clockwise) {
-                                    nx = 2 - z;
-                                    nz = x;
-                                } else {
-                                    nx = z;
-                                    nz = 2 - x;
-                                }
-                                break;
-                            case 2: // Z
-                                if (clockwise) {
-                                    nx = y;
-                                    ny = 2 - x;
-                                } else {
-                                    nx = 2 - y;
-                                    ny = x;
-                                }
-                                break;
-                        }
-
-                        nuevo[nx][ny][nz] = cuboRubik[x][y][z];
-                        nuevo[nx][ny][nz].rotateColors(axis, clockwise);
-                        nuevo[nx][ny][nz].rotateOrientation(axis, clockwise);
-                    }
-                }
-            }
-        }
-
-        cuboRubik = nuevo;
-    }
-
     private double[] rotatePointAroundAxis(double[] p, int axis, double angleDeg, double offset) {
         double rad = Math.toRadians(angleDeg);
         double x = p[0];
@@ -432,7 +369,7 @@ public class Cubo extends JFrame {
         return r;
     }
 
-    private void applyRotation(int axis, double degrees) {
+    public void applyRotation(int axis, double degrees) {
         double rad = Math.toRadians(degrees);
         double c = Math.cos(rad), s = Math.sin(rad);
         double[][] r = new double[3][3];
@@ -452,6 +389,12 @@ public class Cubo extends JFrame {
         anguloX = angs[0];
         anguloY = angs[1];
         anguloZ = angs[2];
+    }
+
+    /** Ajusta la traslación del cubo en pantalla. */
+    public void moveTranslation(int dx, int dy) {
+        trasX += dx;
+        trasY += dy;
     }
 
     /**
@@ -538,7 +481,7 @@ public class Cubo extends JFrame {
                 if (selX != -1) {
                     selected = cuboRubik[selX][selY][selZ];
                 }
-                rotateLayer(axis, layer, clockwise);
+                model.rotateLayer(axis, layer, clockwise);
                 if (selected != null) {
                     for (int ix = 0; ix < 3; ix++) {
                         for (int iy = 0; iy < 3; iy++) {
@@ -609,86 +552,11 @@ public class Cubo extends JFrame {
     /**
      * Redibuja el cubo aplicando las rotaciones y traslaciones actuales.
      */
-    private void moverCubo() {
-        if (!ejeSubcubo) {
-            graficos.clear();
-
-            // Encontrar el centro del cubo
-            int centroX = 1;
-            int centroY = 1;
-            int centroZ = 1; // Coordenadas del subcubo 14
-
-            java.util.List<RenderInfo> infos = new java.util.ArrayList<>();
-            for (int x = 0; x < 3; x++) {
-                for (int y = 0; y < 3; y++) {
-                    for (int z = 0; z < 3; z++) {
-                        // Posición relativa al centro del cubo
-                        double posX = (x - 1) * size;
-                        double posY = (y - 1) * size;
-                        double posZ = (z - 1) * size;
-
-                        // Aplicar las rotaciones alrededor del subcubo 14
-                        double[] rotatedPos = cuboRubik[x][y][z].rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
-
-                        // Traslación con respecto al movimiento general del cubo
-                        int finalX = (int) (rotatedPos[0] + trasX);
-                        int finalY = (int) (rotatedPos[1] + trasY);
-                        int finalZ = (int) (rotatedPos[2] + trasZ);
-
-                        boolean highlight = gameMode && x == selX && y == selY && z == selZ;
-                        double tX = highlight ? selTX : 0;
-                        double tY = highlight ? selTY : 0;
-                        double tZ = highlight ? selTZ : 0;
-                        double depthVal = finalZ + tZ;
-                        infos.add(new RenderInfo(cuboRubik[x][y][z], finalX, finalY, depthVal,
-                                0, 0, 0, tX, tY, tZ, highlight, x, y, z));
-                    }
-                }
-            }
-            infos.sort((a, b) -> Double.compare(b.depth, a.depth));
-            for (RenderInfo info : infos) {
-                RenderOptions opt = new RenderOptions();
-                opt.highlight = info.highlight;
-                opt.extraRotX = info.ex;
-                opt.extraRotY = info.ey;
-                opt.extraRotZ = info.ez;
-                opt.extraTX = info.tx;
-                opt.extraTY = info.ty;
-                opt.extraTZ = info.tz;
-                opt.showLabels = showLabels;
-                opt.idxX = info.ix;
-                opt.idxY = info.iy;
-                opt.idxZ = info.iz;
-                info.cubo.dibujar(graficos, 1, anguloX, anguloY, anguloZ,
-                        info.x, info.y, (int) info.depth, lines, opt);
-            }
-        } else {
-            graficos.clear();
-
-            for (int x = 0; x < 3; x++) {
-                for (int y = 0; y < 3; y++) {
-                    for (int z = 0; z < 3; z++) {
-                        boolean highlight = gameMode && x == selX && y == selY && z == selZ;
-                        double tX = highlight ? selTX : 0;
-                        double tY = highlight ? selTY : 0;
-                        double tZ = highlight ? selTZ : 0;
-                        RenderOptions opt = new RenderOptions();
-                        opt.highlight = highlight;
-                        opt.extraTX = tX;
-                        opt.extraTY = tY;
-                        opt.extraTZ = tZ;
-                        opt.showLabels = showLabels;
-                        opt.idxX = x;
-                        opt.idxY = y;
-                        opt.idxZ = z;
-                        cuboRubik[x][y][z].dibujar(graficos, 1.0, anguloX, anguloY, anguloZ,
-                                trasX, trasY, trasZ, lines, opt);
-                    }
-                }
-            }
-        }
-        drawUI();
-        graficos.render();
+    public void moverCubo() {
+        renderer.moverCubo(cuboRubik, anguloX, anguloY, anguloZ,
+                trasX, trasY, trasZ, size, lines, ejeSubcubo,
+                gameMode, selX, selY, selZ, selTX, selTY, selTZ,
+                showLabels, showControls);
     }
 
     /**
@@ -718,7 +586,7 @@ public class Cubo extends JFrame {
         new Cubo();
     }
 
-    private void initComponents() {
+        private void initComponents() {
         setTitle("Cubo de Rubik en 3D");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -726,380 +594,11 @@ public class Cubo extends JFrame {
         setResizable(false);
 
         graficos = new Graficos(800, 600);
-        RenderPanel panel = new RenderPanel(graficos);
+        panel = new RenderPanel(graficos);
         add(panel);
 
         // Matriz de rotación inicial basada en los ángulos predeterminados
         rotMatrix = matrixFromAngles(anguloX, anguloY, anguloZ);
-        // Attach key events to the render panel so it receives them when
-        // focus is requested on this component.
-        panel.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                switch (e.getKeyCode()) {
-                    case KeyEvent.VK_A:
-                        trasX -= 5;
-                        break;
-                    case KeyEvent.VK_D:
-                        trasX += 5;
-                        break;
-                    case KeyEvent.VK_W:
-                        trasY -= 5;
-                        break;
-                    case KeyEvent.VK_S:
-                        trasY += 5;
-                        break;
-
-                    // — ROTACIÓN EN X (eje horizontal) —
-                    case KeyEvent.VK_I:    // tecla I
-                        if (animating) break;
-                        if (!gameMode) {
-                            applyRotation(0, -5);
-                        } else if (selX != -1) {
-                            int[] m = getArrowRotation(new double[]{0, -1, 0},
-                                    cuboRubik[selX][selY][selZ], selFace);
-                            int axis = m[0];
-                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
-                            boolean cw = m[1] == 1;
-                            rotateLayerAnimated(axis, layer, cw);
-                        }
-                        break;
-                    case KeyEvent.VK_UP:
-                        if (animating) break;
-                        if (gameMode && selX != -1) {
-                            int[] m = getArrowRotation(new double[]{0, -1, 0},
-                                    cuboRubik[selX][selY][selZ], selFace);
-                            int axis = m[0];
-                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
-                            boolean cw = m[1] == 1;
-                            rotateLayerAnimated(axis, layer, cw);
-                        }
-                        break;
-                    case KeyEvent.VK_K:    // tecla K
-                        if (animating) break;
-                        if (!gameMode) {
-                            applyRotation(0, 5);
-                        } else if (selX != -1) {
-                            int[] m = getArrowRotation(new double[]{0, 1, 0},
-                                    cuboRubik[selX][selY][selZ], selFace);
-                            int axis = m[0];
-                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
-                            boolean cw = m[1] == 1;
-                            rotateLayerAnimated(axis, layer, cw);
-                        }
-                        break;
-                    case KeyEvent.VK_DOWN:
-                        if (animating) break;
-                        if (gameMode && selX != -1) {
-                            int[] m = getArrowRotation(new double[]{0, 1, 0},
-                                    cuboRubik[selX][selY][selZ], selFace);
-                            int axis = m[0];
-                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
-                            boolean cw = m[1] == 1;
-                            rotateLayerAnimated(axis, layer, cw);
-                        }
-                        break;
-
-                    // — ROTACIÓN EN Y (eje vertical) —
-                    case KeyEvent.VK_J:    // tecla J
-                        if (animating) break;
-                        if (!gameMode) {
-                            applyRotation(1, 5);  // giro a la izquierda
-                        } else if (selX != -1) {
-                            int[] m = getArrowRotation(new double[]{-1, 0, 0},
-                                    cuboRubik[selX][selY][selZ], selFace);
-                            int axis = m[0];
-                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
-                            boolean cw = m[1] == 1;
-                            rotateLayerAnimated(axis, layer, cw);
-                        }
-                        break;
-                    case KeyEvent.VK_LEFT:
-                        if (animating) break;
-                        if (gameMode && selX != -1) {
-                            int[] m = getArrowRotation(new double[]{-1, 0, 0},
-                                    cuboRubik[selX][selY][selZ], selFace);
-                            int axis = m[0];
-                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
-                            boolean cw = m[1] == 1;
-                            rotateLayerAnimated(axis, layer, cw);
-                        }
-                        break;
-                    case KeyEvent.VK_L:    // tecla L
-                        if (animating) break;
-                        if (!gameMode) {
-                            applyRotation(1, -5);  // giro a la derecha
-                        } else if (selX != -1) {
-                            int[] m = getArrowRotation(new double[]{1, 0, 0},
-                                    cuboRubik[selX][selY][selZ], selFace);
-                            int axis = m[0];
-                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
-                            boolean cw = m[1] == 1;
-                            rotateLayerAnimated(axis, layer, cw);
-                        }
-                        break;
-                    case KeyEvent.VK_RIGHT:
-                        if (animating) break;
-                        if (gameMode && selX != -1) {
-                            int[] m = getArrowRotation(new double[]{1, 0, 0},
-                                    cuboRubik[selX][selY][selZ], selFace);
-                            int axis = m[0];
-                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
-                            boolean cw = m[1] == 1;
-                            rotateLayerAnimated(axis, layer, cw);
-                        }
-                        break;
-
-                    // — ROTACIÓN EN Z (profundidad) —
-                    case KeyEvent.VK_O:
-                        if (animating) break;
-                        if (!gameMode) {
-                            applyRotation(2, 5);
-                        }
-                        break;
-                    case KeyEvent.VK_U:
-                        if (animating) break;
-                        if (!gameMode) {
-                            applyRotation(2, -5);
-                        }
-                        break;
-
-                    case KeyEvent.VK_R:
-                        if (animating) break;
-                        if (gameMode) {
-                            scrambleAnimation();
-                        }
-                        break;
-                    case KeyEvent.VK_ENTER:
-                        gameMode = !gameMode;
-                        if (!gameMode) {
-                            selX = selY = selZ = -1;
-                        }
-                        break;
-                    case KeyEvent.VK_ESCAPE:
-                        if (gameMode) {
-                            selX = selY = selZ = -1;
-                            moverCubo();
-                        }
-                        break;
-                    case KeyEvent.VK_B:
-                        lines = !lines;
-                        break;
-                    case KeyEvent.VK_E:
-                        ejeSubcubo = !ejeSubcubo;
-                        break;
-                    case KeyEvent.VK_N:
-                        showLabels = !showLabels;
-                        break;
-                    case KeyEvent.VK_H:
-                        showControls = !showControls;
-                        break;
-                }
-                moverCubo();
-            }
-        });
-
-        // --- CLICK IZQUIERDO: SELECCIONAR EN MODO JUEGO O ROTAR EN MODO VISTA ---
-        panel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if (SwingUtilities.isLeftMouseButton(e) && gameMode) {
-                    int mx = e.getX(), my = e.getY();
-                    double bestDepth = Double.MAX_VALUE;
-                    int idxX = -1, idxY = -1, idxZ = -1;
-                    for (int x = 0; x < 3; x++) {
-                        for (int y = 0; y < 3; y++) {
-                            for (int z = 0; z < 3; z++) {
-                                Subcubo sc = cuboRubik[x][y][z];
-                                if (sc.containsPoint(mx, my)) {
-                                    double posX = (x - 1) * size, posY = (y - 1) * size, posZ = (z - 1) * size;
-                                    double[] r = sc.rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
-                                    if (r[2] < bestDepth) {
-                                        bestDepth = r[2];
-                                        idxX = x;
-                                        idxY = y;
-                                        idxZ = z;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (idxX != -1) {
-                        selX = idxX;
-                        selY = idxY;
-                        selZ = idxZ;
-                        selFace = cuboRubik[idxX][idxY][idxZ].faceAt(mx, my);
-                        selMX = mx;
-                        selMY = my;
-                        animateSelection();
-                    }
-                    moverCubo();
-                } else if (SwingUtilities.isRightMouseButton(e)) {
-                    int mx = e.getX(), my = e.getY();
-                    double bestDepth = Double.MAX_VALUE;
-                    int idxX = -1, idxY = -1, idxZ = -1;
-                    for (int x = 0; x < 3; x++) {
-                        for (int y = 0; y < 3; y++) {
-                            for (int z = 0; z < 3; z++) {
-                                Subcubo sc = cuboRubik[x][y][z];
-                                if (sc.containsPoint(mx, my)) {
-                                    double posX = (x - 1) * size, posY = (y - 1) * size, posZ = (z - 1) * size;
-                                    double[] r = sc.rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
-                                    if (r[2] < bestDepth) {
-                                        bestDepth = r[2];
-                                        idxX = x;
-                                        idxY = y;
-                                        idxZ = z;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (idxX != -1 && isCorner(idxX, idxY, idxZ)) {
-                        draggingCorner = true;
-                        draggingFace = draggingLayerZ = false;
-                    } else {
-                        draggingCorner = false;
-                    }
-                    lastX = e.getX();
-                    lastY = e.getY();
-                } else if (SwingUtilities.isLeftMouseButton(e) && !gameMode) {
-                    int mx = e.getX(), my = e.getY();
-                    int cx = 0, cy = 0;
-                    double bestDepth = Double.MAX_VALUE;
-                    int idxX = -1, idxY = -1, idxZ = -1;
-                    // Busco el subcubo más cercano bajo el cursor
-                    for (int x = 0; x < 3; x++) {
-                        for (int y = 0; y < 3; y++) {
-                            for (int z = 0; z < 3; z++) {
-                                Subcubo sc = cuboRubik[x][y][z];
-                                if (sc.containsPoint(mx, my)) {
-                                    double posX = (x - 1) * size, posY = (y - 1) * size, posZ = (z - 1) * size;
-                                    double[] r = sc.rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
-                                    if (r[2] < bestDepth) {
-                                        bestDepth = r[2];
-                                        idxX = x;
-                                        idxY = y;
-                                        idxZ = z;
-                                        cx = cy = 0;
-                                        int[][] verts = sc.getScreenVertices();
-                                        for (int i = 0; i < 8; i++) {
-                                            cx += verts[i][0];
-                                            cy += verts[i][1];
-                                        }
-                                        cx /= 8;
-                                        cy /= 8;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (idxX != -1 && isFrontFace(idxX, idxY, idxZ)) {
-                        int dx = cx - trasX, dy = cy - trasY;
-                        draggingCorner = false;
-                        if (e.isShiftDown()) {
-                            // Arrastre para rotar la capa frontal en Z
-                            draggingLayerZ = true;
-                            draggingFace = false;
-                            lastX = e.getX();
-                            lastY = e.getY();
-                        } else {
-                            // Rotación global en X/Y al arrastrar la cara
-                            draggingFace = true;
-                            draggingLayerZ = false;
-                            lastX = e.getX();
-                            lastY = e.getY();
-                            if (Math.abs(dx) >= Math.abs(dy)) {
-                                if (dx < 0) {
-                                    // Izquierda (J/←)
-                                    applyRotation(1, 5);
-                                } else {
-                                    // Derecha (L/→)
-                                    applyRotation(1, -5);
-                                }
-                            } else {
-                                if (dy < 0) {
-                                    // Arriba (I/↑)
-                                    applyRotation(0, -5);
-                                } else {
-                                    // Abajo (K/↓)
-                                    applyRotation(0, 5);
-                                }
-                            }
-                        }
-                    }
-                    moverCubo();
-                }
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                draggingCorner = false;
-                draggingFace = false;
-                draggingLayerZ = false;
-            }
-        });
-
-        panel.addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                if (draggingCorner && (e.getModifiersEx() & InputEvent.BUTTON3_DOWN_MASK) != 0) {
-                    double vx1 = lastX - trasX;
-                    double vy1 = lastY - trasY;
-                    double vx2 = e.getX() - trasX;
-                    double vy2 = e.getY() - trasY;
-                    double cross = vx1 * vy2 - vy1 * vx2;
-                    double dot = vx1 * vx2 + vy1 * vy2;
-                    double angle = Math.toDegrees(Math.atan2(cross, dot));
-                    applyRotation(2, angle);
-                    lastX = e.getX();
-                    lastY = e.getY();
-                    moverCubo();
-                } else if (!gameMode && draggingLayerZ && (e.getModifiersEx() & InputEvent.BUTTON1_DOWN_MASK) != 0) {
-                    double vx1 = lastX - trasX;
-                    double vy1 = lastY - trasY;
-                    double vx2 = e.getX() - trasX;
-                    double vy2 = e.getY() - trasY;
-                    double cross = vx1 * vy2 - vy1 * vx2;
-                    double dot = vx1 * vx2 + vy1 * vy2;
-                    double angle = Math.toDegrees(Math.atan2(cross, dot));
-                    boolean clockwise = angle > 0;
-                    int[] front = getFrontAxis();
-                    int axis = front[0];
-                    int layer = front[1] > 0 ? 2 : 0;
-                    rotateLayerAnimated(axis, layer, clockwise);
-                    draggingLayerZ = false;
-                } else if (!gameMode && draggingFace && (e.getModifiersEx() & InputEvent.BUTTON1_DOWN_MASK) != 0) {
-                    int dx = e.getX() - lastX, dy = e.getY() - lastY;
-                    applyRotation(1, -dx / 2.0);
-                    applyRotation(0, dy / 2.0);
-                    lastX = e.getX();
-                    lastY = e.getY();
-                    moverCubo();
-                } else if ((e.getModifiersEx() & InputEvent.BUTTON3_DOWN_MASK) != 0) {
-                    int dx = e.getX() - lastX, dy = e.getY() - lastY;
-                    // --- ARRASTRE DERECHO: también invertido ---
-                    applyRotation(1, -dx / 2.0); // antes era += dx/2.0
-                    applyRotation(0, dy / 2.0);  // antes era -= dy/2.0
-                    lastX = e.getX();
-                    lastY = e.getY();
-                    moverCubo();
-                }
-            }
-        });
-
-        panel.addMouseWheelListener(e -> {
-            size -= e.getWheelRotation() * 5;
-            if (size < 20) {
-                size = 20;
-            }
-            setSubcube();
-            moverCubo();
-        });
-
-        // El panel debe poder enfocarse para captar las teclas
-        panel.setFocusable(true);
-        panel.requestFocusInWindow(); // Asegura la recepción de eventos de teclado
 
         setVisible(true);
     }
@@ -1108,52 +607,6 @@ public class Cubo extends JFrame {
      * Dibuja textos y botones de ayuda sobre la imagen generada.
      */
     private void drawUI() {
-        if (!showControls) {
-            PixelFont.drawString(graficos, "RUBIK 3D", 10, 20, 5, Color.WHITE);
-            PixelFont.drawString(graficos, gameMode ? "MODE: PLAY" : "MODE: VIEW", 620, 20, 2, Color.YELLOW);
-            return;
-        }
-        PixelFont.drawString(graficos, "RUBIK 3D", 10, 20, 5, Color.WHITE);
-        PixelFont.drawString(graficos, gameMode ? "MODE: PLAY" : "MODE: VIEW", 620, 20, 2, Color.YELLOW);
-
-        int y = 60;
-        int step = 24;
-
-        if (gameMode) {
-            y += step;
-            PixelFont.drawString(graficos, "RIGHT CLICK SELECTS A SUBCUBE", 10, y, 2, Color.WHITE);
-            y += step;
-            PixelFont.drawString(graficos, "ESC CLEARS SUBCUBE SELECTION", 10, y, 2, Color.WHITE);
-            y += step;
-            PixelFont.drawString(graficos, "PRESS ENTER TO VIEW MODE", 10, y, 2, Color.WHITE);
-            y += step;
-            PixelFont.drawString(graficos, "R MIX CUBE", 10, y, 2, Color.WHITE);
-            y += step;
-        } else {
-            y += step;
-            PixelFont.drawString(graficos, "PRESS ENTER TO PLAY MODE", 10, y, 2, Color.WHITE);
-            y += step;
-        }
-        y += step;
-        PixelFont.drawString(graficos, "WASD MOVE CUBE UP LEFT DOWN RIGHT", 10, y, 2, Color.WHITE);
-        y += step;
-        PixelFont.drawString(graficos, "IJKL ROTATE CUBE UP LEFT DOWN RIGHT", 10, y, 2, Color.WHITE);
-        y += step;
-        PixelFont.drawString(graficos, "UO ROTATE CUBE IN Z DIRECTION LEFT RIGHT", 10, y, 2, Color.WHITE);
-        y += step;
-        PixelFont.drawString(graficos, "LEFT DRAG ROTATE CUBE", 10, y, 2, Color.WHITE);
-        y += step;
-        PixelFont.drawString(graficos, "MOUSE WHEEL SCALE", 10, y, 2, Color.WHITE);
-        y += step;
-        y += step;
-        PixelFont.drawString(graficos, "B TOGGLE LINES", 10, y, 2, Color.WHITE);
-        y += step;
-        PixelFont.drawString(graficos, "E CHANGE AXIS", 10, y, 2, Color.WHITE);
-        y += step;
-        PixelFont.drawString(graficos, "N TOGGLE LABELS", 10, y, 2, Color.WHITE);
-        y += step;
-        PixelFont.drawString(graficos, "H SHOW CONTROLLS", 10, y, 2, Color.WHITE);
-        y += step;
-
+        renderer.drawUI(showControls, gameMode);
     }
 }
