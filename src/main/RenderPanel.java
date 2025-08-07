@@ -20,10 +20,10 @@ public class RenderPanel extends JPanel {
         setPreferredSize(new java.awt.Dimension(graficos.getWidth(), graficos.getHeight()));
     }
 
-    @Override
     /**
      * Pinta en pantalla la última imagen generada.
      */
+    @Override
     protected void paintComponent(java.awt.Graphics g) {
         super.paintComponent(g);
         BufferedImage img = graficos.getBuffer();
