@@ -401,14 +401,17 @@ public class Cubo extends JFrame {
         // faces is parallel to the X axis, so up/down arrows should rotate
         // around X and left/right arrows around Y.
         if (face == 4 || face == 5) {
-            boolean vertical = Math.abs(arrowVec[1]) >= Math.abs(arrowVec[0]);
+            // Determine arrow orientation using the rotated arrow vector so
+            // that global cube rotations do not affect the mapping.
+            boolean vertical = Math.abs(rArrow[1]) >= Math.abs(rArrow[0]);
             int axis = vertical ? 0 : 1; // X for vertical arrows, Y otherwise
             boolean cw;
             if (vertical) {
-                // Up/down: invert clockwise when looking at the right face
+                // Up/down arrows determine clockwise direction via the
+                // original screen-space arrow vector.
                 cw = (arrowVec[1] > 0) ^ (face == 5);
             } else {
-                // Left/right: invert clockwise when looking at the right face
+                // Left/right arrows determine clockwise direction.
                 cw = (arrowVec[0] < 0) ^ (face == 5);
             }
             return new int[]{axis, cw ? 1 : 0};

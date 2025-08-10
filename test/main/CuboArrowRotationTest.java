@@ -11,6 +11,7 @@ public class CuboArrowRotationTest {
 
     private Cubo cubo;
     private Method getArrow;
+    private Method applyRot;
 
     @Before
     public void setUp() throws Exception {
@@ -18,11 +19,42 @@ public class CuboArrowRotationTest {
         cubo = new Cubo();
         getArrow = Cubo.class.getDeclaredMethod("getArrowRotation", double[].class, Subcubo.class, int.class);
         getArrow.setAccessible(true);
+        applyRot = Cubo.class.getDeclaredMethod("applyRotation", int.class, double.class);
+        applyRot.setAccessible(true);
     }
 
     private int[] call(double[] arrow, int face) throws Exception {
         Subcubo sc = new Subcubo(0, 0, 0, 1);
         return (int[]) getArrow.invoke(cubo, arrow, sc, face);
+    }
+
+    @Test
+    public void testArrowRotationWithCubeRotated() throws Exception {
+        // Rotate cube 90 degrees around Y axis and ensure mapping remains
+        // consistent for the left and right faces regardless of orientation.
+        applyRot.invoke(cubo, 1, 90.0); // rotate around Y
+        Object[][] cases = new Object[][]{
+            // left face (4) after rotation
+            {4, new double[]{0, -1, 0}, 0, 0},
+            {4, new double[]{0, 1, 0}, 0, 1},
+            {4, new double[]{-1, 0, 0}, 1, 0},
+            {4, new double[]{1, 0, 0}, 1, 1},
+            // right face (5) after rotation
+            {5, new double[]{0, -1, 0}, 0, 1},
+            {5, new double[]{0, 1, 0}, 0, 0},
+            {5, new double[]{-1, 0, 0}, 1, 1},
+            {5, new double[]{1, 0, 0}, 1, 0}
+        };
+
+        for (Object[] c : cases) {
+            int face = (Integer) c[0];
+            double[] arrow = (double[]) c[1];
+            int expAxis = (Integer) c[2];
+            int expCw = (Integer) c[3];
+            int[] res = call(arrow, face);
+            assertEquals("axis for face " + face, expAxis, res[0]);
+            assertEquals("cw for face " + face, expCw, res[1]);
+        }
     }
 
     @Test
