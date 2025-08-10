@@ -989,6 +989,7 @@ public class Cubo extends JFrame {
                     case KeyEvent.VK_ESCAPE:
                         if (gameMode) {
                             selX = selY = selZ = -1;
+                            selFace = selMX = selMY = -1;
                             moverCubo();
                         }
                         break;
