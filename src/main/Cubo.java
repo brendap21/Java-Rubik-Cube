@@ -1191,7 +1191,7 @@ public class Cubo extends JFrame {
 
         if (gameMode) {
             y += step;
-            PixelFont.drawString(graficos, "RIGHT CLICK SELECTS A SUBCUBE", 10, y, 2, Color.WHITE);
+            PixelFont.drawString(graficos, "LEFT CLICK SELECTS A SUBCUBE", 10, y, 2, Color.WHITE);
             y += step;
             PixelFont.drawString(graficos, "ESC CLEARS SUBCUBE SELECTION", 10, y, 2, Color.WHITE);
             y += step;
