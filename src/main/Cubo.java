@@ -303,9 +303,8 @@ public class Cubo extends JFrame {
         } else {
             axis = 2;
         }
-        int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
         boolean cw = negClockwise ? v[axis] < 0 : v[axis] > 0;
-        return new int[]{axis, layer, cw ? 1 : 0};
+        return new int[]{axis, cw ? 1 : 0};
     }
 
 
@@ -327,14 +326,14 @@ public class Cubo extends JFrame {
                 axisVec = cross(normal, right);
             }
             int[] res = mapDirection(axisVec, true);
-            boolean cw = res[2] == 1;
+            boolean cw = res[1] == 1;
             if (dot(rArrow, normal) < 0) {
                 cw = !cw;
             }
             return new int[]{res[0], cw ? 1 : 0};
         }
         int[] res = mapDirection(axisVec, true);
-        return new int[]{res[0], res[2]};
+        return new int[]{res[0], res[1]};
     }
 
     // ----- Ayudas para detectar la cara y esquinas visibles -----
