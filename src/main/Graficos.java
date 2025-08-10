@@ -206,6 +206,10 @@ public class Graficos {
      * Rellena un círculo completo comprobando cada píxel dentro del radio.
      */
     public void fillCircle(int x0, int y0, int RADIO, Color fillColor) {
+        // Aplicar traslación a la posición base
+        x0 += translateX;
+        y0 += translateY;
+
         // Calcular el cuadrado del radio una única vez
         int rSquared = RADIO * RADIO;
 
@@ -225,6 +229,10 @@ public class Graficos {
      * Dibuja la circunferencia de un círculo mediante simetría octogonal.
      */
     public void drawCircle(int x0, int y0, int RADIO, Color color) {
+        // Aplicar traslación a la posición base
+        x0 += translateX;
+        y0 += translateY;
+
         // Solo calculamos 1/8 del círculo y repetimos por simetría
         for (int t = 0; t <= 45; t++) {
             int x = (int) (RADIO * Math.sin(Math.toRadians(t)));
@@ -248,6 +256,10 @@ public class Graficos {
      * Dibuja la circunferencia de un círculo con un patrón de puntos.
      */
     public void drawDottedCircle(int x0, int y0, int radio, Color color) {
+        // Aplicar traslación a la posición base
+        x0 += translateX;
+        y0 += translateY;
+
         int x = 0;
         int y = radio;
         int d = 3 - 2 * radio; // Parámetro de decisión
@@ -255,7 +267,7 @@ public class Graficos {
 
         while (x <= y) {
             if (counter % 10 < 5) { // Controla el patrón de puntos
-                drawDots(x0, y0, x, y, color);
+                drawDots(x0 - translateX, y0 - translateY, x, y, color);
             }
             counter++;
 
@@ -267,7 +279,7 @@ public class Graficos {
                 d = d + 4 * (x - y) + 10;
             }
             if (counter % 10 < 5) { // Controla el patrón de puntos
-                drawDots(x0, y0, x, y, color);
+                drawDots(x0 - translateX, y0 - translateY, x, y, color);
             }
         }
     }
@@ -276,6 +288,10 @@ public class Graficos {
      * Pinta los ocho puntos simétricos de un círculo.
      */
     private void drawDots(int xc, int yc, int x, int y, Color c) {
+        // Aplicar traslación al centro
+        xc += translateX;
+        yc += translateY;
+
         putPixel(xc + x, yc + y, c);
         putPixel(xc - x, yc + y, c);
         putPixel(xc + x, yc - y, c);
@@ -291,6 +307,12 @@ public class Graficos {
      * Bresenham para elipses.
      */
     public void drawOval(int x0, int y0, int x1, int y1, Color color) {
+        // Aplicar traslación a las posiciones base
+        x0 += translateX;
+        y0 += translateY;
+        x1 += translateX;
+        y1 += translateY;
+
         int a = Math.abs(x1 - x0) / 2;
         int b = Math.abs(y1 - y0) / 2;
         int xCenter = (x0 + x1) / 2;
