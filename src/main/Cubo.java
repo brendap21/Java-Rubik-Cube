@@ -572,6 +572,8 @@ public class Cubo extends JFrame {
         final int[] ang = {0};
         javax.swing.Timer timer = new javax.swing.Timer(20, null);
         timer.addActionListener(e -> {
+            // Increase the angle for this frame, ensuring it never exceeds 90°
+            ang[0] = Math.min(90, ang[0] + 10);
             graficos.clear();
             java.util.List<RenderInfo> infos = new java.util.ArrayList<>();
             for (int x = 0; x < 3; x++) {
@@ -635,8 +637,7 @@ public class Cubo extends JFrame {
             drawUI();
             graficos.render();
 
-            ang[0] += 10;
-            if (ang[0] > 90) {
+            if (ang[0] >= 90) {
                 timer.stop();
                 Subcubo selected = null;
                 if (selX != -1) {
