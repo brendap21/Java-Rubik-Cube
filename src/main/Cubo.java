@@ -209,9 +209,13 @@ public class Cubo extends JFrame {
                                 break;
                         }
 
-                        nuevo[nx][ny][nz] = cuboRubik[x][y][z];
-                        nuevo[nx][ny][nz].rotateColors(axis, clockwise);
-                        nuevo[nx][ny][nz].rotateOrientation(axis, clockwise);
+                        Subcubo moved = cuboRubik[x][y][z];
+                        nuevo[nx][ny][nz] = moved;
+                        moved.x = nx;
+                        moved.y = ny;
+                        moved.z = nz;
+                        moved.rotateColors(axis, clockwise);
+                        moved.rotateOrientation(axis, clockwise);
                     }
                 }
             }
