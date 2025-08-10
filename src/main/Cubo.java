@@ -370,6 +370,18 @@ public class Cubo extends JFrame {
         return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
     }
 
+    private double length(double[] v) {
+        return Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+    }
+
+    private double[] normalize(double[] v) {
+        double len = length(v);
+        if (len == 0) {
+            return new double[]{0, 0, 0};
+        }
+        return new double[]{v[0] / len, v[1] / len, v[2] / len};
+    }
+
     private int[] mapDirection(double[] v, boolean negClockwise) {
         double ax = Math.abs(v[0]);
         double ay = Math.abs(v[1]);
@@ -392,6 +404,8 @@ public class Cubo extends JFrame {
     private int[] getArrowRotation(double[] arrowVec, Subcubo sc, int face) {
         double[] rArrow = rotateVector(arrowVec, -anguloX, -anguloY, -anguloZ);
         double[] normal = sc.getFaceNormalWorld(face);
+        rArrow = normalize(rArrow);
+        normal = normalize(normal);
 
         // Faces 4 (left) and 5 (right) need explicit mapping so that each
         // arrow key corresponds to a unique rotation. The normal of these
@@ -419,12 +433,23 @@ public class Cubo extends JFrame {
         // using the global up or right vectors to decide the axis.
         double[] axisVec = cross(normal, rArrow);
         double thr = 1e-6;
-        if (Math.abs(axisVec[0]) < thr && Math.abs(axisVec[1]) < thr && Math.abs(axisVec[2]) < thr) {
-            double[] up = {-rotMatrix[0][1], -rotMatrix[1][1], -rotMatrix[2][1]};
+        if (length(axisVec) < thr) {
+            double[] up = normalize(new double[]{-rotMatrix[0][1], -rotMatrix[1][1], -rotMatrix[2][1]});
             axisVec = cross(normal, up);
-            if (Math.abs(axisVec[0]) < thr && Math.abs(axisVec[1]) < thr && Math.abs(axisVec[2]) < thr) {
-                double[] right = {rotMatrix[0][0], rotMatrix[1][0], rotMatrix[2][0]};
+            if (length(axisVec) < thr) {
+                double[] right = normalize(new double[]{rotMatrix[0][0], rotMatrix[1][0], rotMatrix[2][0]});
                 axisVec = cross(normal, right);
+                if (length(axisVec) < thr && (face == 2 || face == 3)) {
+                    boolean vertical = Math.abs(rArrow[1]) >= Math.abs(rArrow[0]);
+                    int axis = vertical ? 0 : 2; // X for vertical arrows, Z otherwise
+                    boolean cw;
+                    if (vertical) {
+                        cw = (arrowVec[1] > 0) ^ (face == 3);
+                    } else {
+                        cw = (arrowVec[0] < 0) ^ (face == 3);
+                    }
+                    return new int[]{axis, cw ? 1 : 0};
+                }
             }
             int[] res = mapDirection(axisVec, true);
             boolean cw = res[1] == 1;
