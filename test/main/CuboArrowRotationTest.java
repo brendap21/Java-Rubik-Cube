@@ -2,13 +2,10 @@ package main;
 
 import static org.junit.Assert.*;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import sun.misc.Unsafe;
 
 public class CuboArrowRotationTest {
 
@@ -17,29 +14,8 @@ public class CuboArrowRotationTest {
 
     @Before
     public void setUp() throws Exception {
-        // allocate Cubo instance without invoking its constructor
-        Field f = Unsafe.class.getDeclaredField("theUnsafe");
-        f.setAccessible(true);
-        Unsafe unsafe = (Unsafe) f.get(null);
-        cubo = (Cubo) unsafe.allocateInstance(Cubo.class);
-
-        // identity rotation matrix
-        double[][] identity = new double[][]{
-            {1, 0, 0},
-            {0, 1, 0},
-            {0, 0, 1}
-        };
-        Field rm = Cubo.class.getDeclaredField("rotMatrix");
-        rm.setAccessible(true);
-        rm.set(cubo, identity);
-
-        // angles set to zero
-        for (String name : new String[]{"anguloX", "anguloY", "anguloZ"}) {
-            Field ang = Cubo.class.getDeclaredField(name);
-            ang.setAccessible(true);
-            ang.setDouble(cubo, 0);
-        }
-
+        System.setProperty("java.awt.headless", "true");
+        cubo = new Cubo();
         getArrow = Cubo.class.getDeclaredMethod("getArrowRotation", double[].class, Subcubo.class, int.class);
         getArrow.setAccessible(true);
     }
