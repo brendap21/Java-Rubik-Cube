@@ -143,10 +143,7 @@ public class Cubo extends JFrame {
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
                 for (int z = 0; z < 3; z++) {
-                    int posX = (int) ((x - 1) * size * escala);
-                    int posY = (int) ((y - 1) * size * escala);
-                    int posZ = (int) ((z - 1) * size * escala);
-                    cuboRubik[x][y][z] = new Subcubo(posX, posY, posZ, size);
+                    cuboRubik[x][y][z] = new Subcubo(x, y, z, size);
                 }
             }
         }

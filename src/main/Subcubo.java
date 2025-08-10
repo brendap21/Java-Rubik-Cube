@@ -11,7 +11,7 @@ import java.util.Arrays;
 public class Subcubo {
 
     /**
-     * Posición original de la pieza dentro del cubo completo.
+     * Índices de esta pieza dentro del cubo completo.
      */
     public int x, y, z, size;
     /**
@@ -46,12 +46,12 @@ public class Subcubo {
     private double rotX = 0, rotY = 0, rotZ = 0;
 
     /**
-     * Crea un subcubo en la posición indicada dentro del cubo de Rubik.
+     * Crea un subcubo identificándolo por sus índices dentro del cubo de Rubik.
      */
-    public Subcubo(int x, int y, int z, int size) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    public Subcubo(int ix, int iy, int iz, int size) {
+        this.x = ix;
+        this.y = iy;
+        this.z = iz;
         this.size = size;
 
         vertices = new double[][]{
@@ -91,6 +91,21 @@ public class Subcubo {
 
         screenVertices = new int[8][2];
         faceDepths = new double[6];
+    }
+
+    /**
+     * Devuelve la posición absoluta del centro del subcubo en función de su
+     * índice y una escala dada. La escala representa la separación relativa
+     * entre piezas.
+     *
+     * @param escala factor de escala aplicado al tamaño
+     * @return vector de tres componentes con las coordenadas en el espacio
+     */
+    public double[] getPosition(double escala) {
+        double posX = (x - 1) * size * escala;
+        double posY = (y - 1) * size * escala;
+        double posZ = (z - 1) * size * escala;
+        return new double[]{posX, posY, posZ};
     }
 
     /**
