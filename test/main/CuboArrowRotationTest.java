@@ -3,6 +3,7 @@ package main;
 import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -102,5 +103,37 @@ public class CuboArrowRotationTest {
             assertEquals("axis for face " + face, expAxis, res[0]);
             assertEquals("cw for face " + face, expCw, res[1]);
         }
+    }
+
+    @Test
+    public void testArrowRotationTopBottomDegenerate() throws Exception {
+        Field rotField = Cubo.class.getDeclaredField("rotMatrix");
+        rotField.setAccessible(true);
+        Field ax = Cubo.class.getDeclaredField("anguloX");
+        Field ay = Cubo.class.getDeclaredField("anguloY");
+        Field az = Cubo.class.getDeclaredField("anguloZ");
+        ax.setDouble(cubo, 0.0);
+        ay.setDouble(cubo, 0.0);
+        az.setDouble(cubo, 0.0);
+
+        double[][] mTop = new double[][]{
+            {0, 0, 1},
+            {-1, 1, 0},
+            {0, 0, 0}
+        };
+        rotField.set(cubo, mTop);
+        int[] resTop = call(new double[]{0, -1, 0}, 3);
+        assertEquals(0, resTop[0]);
+        assertEquals(1, resTop[1]);
+
+        double[][] mBottom = new double[][]{
+            {0, 0, 1},
+            {1, -1, 0},
+            {0, 0, 0}
+        };
+        rotField.set(cubo, mBottom);
+        int[] resBottom = call(new double[]{0, 1, 0}, 2);
+        assertEquals(0, resBottom[0]);
+        assertEquals(1, resBottom[1]);
     }
 }
