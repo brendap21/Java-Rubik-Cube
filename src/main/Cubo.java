@@ -283,18 +283,18 @@ public class Cubo extends JFrame {
             case 2: // Z axis
                 if (clockwise) {
                     switch (face) {
-                        case 2: return 5; // bottom -> right
-                        case 3: return 4; // top -> left
-                        case 4: return 2; // left -> bottom
-                        case 5: return 3; // right -> top
-                        default: return face;
-                    }
-                } else {
-                    switch (face) {
                         case 2: return 4; // bottom -> left
                         case 3: return 5; // top -> right
                         case 4: return 3; // left -> top
                         case 5: return 2; // right -> bottom
+                        default: return face;
+                    }
+                } else {
+                    switch (face) {
+                        case 2: return 5; // bottom -> right
+                        case 3: return 4; // top -> left
+                        case 4: return 2; // left -> bottom
+                        case 5: return 3; // right -> top
                         default: return face;
                     }
                 }
