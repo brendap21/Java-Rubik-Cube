@@ -224,6 +224,71 @@ public class Cubo extends JFrame {
         cuboRubik = nuevo;
     }
 
+    /**
+     * Devuelve el índice de una cara tras aplicar una rotación alrededor de un
+     * eje.
+     */
+    private int rotateFaceIndex(int face, int axis, boolean clockwise) {
+        switch (axis) {
+            case 0: // X axis
+                if (clockwise) {
+                    switch (face) {
+                        case 0: return 3; // back -> top
+                        case 1: return 2; // front -> bottom
+                        case 2: return 0; // bottom -> back
+                        case 3: return 1; // top -> front
+                        default: return face;
+                    }
+                } else {
+                    switch (face) {
+                        case 0: return 2; // back -> bottom
+                        case 1: return 3; // front -> top
+                        case 2: return 1; // bottom -> front
+                        case 3: return 0; // top -> back
+                        default: return face;
+                    }
+                }
+            case 1: // Y axis
+                if (clockwise) {
+                    switch (face) {
+                        case 0: return 5; // back -> right
+                        case 1: return 4; // front -> left
+                        case 4: return 0; // left -> back
+                        case 5: return 1; // right -> front
+                        default: return face;
+                    }
+                } else {
+                    switch (face) {
+                        case 0: return 4; // back -> left
+                        case 1: return 5; // front -> right
+                        case 4: return 1; // left -> front
+                        case 5: return 0; // right -> back
+                        default: return face;
+                    }
+                }
+            case 2: // Z axis
+                if (clockwise) {
+                    switch (face) {
+                        case 2: return 5; // bottom -> right
+                        case 3: return 4; // top -> left
+                        case 4: return 2; // left -> bottom
+                        case 5: return 3; // right -> top
+                        default: return face;
+                    }
+                } else {
+                    switch (face) {
+                        case 2: return 4; // bottom -> left
+                        case 3: return 5; // top -> right
+                        case 4: return 3; // left -> top
+                        case 5: return 2; // right -> bottom
+                        default: return face;
+                    }
+                }
+            default:
+                return face;
+        }
+    }
+
     private double[] rotatePointAroundAxis(double[] p, int axis, double angleDeg, double offset) {
         double rad = Math.toRadians(angleDeg);
         double x = p[0];
@@ -556,8 +621,13 @@ public class Cubo extends JFrame {
                     }
                 }
                 moverCubo();
-                if (selected != null && selMX != -1) {
-                    selFace = cuboRubik[selX][selY][selZ].faceAt(selMX, selMY);
+                if (selected != null && selFace != -1) {
+                    boolean participates = (axis == 0 && selX == layer)
+                            || (axis == 1 && selY == layer)
+                            || (axis == 2 && selZ == layer);
+                    if (participates) {
+                        selFace = rotateFaceIndex(selFace, axis, clockwise);
+                    }
                 }
                 animating = false;
                 if (done != null) {
