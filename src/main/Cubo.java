@@ -395,9 +395,28 @@ public class Cubo extends JFrame {
     private int[] getArrowRotation(double[] arrowVec, Subcubo sc, int face) {
         double[] rArrow = rotateVector(arrowVec, -anguloX, -anguloY, -anguloZ);
         double[] normal = sc.getFaceNormalWorld(face);
-        // Use the face normal and arrow to obtain the rotation axis so that
-        // pressing an arrow key rotates the selected layer following the
-        // arrow direction regardless of the cube orientation.
+
+        // Faces 4 (left) and 5 (right) need explicit mapping so that each
+        // arrow key corresponds to a unique rotation. The normal of these
+        // faces is parallel to the X axis, so up/down arrows should rotate
+        // around X and left/right arrows around Y.
+        if (face == 4 || face == 5) {
+            boolean vertical = Math.abs(arrowVec[1]) >= Math.abs(arrowVec[0]);
+            int axis = vertical ? 0 : 1; // X for vertical arrows, Y otherwise
+            boolean cw;
+            if (vertical) {
+                // Up/down: invert clockwise when looking at the right face
+                cw = (arrowVec[1] > 0) ^ (face == 5);
+            } else {
+                // Left/right: invert clockwise when looking at the right face
+                cw = (arrowVec[0] < 0) ^ (face == 5);
+            }
+            return new int[]{axis, cw ? 1 : 0};
+        }
+
+        // General case: obtain axis from cross product between face normal and
+        // arrow direction. If the arrow is parallel to the normal, fall back to
+        // using the global up or right vectors to decide the axis.
         double[] axisVec = cross(normal, rArrow);
         double thr = 1e-6;
         if (Math.abs(axisVec[0]) < thr && Math.abs(axisVec[1]) < thr && Math.abs(axisVec[2]) < thr) {

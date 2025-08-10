@@ -40,15 +40,15 @@ public class CuboArrowRotationTest {
             {0, new double[]{-1, 0, 0}, 1, 0},
             {0, new double[]{1, 0, 0}, 1, 1},
             // left face (4)
-            {4, new double[]{0, -1, 0}, 2, 0},
-            {4, new double[]{0, 1, 0}, 2, 1},
-            {4, new double[]{-1, 0, 0}, 2, 0},
-            {4, new double[]{1, 0, 0}, 2, 1},
+            {4, new double[]{0, -1, 0}, 0, 0},
+            {4, new double[]{0, 1, 0}, 0, 1},
+            {4, new double[]{-1, 0, 0}, 1, 1},
+            {4, new double[]{1, 0, 0}, 1, 0},
             // right face (5)
-            {5, new double[]{0, -1, 0}, 2, 1},
-            {5, new double[]{0, 1, 0}, 2, 0},
-            {5, new double[]{-1, 0, 0}, 2, 0},
-            {5, new double[]{1, 0, 0}, 2, 1},
+            {5, new double[]{0, -1, 0}, 0, 1},
+            {5, new double[]{0, 1, 0}, 0, 0},
+            {5, new double[]{-1, 0, 0}, 1, 0},
+            {5, new double[]{1, 0, 0}, 1, 1},
             // top face (3)
             {3, new double[]{0, -1, 0}, 2, 0},
             {3, new double[]{0, 1, 0}, 2, 1},
