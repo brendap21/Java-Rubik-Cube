@@ -176,15 +176,15 @@ public class Subcubo {
                 Color left = colores[4];
                 Color right = colores[5];
                 if (clockwise) {
-                    colores[4] = top;    // left
-                    colores[2] = left;   // bottom
-                    colores[5] = bottom; // right
-                    colores[3] = right;  // top
-                } else {
                     colores[5] = top;    // right
                     colores[2] = right;  // bottom
                     colores[4] = bottom; // left
                     colores[3] = left;   // top
+                } else {
+                    colores[4] = top;    // left
+                    colores[2] = left;   // bottom
+                    colores[5] = bottom; // right
+                    colores[3] = right;  // top
                 }
                 break;
             }
