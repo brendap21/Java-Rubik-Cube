@@ -466,7 +466,7 @@ public class Cubo extends JFrame {
         }
         animating = true;
         int dir = clockwise ? 1 : -1;
-        double offset = (layer - 1) * size;
+        double offset = (layer - 1) * size * escala;
 
         final int[] ang = {0};
         javax.swing.Timer timer = new javax.swing.Timer(20, null);
@@ -476,9 +476,9 @@ public class Cubo extends JFrame {
             for (int x = 0; x < 3; x++) {
                 for (int y = 0; y < 3; y++) {
                     for (int z = 0; z < 3; z++) {
-                        double posX = (x - 1) * size;
-                        double posY = (y - 1) * size;
-                        double posZ = (z - 1) * size;
+                        double posX = (x - 1) * size * escala;
+                        double posY = (y - 1) * size * escala;
+                        double posZ = (z - 1) * size * escala;
                         double extraX = 0, extraY = 0, extraZ = 0;
                         if (axis == 0 && x == layer) {
                             double[] r = rotatePointAroundAxis(new double[]{posX, posY, posZ}, 0, dir * ang[0], offset);
@@ -621,9 +621,9 @@ public class Cubo extends JFrame {
                 for (int y = 0; y < 3; y++) {
                     for (int z = 0; z < 3; z++) {
                         // Posición relativa al centro del cubo
-                        double posX = (x - 1) * size;
-                        double posY = (y - 1) * size;
-                        double posZ = (z - 1) * size;
+                        double posX = (x - 1) * size * escala;
+                        double posY = (y - 1) * size * escala;
+                        double posZ = (z - 1) * size * escala;
 
                         // Aplicar las rotaciones alrededor del subcubo 14
                         double[] rotatedPos = cuboRubik[x][y][z].rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
@@ -910,7 +910,7 @@ public class Cubo extends JFrame {
                             for (int z = 0; z < 3; z++) {
                                 Subcubo sc = cuboRubik[x][y][z];
                                 if (sc.containsPoint(mx, my)) {
-                                    double posX = (x - 1) * size, posY = (y - 1) * size, posZ = (z - 1) * size;
+                                    double posX = (x - 1) * size * escala, posY = (y - 1) * size * escala, posZ = (z - 1) * size * escala;
                                     double[] r = sc.rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
                                     if (r[2] < bestDepth) {
                                         bestDepth = r[2];
@@ -941,7 +941,7 @@ public class Cubo extends JFrame {
                             for (int z = 0; z < 3; z++) {
                                 Subcubo sc = cuboRubik[x][y][z];
                                 if (sc.containsPoint(mx, my)) {
-                                    double posX = (x - 1) * size, posY = (y - 1) * size, posZ = (z - 1) * size;
+                                    double posX = (x - 1) * size * escala, posY = (y - 1) * size * escala, posZ = (z - 1) * size * escala;
                                     double[] r = sc.rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
                                     if (r[2] < bestDepth) {
                                         bestDepth = r[2];
@@ -972,7 +972,7 @@ public class Cubo extends JFrame {
                             for (int z = 0; z < 3; z++) {
                                 Subcubo sc = cuboRubik[x][y][z];
                                 if (sc.containsPoint(mx, my)) {
-                                    double posX = (x - 1) * size, posY = (y - 1) * size, posZ = (z - 1) * size;
+                                    double posX = (x - 1) * size * escala, posY = (y - 1) * size * escala, posZ = (z - 1) * size * escala;
                                     double[] r = sc.rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
                                     if (r[2] < bestDepth) {
                                         bestDepth = r[2];
