@@ -1147,7 +1147,7 @@ public class Cubo extends JFrame {
         y += step;
         PixelFont.drawString(graficos, "N TOGGLE LABELS", 10, y, 2, Color.WHITE);
         y += step;
-        PixelFont.drawString(graficos, "H SHOW CONTROLLS", 10, y, 2, Color.WHITE);
+        PixelFont.drawString(graficos, "H SHOW CONTROLS", 10, y, 2, Color.WHITE);
         y += step;
 
     }
