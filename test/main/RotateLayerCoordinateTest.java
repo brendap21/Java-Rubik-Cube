@@ -21,17 +21,22 @@ public class RotateLayerCoordinateTest {
             for (int layer = 0; layer < 3; layer++) {
                 Cubo c = new Cubo();
                 Subcubo[][][] cubo = (Subcubo[][][]) cuboField.get(c);
+
+                // Verificar índices iniciales
                 for (int x = 0; x < 3; x++) {
                     for (int y = 0; y < 3; y++) {
                         for (int z = 0; z < 3; z++) {
-                            cubo[x][y][z].x = x;
-                            cubo[x][y][z].y = y;
-                            cubo[x][y][z].z = z;
+                            Subcubo sc = cubo[x][y][z];
+                            assertEquals(x, sc.x);
+                            assertEquals(y, sc.y);
+                            assertEquals(z, sc.z);
                         }
                     }
                 }
+
                 rotateLayer.invoke(c, axis, layer, true);
                 cubo = (Subcubo[][][]) cuboField.get(c);
+
                 for (int x = 0; x < 3; x++) {
                     for (int y = 0; y < 3; y++) {
                         for (int z = 0; z < 3; z++) {
