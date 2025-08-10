@@ -613,11 +613,6 @@ public class Cubo extends JFrame {
         if (!ejeSubcubo) {
             graficos.clear();
 
-            // Encontrar el centro del cubo
-            int centroX = 1;
-            int centroY = 1;
-            int centroZ = 1; // Coordenadas del subcubo 14
-
             java.util.List<RenderInfo> infos = new java.util.ArrayList<>();
             for (int x = 0; x < 3; x++) {
                 for (int y = 0; y < 3; y++) {
