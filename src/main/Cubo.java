@@ -627,6 +627,8 @@ public class Cubo extends JFrame {
                             || (axis == 2 && selZ == layer);
                     if (participates) {
                         selFace = rotateFaceIndex(selFace, axis, clockwise);
+                        selMX = -1;
+                        selMY = -1;
                     }
                 }
                 animating = false;
