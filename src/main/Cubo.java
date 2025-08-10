@@ -154,6 +154,23 @@ public class Cubo extends JFrame {
     }
 
     /**
+     * Ajusta el tamaño de las piezas existentes sin reiniciar sus colores ni
+     * orientaciones.
+     *
+     * @param newSize nuevo tamaño en píxeles para cada subcubo
+     */
+    private void resizeSubcubes(int newSize) {
+        size = newSize;
+        for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 3; y++) {
+                for (int z = 0; z < 3; z++) {
+                    cuboRubik[x][y][z].setSize(newSize);
+                }
+            }
+        }
+    }
+
+    /**
      * Rota una capa completa del cubo modificando orientación y colores de las
      * piezas que la componen.
      */
@@ -1159,11 +1176,11 @@ public class Cubo extends JFrame {
         });
 
         panel.addMouseWheelListener(e -> {
-            size -= e.getWheelRotation() * 5;
-            if (size < 20) {
-                size = 20;
+            int newSize = size - e.getWheelRotation() * 5;
+            if (newSize < 20) {
+                newSize = 20;
             }
-            setSubcube();
+            resizeSubcubes(newSize);
             moverCubo();
         });
 

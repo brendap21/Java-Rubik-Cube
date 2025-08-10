@@ -177,6 +177,29 @@ public class Subcubo {
     }
 
     /**
+     * Ajusta el tamaño del subcubo sin reiniciar su orientación ni colores.
+     *
+     * @param newSize nuevo tamaño del subcubo
+     */
+    public void setSize(int newSize) {
+        this.size = newSize;
+        double half = newSize / 2.0;
+        double[][] newVerts = new double[][]{
+            {-half, -half, -half},
+            {half, -half, -half},
+            {half, half, -half},
+            {-half, half, -half},
+            {-half, -half, half},
+            {half, -half, half},
+            {half, half, half},
+            {-half, half, half}
+        };
+        for (int i = 0; i < vertices.length; i++) {
+            System.arraycopy(newVerts[i], 0, vertices[i], 0, 3);
+        }
+    }
+
+    /**
      * Devuelve el vector normal local de una cara según su índice.
      */
     public static double[] getFaceNormal(int face) {
