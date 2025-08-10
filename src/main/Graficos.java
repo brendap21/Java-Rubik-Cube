@@ -256,10 +256,6 @@ public class Graficos {
      * Dibuja la circunferencia de un círculo con un patrón de puntos.
      */
     public void drawDottedCircle(int x0, int y0, int radio, Color color) {
-        // Aplicar traslación a la posición base
-        x0 += translateX;
-        y0 += translateY;
-
         int x = 0;
         int y = radio;
         int d = 3 - 2 * radio; // Parámetro de decisión
@@ -267,7 +263,7 @@ public class Graficos {
 
         while (x <= y) {
             if (counter % 10 < 5) { // Controla el patrón de puntos
-                drawDots(x0 - translateX, y0 - translateY, x, y, color);
+                drawDots(x0, y0, x, y, color);
             }
             counter++;
 
@@ -279,7 +275,7 @@ public class Graficos {
                 d = d + 4 * (x - y) + 10;
             }
             if (counter % 10 < 5) { // Controla el patrón de puntos
-                drawDots(x0 - translateX, y0 - translateY, x, y, color);
+                drawDots(x0, y0, x, y, color);
             }
         }
     }
