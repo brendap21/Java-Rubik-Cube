@@ -899,10 +899,15 @@ public class Cubo extends JFrame {
                     case KeyEvent.VK_UP:
                         if (animating) break;
                         if (gameMode && selX != -1 && selFace != -1) {
+                            Subcubo sc = cuboRubik[selX][selY][selZ];
                             int[] m = getArrowRotation(new double[]{0, -1, 0},
-                                    cuboRubik[selX][selY][selZ], selFace);
+                                    sc, selFace);
                             int axis = m[0];
-                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
+                            double[] n = sc.getFaceNormalWorld(selFace);
+                            int nAxis = Math.abs(n[0]) > Math.abs(n[1])
+                                    ? (Math.abs(n[0]) > Math.abs(n[2]) ? 0 : 2)
+                                    : (Math.abs(n[1]) > Math.abs(n[2]) ? 1 : 2);
+                            int layer = nAxis == 0 ? selX : nAxis == 1 ? selY : selZ;
                             boolean cw = m[1] == 1;
                             rotateLayerAnimated(axis, layer, cw);
                         }
@@ -923,10 +928,15 @@ public class Cubo extends JFrame {
                     case KeyEvent.VK_DOWN:
                         if (animating) break;
                         if (gameMode && selX != -1 && selFace != -1) {
+                            Subcubo sc = cuboRubik[selX][selY][selZ];
                             int[] m = getArrowRotation(new double[]{0, 1, 0},
-                                    cuboRubik[selX][selY][selZ], selFace);
+                                    sc, selFace);
                             int axis = m[0];
-                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
+                            double[] n = sc.getFaceNormalWorld(selFace);
+                            int nAxis = Math.abs(n[0]) > Math.abs(n[1])
+                                    ? (Math.abs(n[0]) > Math.abs(n[2]) ? 0 : 2)
+                                    : (Math.abs(n[1]) > Math.abs(n[2]) ? 1 : 2);
+                            int layer = nAxis == 0 ? selX : nAxis == 1 ? selY : selZ;
                             boolean cw = m[1] == 1;
                             rotateLayerAnimated(axis, layer, cw);
                         }
@@ -949,10 +959,15 @@ public class Cubo extends JFrame {
                     case KeyEvent.VK_LEFT:
                         if (animating) break;
                         if (gameMode && selX != -1 && selFace != -1) {
+                            Subcubo sc = cuboRubik[selX][selY][selZ];
                             int[] m = getArrowRotation(new double[]{-1, 0, 0},
-                                    cuboRubik[selX][selY][selZ], selFace);
+                                    sc, selFace);
                             int axis = m[0];
-                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
+                            double[] n = sc.getFaceNormalWorld(selFace);
+                            int nAxis = Math.abs(n[0]) > Math.abs(n[1])
+                                    ? (Math.abs(n[0]) > Math.abs(n[2]) ? 0 : 2)
+                                    : (Math.abs(n[1]) > Math.abs(n[2]) ? 1 : 2);
+                            int layer = nAxis == 0 ? selX : nAxis == 1 ? selY : selZ;
                             boolean cw = m[1] == 1;
                             rotateLayerAnimated(axis, layer, cw);
                         }
@@ -973,10 +988,15 @@ public class Cubo extends JFrame {
                     case KeyEvent.VK_RIGHT:
                         if (animating) break;
                         if (gameMode && selX != -1 && selFace != -1) {
+                            Subcubo sc = cuboRubik[selX][selY][selZ];
                             int[] m = getArrowRotation(new double[]{1, 0, 0},
-                                    cuboRubik[selX][selY][selZ], selFace);
+                                    sc, selFace);
                             int axis = m[0];
-                            int layer = axis == 0 ? selX : axis == 1 ? selY : selZ;
+                            double[] n = sc.getFaceNormalWorld(selFace);
+                            int nAxis = Math.abs(n[0]) > Math.abs(n[1])
+                                    ? (Math.abs(n[0]) > Math.abs(n[2]) ? 0 : 2)
+                                    : (Math.abs(n[1]) > Math.abs(n[2]) ? 1 : 2);
+                            int layer = nAxis == 0 ? selX : nAxis == 1 ? selY : selZ;
                             boolean cw = m[1] == 1;
                             rotateLayerAnimated(axis, layer, cw);
                         }
