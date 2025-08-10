@@ -825,7 +825,7 @@ public class Cubo extends JFrame {
                         if (animating) break;
                         if (!gameMode) {
                             applyRotation(0, -5);
-                        } else if (selX != -1 && selFace != -1) {
+                        } else if (selX != -1) {
                             int[] m = getArrowRotation(new double[]{0, -1, 0},
                                     cuboRubik[selX][selY][selZ], selFace);
                             int axis = m[0];
@@ -836,7 +836,7 @@ public class Cubo extends JFrame {
                         break;
                     case KeyEvent.VK_UP:
                         if (animating) break;
-                        if (gameMode && selX != -1 && selFace != -1) {
+                        if (gameMode && selX != -1) {
                             int[] m = getArrowRotation(new double[]{0, -1, 0},
                                     cuboRubik[selX][selY][selZ], selFace);
                             int axis = m[0];
@@ -849,7 +849,7 @@ public class Cubo extends JFrame {
                         if (animating) break;
                         if (!gameMode) {
                             applyRotation(0, 5);
-                        } else if (selX != -1 && selFace != -1) {
+                        } else if (selX != -1) {
                             int[] m = getArrowRotation(new double[]{0, 1, 0},
                                     cuboRubik[selX][selY][selZ], selFace);
                             int axis = m[0];
@@ -860,7 +860,7 @@ public class Cubo extends JFrame {
                         break;
                     case KeyEvent.VK_DOWN:
                         if (animating) break;
-                        if (gameMode && selX != -1 && selFace != -1) {
+                        if (gameMode && selX != -1) {
                             int[] m = getArrowRotation(new double[]{0, 1, 0},
                                     cuboRubik[selX][selY][selZ], selFace);
                             int axis = m[0];
@@ -875,7 +875,7 @@ public class Cubo extends JFrame {
                         if (animating) break;
                         if (!gameMode) {
                             applyRotation(1, 5);  // giro a la izquierda
-                        } else if (selX != -1 && selFace != -1) {
+                        } else if (selX != -1) {
                             int[] m = getArrowRotation(new double[]{-1, 0, 0},
                                     cuboRubik[selX][selY][selZ], selFace);
                             int axis = m[0];
@@ -886,7 +886,7 @@ public class Cubo extends JFrame {
                         break;
                     case KeyEvent.VK_LEFT:
                         if (animating) break;
-                        if (gameMode && selX != -1 && selFace != -1) {
+                        if (gameMode && selX != -1) {
                             int[] m = getArrowRotation(new double[]{-1, 0, 0},
                                     cuboRubik[selX][selY][selZ], selFace);
                             int axis = m[0];
@@ -899,7 +899,7 @@ public class Cubo extends JFrame {
                         if (animating) break;
                         if (!gameMode) {
                             applyRotation(1, -5);  // giro a la derecha
-                        } else if (selX != -1 && selFace != -1) {
+                        } else if (selX != -1) {
                             int[] m = getArrowRotation(new double[]{1, 0, 0},
                                     cuboRubik[selX][selY][selZ], selFace);
                             int axis = m[0];
@@ -910,7 +910,7 @@ public class Cubo extends JFrame {
                         break;
                     case KeyEvent.VK_RIGHT:
                         if (animating) break;
-                        if (gameMode && selX != -1 && selFace != -1) {
+                        if (gameMode && selX != -1) {
                             int[] m = getArrowRotation(new double[]{1, 0, 0},
                                     cuboRubik[selX][selY][selZ], selFace);
                             int axis = m[0];
