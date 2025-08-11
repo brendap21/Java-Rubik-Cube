@@ -29,15 +29,15 @@ public class SubcuboColorRotationTest {
         switch (axis) {
             case 0:
                 if (cw) {
-                    r[0] = c[2];
-                    r[1] = c[3];
-                    r[2] = c[1];
-                    r[3] = c[0];
-                } else {
                     r[0] = c[3];
                     r[1] = c[2];
                     r[2] = c[0];
                     r[3] = c[1];
+                } else {
+                    r[0] = c[2];
+                    r[1] = c[3];
+                    r[2] = c[1];
+                    r[3] = c[0];
                 }
                 break;
             case 1:
