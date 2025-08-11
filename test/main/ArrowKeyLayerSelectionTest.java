@@ -6,6 +6,7 @@ import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import org.junit.Test;
 
@@ -35,12 +36,14 @@ public class ArrowKeyLayerSelectionTest {
         Field selZF = Cubo.class.getDeclaredField("selZ");
         Field selFaceF = Cubo.class.getDeclaredField("selFace");
         Field cuboField = Cubo.class.getDeclaredField("cuboRubik");
+        Method getArrow = Cubo.class.getDeclaredMethod("getArrowRotation", double[].class, Subcubo.class, int.class);
         gameModeF.setAccessible(true);
         selXF.setAccessible(true);
         selYF.setAccessible(true);
         selZF.setAccessible(true);
         selFaceF.setAccessible(true);
         cuboField.setAccessible(true);
+        getArrow.setAccessible(true);
 
         int[] keys = {KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT};
         for (int key : keys) {
@@ -52,11 +55,16 @@ public class ArrowKeyLayerSelectionTest {
             selFaceF.setInt(c, 1); // front face
             Subcubo[][][] cubo = (Subcubo[][][]) cuboField.get(c);
             Subcubo selected = cubo[1][1][2];
-            double[] normal = selected.getFaceNormalWorld(1);
-            int nAxis = Math.abs(normal[0]) > Math.abs(normal[1])
-                    ? (Math.abs(normal[0]) > Math.abs(normal[2]) ? 0 : 2)
-                    : (Math.abs(normal[1]) > Math.abs(normal[2]) ? 1 : 2);
-            int originalLayer = nAxis == 0 ? 1 : nAxis == 1 ? 1 : 2;
+            double[] arrow;
+            switch (key) {
+                case KeyEvent.VK_UP: arrow = new double[]{0, -1, 0}; break;
+                case KeyEvent.VK_DOWN: arrow = new double[]{0, 1, 0}; break;
+                case KeyEvent.VK_LEFT: arrow = new double[]{-1, 0, 0}; break;
+                default: arrow = new double[]{1, 0, 0};
+            }
+            int[] res = (int[]) getArrow.invoke(c, arrow, selected, 1);
+            int axis = res[0];
+            int originalLayer = axis == 0 ? 1 : axis == 1 ? 1 : 2;
 
             pressKeyAndWait(c, key);
 
@@ -73,7 +81,7 @@ public class ArrowKeyLayerSelectionTest {
                     }
                 }
             }
-            int newLayer = nAxis == 0 ? nx : nAxis == 1 ? ny : nz;
+            int newLayer = axis == 0 ? nx : axis == 1 ? ny : nz;
             assertEquals("arrow key " + key, originalLayer, newLayer);
         }
     }

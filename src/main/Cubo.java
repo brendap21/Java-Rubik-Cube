@@ -911,11 +911,7 @@ public class Cubo extends JFrame {
                             int[] m = getArrowRotation(new double[]{0, -1, 0},
                                     sc, selFace);
                             int axis = m[0];
-                            double[] n = sc.getFaceNormalWorld(selFace);
-                            int nAxis = Math.abs(n[0]) > Math.abs(n[1])
-                                    ? (Math.abs(n[0]) > Math.abs(n[2]) ? 0 : 2)
-                                    : (Math.abs(n[1]) > Math.abs(n[2]) ? 1 : 2);
-                            int layer = nAxis == 0 ? selX : nAxis == 1 ? selY : selZ;
+                            int layer = (axis == 0 ? selX : axis == 1 ? selY : selZ);
                             boolean cw = m[1] == 1;
                             rotateLayerAnimated(axis, layer, cw);
                         }
@@ -940,11 +936,7 @@ public class Cubo extends JFrame {
                             int[] m = getArrowRotation(new double[]{0, 1, 0},
                                     sc, selFace);
                             int axis = m[0];
-                            double[] n = sc.getFaceNormalWorld(selFace);
-                            int nAxis = Math.abs(n[0]) > Math.abs(n[1])
-                                    ? (Math.abs(n[0]) > Math.abs(n[2]) ? 0 : 2)
-                                    : (Math.abs(n[1]) > Math.abs(n[2]) ? 1 : 2);
-                            int layer = nAxis == 0 ? selX : nAxis == 1 ? selY : selZ;
+                            int layer = (axis == 0 ? selX : axis == 1 ? selY : selZ);
                             boolean cw = m[1] == 1;
                             rotateLayerAnimated(axis, layer, cw);
                         }
@@ -971,11 +963,7 @@ public class Cubo extends JFrame {
                             int[] m = getArrowRotation(new double[]{-1, 0, 0},
                                     sc, selFace);
                             int axis = m[0];
-                            double[] n = sc.getFaceNormalWorld(selFace);
-                            int nAxis = Math.abs(n[0]) > Math.abs(n[1])
-                                    ? (Math.abs(n[0]) > Math.abs(n[2]) ? 0 : 2)
-                                    : (Math.abs(n[1]) > Math.abs(n[2]) ? 1 : 2);
-                            int layer = nAxis == 0 ? selX : nAxis == 1 ? selY : selZ;
+                            int layer = (axis == 0 ? selX : axis == 1 ? selY : selZ);
                             boolean cw = m[1] == 1;
                             rotateLayerAnimated(axis, layer, cw);
                         }
@@ -1000,11 +988,7 @@ public class Cubo extends JFrame {
                             int[] m = getArrowRotation(new double[]{1, 0, 0},
                                     sc, selFace);
                             int axis = m[0];
-                            double[] n = sc.getFaceNormalWorld(selFace);
-                            int nAxis = Math.abs(n[0]) > Math.abs(n[1])
-                                    ? (Math.abs(n[0]) > Math.abs(n[2]) ? 0 : 2)
-                                    : (Math.abs(n[1]) > Math.abs(n[2]) ? 1 : 2);
-                            int layer = nAxis == 0 ? selX : nAxis == 1 ? selY : selZ;
+                            int layer = (axis == 0 ? selX : axis == 1 ? selY : selZ);
                             boolean cw = m[1] == 1;
                             rotateLayerAnimated(axis, layer, cw);
                         }
