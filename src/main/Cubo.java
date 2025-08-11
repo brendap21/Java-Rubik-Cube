@@ -211,11 +211,11 @@ public class Cubo extends JFrame {
                     for (int z = 0; z < 3; z++) {
                         int nx, nz;
                         if (clockwise) {
-                            nx = 2 - z;
-                            nz = x;
-                        } else {
                             nx = z;
                             nz = 2 - x;
+                        } else {
+                            nx = 2 - z;
+                            nz = x;
                         }
                         Subcubo sc = temp[x][z];
                         cuboRubik[nx][layer][nz] = sc;
@@ -283,18 +283,18 @@ public class Cubo extends JFrame {
             case 1: // Y axis
                 if (clockwise) {
                     switch (face) {
-                        case 0: return 5; // back -> right
-                        case 1: return 4; // front -> left
-                        case 4: return 0; // left -> back
-                        case 5: return 1; // right -> front
-                        default: return face;
-                    }
-                } else {
-                    switch (face) {
                         case 0: return 4; // back -> left
                         case 1: return 5; // front -> right
                         case 4: return 1; // left -> front
                         case 5: return 0; // right -> back
+                        default: return face;
+                    }
+                } else {
+                    switch (face) {
+                        case 0: return 5; // back -> right
+                        case 1: return 4; // front -> left
+                        case 4: return 0; // left -> back
+                        case 5: return 1; // right -> front
                         default: return face;
                     }
                 }
