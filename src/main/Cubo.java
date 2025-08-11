@@ -433,43 +433,27 @@ public class Cubo extends JFrame {
                 max = Math.abs(normal[i]);
             }
         }
-        int sign = normal[faceAxis] >= 0 ? 1 : -1;
 
-        // Determinar si la flecha es vertical u horizontal en el espacio del cubo
-        boolean vertical = Math.abs(rArrow[1]) >= Math.abs(rArrow[0]);
-
-        int axis;
-        boolean cw;
-        switch (faceAxis) {
-            case 0: // Caras izquierda/derecha (normal en X)
-                axis = vertical ? 0 : 1;
-                if (vertical) {
-                    cw = (rArrow[1] > 0) ^ (sign > 0);
-                } else {
-                    cw = (rArrow[0] < 0) ^ (sign > 0);
-                }
-                break;
-            case 1: // Caras arriba/abajo (normal en Y)
-                axis = 1;
-                if (vertical) {
-                    cw = (rArrow[1] > 0) ^ (sign > 0);
-                } else {
-                    cw = (rArrow[0] < 0) ^ (sign > 0);
-                }
-                break;
-            case 2: // Caras frente/atrás (normal en Z)
-                axis = vertical ? 0 : 1;
-                if (vertical) {
-                    cw = (rArrow[1] > 0) ^ (sign < 0);
-                } else {
-                    cw = (rArrow[0] < 0) ^ (sign < 0);
-                }
-                break;
-            default:
-                axis = 0;
-                cw = false;
-                break;
+        // Transformar la flecha al espacio mundial según la orientación actual
+        double[] wArrow = rotateVector(rArrow, anguloX, anguloY, anguloZ);
+        // Producto cruz para obtener el eje de rotación
+        double[] axisVec = cross(normal, wArrow);
+        if (length(axisVec) < 1e-6) {
+            axisVec = cross(normal, new double[]{1, 0, 0});
+            if (length(axisVec) < 1e-6) {
+                axisVec = cross(normal, new double[]{0, 1, 0});
+            }
         }
+
+        int axis = 0;
+        double maxComp = Math.abs(axisVec[0]);
+        for (int i = 1; i < 3; i++) {
+            if (Math.abs(axisVec[i]) > maxComp) {
+                axis = i;
+                maxComp = Math.abs(axisVec[i]);
+            }
+        }
+        boolean cw = (axisVec[axis] * normal[faceAxis] > 0) ^ (normal[faceAxis] > 0);
         return new int[]{axis, cw ? 1 : 0};
     }
 
