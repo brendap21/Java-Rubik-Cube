@@ -401,11 +401,15 @@ public class Cubo extends JFrame {
     }
 
     // Tabla de mapeo para flechas paralelas a la normal en coordenadas locales
+    // When an arrow vector is parallel to the normal of a face we cannot use
+    // the cross product to determine the rotation axis.  Instead we fall back
+    // to this lookup table which provides the axis (0‑X,1‑Y,2‑Z) and clockwise
+    // flag for each face and arrow direction (parallel or anti‑parallel).
     private static final int[][][] PARALLEL_TABLE = {
-        {{0, 0}, {0, 1}}, // back
-        {{0, 0}, {0, 1}}, // front
-        {{0, 1}, {0, 0}}, // bottom
-        {{0, 0}, {0, 1}}, // top
+        {{0, 1}, {0, 0}}, // back  (dot>0 -> cw, dot<0 -> ccw)
+        {{0, 0}, {0, 1}}, // front (dot>0 -> ccw, dot<0 -> cw)
+        {{2, 0}, {2, 1}}, // bottom
+        {{2, 0}, {2, 1}}, // top
         {{1, 1}, {1, 0}}, // left
         {{1, 1}, {1, 0}}  // right
     };
