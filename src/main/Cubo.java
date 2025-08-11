@@ -434,8 +434,16 @@ public class Cubo extends JFrame {
             }
         }
 
-        // Transformar la flecha al espacio mundial según la orientación actual
-        double[] wArrow = rotateVector(rArrow, anguloX, anguloY, anguloZ);
+        // Transformar la flecha al espacio mundial según la orientación actual.
+        // La flecha está en coordenadas de pantalla; para llevarla al espacio
+        // del cubo debemos aplicar la rotación inversa a la que se usa para
+        // proyectar el cubo en pantalla.  Anteriormente se aplicaban los
+        // mismos ángulos positivos, lo que equivalía a rotar la flecha en la
+        // misma dirección que el cubo y producía resultados incoherentes al
+        // determinar el eje y sentido de giro.  Al usar los ángulos negativos
+        // convertimos correctamente la dirección de la flecha al sistema de
+        // coordenadas mundial del cubo.
+        double[] wArrow = rotateVector(rArrow, -anguloX, -anguloY, -anguloZ);
         // Producto cruz para obtener el eje de rotación
         double[] axisVec = cross(normal, wArrow);
         if (length(axisVec) < 1e-6) {
