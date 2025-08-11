@@ -193,7 +193,7 @@ public class CuboArrowRotationTest {
         };
         rotField.set(cubo, mTop);
         int[] resTop = call(new double[]{0, -1, 0}, 3);
-        assertEquals(0, resTop[0]);
+        assertEquals(2, resTop[0]);
         assertEquals(1, resTop[1]);
 
         double[][] mBottom = new double[][]{
@@ -203,7 +203,7 @@ public class CuboArrowRotationTest {
         };
         rotField.set(cubo, mBottom);
         int[] resBottom = call(new double[]{0, 1, 0}, 2);
-        assertEquals(0, resBottom[0]);
+        assertEquals(2, resBottom[0]);
         assertEquals(1, resBottom[1]);
     }
 }

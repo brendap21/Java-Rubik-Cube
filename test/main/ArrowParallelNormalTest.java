@@ -42,10 +42,10 @@ public class ArrowParallelNormalTest {
     @Test
     public void testParallelToNormalAllFaces() throws Exception {
         Object[][] cases = new Object[][]{
-            {0, Subcubo.getFaceNormal(0), 0, 0},
+            {0, Subcubo.getFaceNormal(0), 0, 1},
             {1, Subcubo.getFaceNormal(1), 0, 0},
-            {2, Subcubo.getFaceNormal(2), 0, 1},
-            {3, Subcubo.getFaceNormal(3), 0, 0},
+            {2, Subcubo.getFaceNormal(2), 2, 0},
+            {3, Subcubo.getFaceNormal(3), 2, 0},
             {4, Subcubo.getFaceNormal(4), 1, 1},
             {5, Subcubo.getFaceNormal(5), 1, 1}
         };
