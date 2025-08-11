@@ -51,7 +51,7 @@ public class Subcubo {
      * en sentido horario alrededor del eje correspondiente.
      */
     private static final int[][] FACE_CYCLES = {
-        {0, 3, 1, 2}, // X axis: back -> top -> front -> bottom
+        {0, 2, 1, 3}, // X axis: back -> bottom -> front -> top
         {0, 4, 1, 5}, // Y axis: back -> left -> front -> right
         {3, 5, 2, 4}  // Z axis: top -> right -> bottom -> left
     };
