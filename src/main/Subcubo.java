@@ -128,7 +128,7 @@ public class Subcubo {
      * @param clockwise sentido horario si es {@code true}
      */
     public void applyGlobalRotation(int axis, boolean clockwise) {
-        double ang = clockwise ? -90 : 90;
+        double ang = clockwise ? 90 : -90;
         double[][] r = rotationAxis(axis, ang);
         rotMatrix = multiply(r, rotMatrix);
     }

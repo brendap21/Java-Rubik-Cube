@@ -72,18 +72,29 @@ public class SubcuboColorRotationTest {
 
     @Test
     public void testFourRotationsReturnOriginal() throws Exception {
-        Field field = Subcubo.class.getDeclaredField("colores");
-        field.setAccessible(true);
+        Field colorField = Subcubo.class.getDeclaredField("colores");
+        colorField.setAccessible(true);
+        Field matrixField = Subcubo.class.getDeclaredField("rotMatrix");
+        matrixField.setAccessible(true);
+
+        double[][] identity = new double[][]{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
 
         for (int axis = 0; axis < 3; axis++) {
             for (boolean cw : new boolean[]{true, false}) {
                 Subcubo sc = new Subcubo(0, 0, 0, 1);
-                Color[] orig = ((Color[]) field.get(sc)).clone();
+                Color[] origColors = ((Color[]) colorField.get(sc)).clone();
                 for (int i = 0; i < 4; i++) {
+                    sc.applyGlobalRotation(axis, cw);
                     sc.rotateColors(axis, cw);
                 }
-                Color[] actual = (Color[]) field.get(sc);
-                assertArrayEquals("axis=" + axis + " cw=" + cw, orig, actual);
+                Color[] actualColors = (Color[]) colorField.get(sc);
+                assertArrayEquals("axis=" + axis + " cw=" + cw + " colors", origColors, actualColors);
+
+                double[][] actualMatrix = (double[][]) matrixField.get(sc);
+                for (int r = 0; r < 3; r++) {
+                    assertArrayEquals("axis=" + axis + " cw=" + cw + " matrix row " + r,
+                            identity[r], actualMatrix[r], 1e-9);
+                }
             }
         }
     }
