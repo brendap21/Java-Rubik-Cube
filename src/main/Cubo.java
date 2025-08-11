@@ -229,7 +229,7 @@ public class Cubo extends JFrame {
                         moved.y = ny;
                         moved.z = nz;
                         moved.rotateColors(axis, clockwise);
-                        moved.rotateOrientation(axis, clockwise);
+                        moved.applyGlobalRotation(axis, clockwise);
                     }
                 }
             }
@@ -643,6 +643,7 @@ public class Cubo extends JFrame {
             ang[0] = Math.min(90, ang[0] + 10);
             graficos.clear();
             java.util.List<RenderInfo> infos = new java.util.ArrayList<>();
+            double[][] globalRot = Subcubo.rotation(anguloX, anguloY, anguloZ);
             for (int x = 0; x < 3; x++) {
                 for (int y = 0; y < 3; y++) {
                     for (int z = 0; z < 3; z++) {
@@ -669,7 +670,7 @@ public class Cubo extends JFrame {
                             posZ = r[2];
                             extraZ = dir * ang[0];
                         }
-                        double[] rotatedPos = cuboRubik[x][y][z].rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
+                        double[] rotatedPos = cuboRubik[x][y][z].rotar(new double[]{posX, posY, posZ}, globalRot);
                         int finalX = (int) (rotatedPos[0] + trasX);
                         int finalY = (int) (rotatedPos[1] + trasY);
                         int finalZ = (int) (rotatedPos[2] + trasZ);
@@ -793,6 +794,7 @@ public class Cubo extends JFrame {
             graficos.clear();
 
             java.util.List<RenderInfo> infos = new java.util.ArrayList<>();
+            double[][] globalRot = Subcubo.rotation(anguloX, anguloY, anguloZ);
             for (int x = 0; x < 3; x++) {
                 for (int y = 0; y < 3; y++) {
                     for (int z = 0; z < 3; z++) {
@@ -802,7 +804,7 @@ public class Cubo extends JFrame {
                         double posZ = (z - 1) * size * escala;
 
                         // Aplicar las rotaciones alrededor del subcubo 14
-                        double[] rotatedPos = cuboRubik[x][y][z].rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
+                        double[] rotatedPos = cuboRubik[x][y][z].rotar(new double[]{posX, posY, posZ}, globalRot);
 
                         // Traslación con respecto al movimiento general del cubo
                         int finalX = (int) (rotatedPos[0] + trasX);
@@ -839,6 +841,7 @@ public class Cubo extends JFrame {
         } else {
             graficos.clear();
 
+            double[][] globalRot = Subcubo.rotation(anguloX, anguloY, anguloZ);
             for (int x = 0; x < 3; x++) {
                 for (int y = 0; y < 3; y++) {
                     for (int z = 0; z < 3; z++) {
@@ -849,7 +852,7 @@ public class Cubo extends JFrame {
 
                         // Aplicar rotaciones globales
                         double[] rotatedPos = cuboRubik[x][y][z].rotar(
-                                new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
+                                new double[]{posX, posY, posZ}, globalRot);
 
                         // Traslación global
                         int finalX = (int) (rotatedPos[0] + trasX);
@@ -1099,13 +1102,14 @@ public class Cubo extends JFrame {
                     int mx = e.getX(), my = e.getY();
                     double bestDepth = Double.MAX_VALUE;
                     int idxX = -1, idxY = -1, idxZ = -1;
+                    double[][] globalRot = Subcubo.rotation(anguloX, anguloY, anguloZ);
                     for (int x = 0; x < 3; x++) {
                         for (int y = 0; y < 3; y++) {
                             for (int z = 0; z < 3; z++) {
                                 Subcubo sc = cuboRubik[x][y][z];
                                 if (sc.containsPoint(mx, my)) {
                                     double posX = (x - 1) * size * escala, posY = (y - 1) * size * escala, posZ = (z - 1) * size * escala;
-                                    double[] r = sc.rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
+                                    double[] r = sc.rotar(new double[]{posX, posY, posZ}, globalRot);
                                     if (r[2] < bestDepth) {
                                         bestDepth = r[2];
                                         idxX = x;
@@ -1130,13 +1134,14 @@ public class Cubo extends JFrame {
                     int mx = e.getX(), my = e.getY();
                     double bestDepth = Double.MAX_VALUE;
                     int idxX = -1, idxY = -1, idxZ = -1;
+                    double[][] globalRot = Subcubo.rotation(anguloX, anguloY, anguloZ);
                     for (int x = 0; x < 3; x++) {
                         for (int y = 0; y < 3; y++) {
                             for (int z = 0; z < 3; z++) {
                                 Subcubo sc = cuboRubik[x][y][z];
                                 if (sc.containsPoint(mx, my)) {
                                     double posX = (x - 1) * size * escala, posY = (y - 1) * size * escala, posZ = (z - 1) * size * escala;
-                                    double[] r = sc.rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
+                                    double[] r = sc.rotar(new double[]{posX, posY, posZ}, globalRot);
                                     if (r[2] < bestDepth) {
                                         bestDepth = r[2];
                                         idxX = x;
@@ -1161,13 +1166,14 @@ public class Cubo extends JFrame {
                     double bestDepth = Double.MAX_VALUE;
                     int idxX = -1, idxY = -1, idxZ = -1;
                     // Busco el subcubo más cercano bajo el cursor
+                    double[][] globalRot = Subcubo.rotation(anguloX, anguloY, anguloZ);
                     for (int x = 0; x < 3; x++) {
                         for (int y = 0; y < 3; y++) {
                             for (int z = 0; z < 3; z++) {
                                 Subcubo sc = cuboRubik[x][y][z];
                                 if (sc.containsPoint(mx, my)) {
                                     double posX = (x - 1) * size * escala, posY = (y - 1) * size * escala, posZ = (z - 1) * size * escala;
-                                    double[] r = sc.rotar(new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
+                                    double[] r = sc.rotar(new double[]{posX, posY, posZ}, globalRot);
                                     if (r[2] < bestDepth) {
                                         bestDepth = r[2];
                                         idxX = x;
