@@ -200,9 +200,9 @@ public class Subcubo {
             case 1: // front
                 return new double[]{0, 0, 1};
             case 2: // bottom
-                return new double[]{0, 1, 0};
-            case 3: // top
                 return new double[]{0, -1, 0};
+            case 3: // top
+                return new double[]{0, 1, 0};
             case 4: // left
                 return new double[]{-1, 0, 0};
             case 5: // right
