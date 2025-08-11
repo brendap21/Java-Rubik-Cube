@@ -131,6 +131,7 @@ public class Subcubo {
         double ang = clockwise ? 90 : -90;
         double[][] r = rotationAxis(axis, ang);
         rotMatrix = multiply(r, rotMatrix);
+        normalizeRotMatrix();
     }
 
     /**
@@ -434,6 +435,44 @@ public class Subcubo {
             m[1][0] * v[0] + m[1][1] * v[1] + m[1][2] * v[2],
             m[2][0] * v[0] + m[2][1] * v[1] + m[2][2] * v[2]
         };
+    }
+
+    /**
+     * Normaliza la matriz de rotación acumulada {@link #rotMatrix} corrigiendo
+     * pequeñas desviaciones numéricas para mantenerla en un estado discreto
+     * (valores -1, 0 o 1). Esto evita la acumulación de errores tras muchas
+     * rotaciones.
+     */
+    private void normalizeRotMatrix() {
+        double eps = 1e-9;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                double v = rotMatrix[i][j];
+                if (Math.abs(v) < eps) {
+                    rotMatrix[i][j] = 0;
+                } else if (Math.abs(v - 1) < eps) {
+                    rotMatrix[i][j] = 1;
+                } else if (Math.abs(v + 1) < eps) {
+                    rotMatrix[i][j] = -1;
+                } else {
+                    rotMatrix[i][j] = Math.round(v);
+                }
+            }
+        }
+        // Reconstruir a partir de estados discretos para garantizar
+        // ortogonalidad y evitar acumulación de errores.
+        double[][] rebuilt = new double[3][3];
+        for (int i = 0; i < 3; i++) {
+            int maxIdx = 0;
+            for (int j = 1; j < 3; j++) {
+                if (Math.abs(rotMatrix[i][j]) > Math.abs(rotMatrix[i][maxIdx])) {
+                    maxIdx = j;
+                }
+            }
+            double sign = Math.signum(rotMatrix[i][maxIdx]);
+            rebuilt[i][maxIdx] = sign == 0 ? 1 : sign;
+        }
+        rotMatrix = rebuilt;
     }
 
     /**
