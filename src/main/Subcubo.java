@@ -140,15 +140,17 @@ public class Subcubo {
                 Color bottom = colores[2];
                 Color top = colores[3];
                 if (clockwise) {
-                    colores[0] = bottom; // back
+                    // back -> top -> front -> bottom -> back
+                    colores[3] = back;   // top
                     colores[1] = top;    // front
                     colores[2] = front;  // bottom
-                    colores[3] = back;   // top
+                    colores[0] = bottom; // back
                 } else {
+                    // inverse cycle: top -> back -> bottom -> front -> top
                     colores[0] = top;    // back
+                    colores[3] = front;  // top
                     colores[1] = bottom; // front
                     colores[2] = back;   // bottom
-                    colores[3] = front;  // top
                 }
                 break;
             }
