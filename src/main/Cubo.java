@@ -401,65 +401,73 @@ public class Cubo extends JFrame {
 
     // Calcula el eje y sentido de rotación a partir de un vector de flecha en
     // pantalla y la cara seleccionada de un subcubo
+    /**
+     * Determina el eje de rotación y el sentido horario/antihorario según la
+     * flecha pulsada y la cara seleccionada.
+     *
+     * <p>La convención de sentido horario se define mirando de frente cada
+     * cara:
+     * <ul>
+     *   <li>Frente: flechas <em>abajo</em> o <em>izquierda</em> rotan en sentido horario.</li>
+     *   <li>Atrás: flechas <em>arriba</em> o <em>derecha</em> rotan en sentido horario.</li>
+     *   <li>Izquierda: flechas <em>abajo</em> o <em>izquierda</em> rotan en sentido horario.</li>
+     *   <li>Derecha: flechas <em>arriba</em> o <em>derecha</em> rotan en sentido horario.</li>
+     *   <li>Arriba: flechas <em>abajo</em> o <em>izquierda</em> rotan en sentido horario.</li>
+     *   <li>Abajo: flechas <em>abajo</em> o <em>derecha</em> rotan en sentido horario.</li>
+     * </ul>
+     *
+     * <p>La cara seleccionada se clasifica según la componente dominante de su
+     * vector normal y las flechas se mapean a ejes predefinidos para cada
+     * grupo de caras.</p>
+     */
     private int[] getArrowRotation(double[] arrowVec, Subcubo sc, int face) {
         double[] rArrow = rotateVector(arrowVec, -anguloX, -anguloY, -anguloZ);
-        double[] normal = sc.getFaceNormalWorld(face);
+        double[] normal = normalize(sc.getFaceNormalWorld(face));
         rArrow = normalize(rArrow);
-        normal = normalize(normal);
 
-        // Faces 4 (left) and 5 (right) need explicit mapping so that each
-        // arrow key corresponds to a unique rotation. The normal of these
-        // faces is parallel to the X axis, so up/down arrows should rotate
-        // around X and left/right arrows around Y.
-        if (face == 4 || face == 5) {
-            // Determine arrow orientation using the rotated arrow vector so
-            // that global cube rotations do not affect the mapping.
-            boolean vertical = Math.abs(rArrow[1]) >= Math.abs(rArrow[0]);
-            int axis = vertical ? 0 : 1; // X for vertical arrows, Y otherwise
-            boolean cw;
-            if (vertical) {
-                // Up/down arrows determine clockwise direction via the
-                // original screen-space arrow vector.
-                cw = (arrowVec[1] > 0) ^ (face == 5);
-            } else {
-                // Left/right arrows determine clockwise direction.
-                cw = (arrowVec[0] < 0) ^ (face == 5);
+        // Eje dominante de la cara seleccionada
+        int faceAxis = 0;
+        double max = Math.abs(normal[0]);
+        for (int i = 1; i < 3; i++) {
+            if (Math.abs(normal[i]) > max) {
+                faceAxis = i;
+                max = Math.abs(normal[i]);
             }
-            return new int[]{axis, cw ? 1 : 0};
         }
+        int sign = normal[faceAxis] >= 0 ? 1 : -1;
 
-        // General case: obtain axis from cross product between face normal and
-        // arrow direction. If the arrow is parallel to the normal, fall back to
-        // using the global up or right vectors to decide the axis.
-        double[] axisVec = cross(normal, rArrow);
-        double thr = 1e-6;
-        if (length(axisVec) < thr) {
-            double[] up = normalize(new double[]{-rotMatrix[0][1], -rotMatrix[1][1], -rotMatrix[2][1]});
-            axisVec = cross(normal, up);
-            if (length(axisVec) < thr) {
-                double[] right = normalize(new double[]{rotMatrix[0][0], rotMatrix[1][0], rotMatrix[2][0]});
-                axisVec = cross(normal, right);
-                if (length(axisVec) < thr && (face == 2 || face == 3)) {
-                    boolean vertical = Math.abs(rArrow[1]) >= Math.abs(rArrow[0]);
-                    int axis = vertical ? 0 : 2; // X for vertical arrows, Z otherwise
-                    boolean cw;
-                    if (vertical) {
-                        cw = (arrowVec[1] > 0) ^ (face == 3);
-                    } else {
-                        cw = (arrowVec[0] < 0) ^ (face == 3);
-                    }
-                    return new int[]{axis, cw ? 1 : 0};
+        // Determinar si la flecha es vertical u horizontal en el espacio del cubo
+        boolean vertical = Math.abs(rArrow[1]) >= Math.abs(rArrow[0]);
+
+        int axis;
+        boolean cw;
+        switch (faceAxis) {
+            case 0: // Caras izquierda/derecha (normal en X)
+                axis = vertical ? 0 : 1;
+                if (vertical) {
+                    cw = (arrowVec[1] > 0) ^ (sign > 0);
+                } else {
+                    cw = (arrowVec[0] < 0) ^ (sign > 0);
                 }
-            }
-            int[] res = mapDirection(axisVec, true);
-            boolean cw = res[1] == 1;
-            if (dot(rArrow, normal) < 0) {
-                cw = !cw;
-            }
-            return new int[]{res[0], cw ? 1 : 0};
+                break;
+            case 1: // Caras frente/atrás (normal en Y)
+                axis = vertical ? 0 : 1;
+                if (vertical) {
+                    cw = (arrowVec[1] > 0) ^ (sign < 0);
+                } else {
+                    cw = (arrowVec[0] < 0) ^ (sign < 0);
+                }
+                break;
+            default: // Caras arriba/abajo (normal en Z)
+                axis = 2;
+                if (vertical) {
+                    cw = arrowVec[1] > 0;
+                } else {
+                    cw = (arrowVec[0] < 0) ^ (sign < 0);
+                }
+                break;
         }
-        int[] res = mapDirection(axisVec, true);
-        return new int[]{res[0], res[1]};
+        return new int[]{axis, cw ? 1 : 0};
     }
 
     // ----- Ayudas para detectar la cara y esquinas visibles -----
