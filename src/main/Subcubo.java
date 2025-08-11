@@ -41,9 +41,9 @@ public class Subcubo {
     private final double[] faceDepths;
 
     /**
-     * Rotaciones acumuladas alrededor de cada eje.
+     * Matriz de rotación acumulada que representa la orientación del subcubo.
      */
-    private double rotX = 0, rotY = 0, rotZ = 0;
+    private double[][] rotMatrix;
 
     /**
      * Crea un subcubo identificándolo por sus índices dentro del cubo de Rubik.
@@ -91,6 +91,7 @@ public class Subcubo {
 
         screenVertices = new int[8][2];
         faceDepths = new double[6];
+        rotMatrix = identity();
     }
 
     /**
@@ -109,21 +110,16 @@ public class Subcubo {
     }
 
     /**
-     * Actualiza la rotación acumulada de la pieza.
+     * Aplica una rotación global de 90° alrededor del eje indicado a la
+     * orientación del subcubo.
+     *
+     * @param axis      eje de rotación (0=X, 1=Y, 2=Z)
+     * @param clockwise sentido horario si es {@code true}
      */
-    public void rotateOrientation(int axis, boolean clockwise) {
+    public void applyGlobalRotation(int axis, boolean clockwise) {
         double ang = clockwise ? -90 : 90;
-        switch (axis) {
-            case 0:
-                rotX = (rotX + ang + 360) % 360;
-                break;
-            case 1:
-                rotY = (rotY + ang + 360) % 360;
-                break;
-            case 2:
-                rotZ = (rotZ + ang + 360) % 360;
-                break;
-        }
+        double[][] r = rotationAxis(axis, ang);
+        rotMatrix = multiply(r, rotMatrix);
     }
 
     /**
@@ -244,7 +240,7 @@ public class Subcubo {
      */
     public double[] getFaceNormalWorld(int face) {
         double[] local = getFaceNormal(face);
-        return rotar(local, rotX, rotY, rotZ);
+        return rotar(local, rotMatrix);
     }
 
     /**
@@ -258,8 +254,9 @@ public class Subcubo {
      * @return vector normal transformado al espacio global
      */
     public double[] getFaceNormalGlobal(int face, double anguloX, double anguloY, double anguloZ) {
-        double[] world = getFaceNormalWorld(face);
-        return rotar(world, anguloX, anguloY, anguloZ);
+        double[] world = rotar(getFaceNormal(face), rotMatrix);
+        double[][] g = rotation(anguloX, anguloY, anguloZ);
+        return rotar(world, g);
     }
 
     /**
@@ -282,10 +279,21 @@ public class Subcubo {
         int idxY = opt.idxY;
         int idxZ = opt.idxZ;
 
+        double[][] orientation = rotMatrix;
+        if (extraRotX != 0) {
+            orientation = multiply(rotationAxis(0, extraRotX), orientation);
+        }
+        if (extraRotY != 0) {
+            orientation = multiply(rotationAxis(1, extraRotY), orientation);
+        }
+        if (extraRotZ != 0) {
+            orientation = multiply(rotationAxis(2, extraRotZ), orientation);
+        }
+        double[][] globalRot = rotation(anguloX, anguloY, anguloZ);
         double[][] rotadas = new double[8][3];
         for (int i = 0; i < 8; i++) {
-            double[] local = rotar(vertices[i], rotX + extraRotX, rotY + extraRotY, rotZ + extraRotZ);
-            rotadas[i] = rotar(local, anguloX, anguloY, anguloZ);
+            double[] local = rotar(vertices[i], orientation);
+            rotadas[i] = rotar(local, globalRot);
         }
 
         // Aplicar traslación a los vértices rotados
@@ -370,27 +378,85 @@ public class Subcubo {
     }
 
     /**
-     * Aplica rotaciones en X, Y y Z a un punto en 3D.
+     * Aplica una matriz de rotación a un punto en 3D.
      */
-    public double[] rotar(double[] punto, double anguloX, double anguloY, double anguloZ) {
-        double[] resultado = Arrays.copyOf(punto, 3);
-        double radX = Math.toRadians(anguloX);
-        double radY = Math.toRadians(anguloY);
-        double radZ = Math.toRadians(anguloZ);
+    public double[] rotar(double[] punto, double[][] matriz) {
+        return multiply(matriz, punto);
+    }
 
-        double temp = resultado[1] * Math.cos(radX) - resultado[2] * Math.sin(radX);
-        resultado[2] = resultado[1] * Math.sin(radX) + resultado[2] * Math.cos(radX);
-        resultado[1] = temp;
+    /**
+     * Devuelve la matriz identidad 3x3.
+     */
+    private static double[][] identity() {
+        return new double[][]{
+            {1, 0, 0},
+            {0, 1, 0},
+            {0, 0, 1}
+        };
+    }
 
-        temp = resultado[0] * Math.cos(radY) + resultado[2] * Math.sin(radY);
-        resultado[2] = -resultado[0] * Math.sin(radY) + resultado[2] * Math.cos(radY);
-        resultado[0] = temp;
+    /**
+     * Crea una matriz de rotación a partir de ángulos de Euler aplicados en
+     * orden X, luego Y y finalmente Z.
+     */
+    public static double[][] rotation(double angX, double angY, double angZ) {
+        double[][] rx = rotationAxis(0, angX);
+        double[][] ry = rotationAxis(1, angY);
+        double[][] rz = rotationAxis(2, angZ);
+        return multiply(rz, multiply(ry, rx));
+    }
 
-        temp = resultado[0] * Math.cos(radZ) - resultado[1] * Math.sin(radZ);
-        resultado[1] = resultado[0] * Math.sin(radZ) + resultado[1] * Math.cos(radZ);
-        resultado[0] = temp;
+    /**
+     * Devuelve la matriz de rotación alrededor de uno de los ejes cartesianos.
+     */
+    public static double[][] rotationAxis(int axis, double degrees) {
+        double rad = Math.toRadians(degrees);
+        double c = Math.cos(rad);
+        double s = Math.sin(rad);
+        switch (axis) {
+            case 0: // X
+                return new double[][]{
+                    {1, 0, 0},
+                    {0, c, -s},
+                    {0, s, c}
+                };
+            case 1: // Y
+                return new double[][]{
+                    {c, 0, s},
+                    {0, 1, 0},
+                    {-s, 0, c}
+                };
+            default: // Z
+                return new double[][]{
+                    {c, -s, 0},
+                    {s, c, 0},
+                    {0, 0, 1}
+                };
+        }
+    }
 
-        return resultado;
+    /**
+     * Multiplica dos matrices 3x3.
+     */
+    public static double[][] multiply(double[][] a, double[][] b) {
+        double[][] r = new double[3][3];
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                r[i][j] = a[i][0] * b[0][j] + a[i][1] * b[1][j] + a[i][2] * b[2][j];
+            }
+        }
+        return r;
+    }
+
+    /**
+     * Multiplica una matriz 3x3 por un vector de 3 componentes.
+     */
+    public static double[] multiply(double[][] m, double[] v) {
+        return new double[]{
+            m[0][0] * v[0] + m[0][1] * v[1] + m[0][2] * v[2],
+            m[1][0] * v[0] + m[1][1] * v[1] + m[1][2] * v[2],
+            m[2][0] * v[0] + m[2][1] * v[1] + m[2][2] * v[2]
+        };
     }
 
     /**
