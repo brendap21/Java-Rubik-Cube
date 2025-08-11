@@ -651,7 +651,7 @@ public class Cubo extends JFrame {
             return;
         }
         animating = true;
-        int dir = clockwise ? -1 : 1;
+        int dir = clockwise ? 1 : -1;
         double offset = (layer - 1) * size * escala;
 
         final int[] ang = {0};
@@ -670,23 +670,23 @@ public class Cubo extends JFrame {
                         double posZ = (z - 1) * size * escala;
                         double extraX = 0, extraY = 0, extraZ = 0;
                         if (axis == 0 && x == layer) {
-                            double[] r = rotatePointAroundAxis(new double[]{posX, posY, posZ}, 0, dir * ang[0], offset);
+                            double[] r = rotatePointAroundAxis(new double[]{posX, posY, posZ}, 0, -dir * ang[0], offset);
                             posX = r[0];
                             posY = r[1];
                             posZ = r[2];
-                            extraX = dir * ang[0];
+                            extraX = -dir * ang[0];
                         } else if (axis == 1 && y == layer) {
-                            double[] r = rotatePointAroundAxis(new double[]{posX, posY, posZ}, 1, dir * ang[0], offset);
+                            double[] r = rotatePointAroundAxis(new double[]{posX, posY, posZ}, 1, -dir * ang[0], offset);
                             posX = r[0];
                             posY = r[1];
                             posZ = r[2];
-                            extraY = dir * ang[0];
+                            extraY = -dir * ang[0];
                         } else if (axis == 2 && z == layer) {
-                            double[] r = rotatePointAroundAxis(new double[]{posX, posY, posZ}, 2, dir * ang[0], offset);
+                            double[] r = rotatePointAroundAxis(new double[]{posX, posY, posZ}, 2, -dir * ang[0], offset);
                             posX = r[0];
                             posY = r[1];
                             posZ = r[2];
-                            extraZ = dir * ang[0];
+                            extraZ = -dir * ang[0];
                         }
                         double[] rotatedPos = cuboRubik[x][y][z].rotar(new double[]{posX, posY, posZ}, globalRot);
                         int finalX = (int) (rotatedPos[0] + trasX);
