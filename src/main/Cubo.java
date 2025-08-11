@@ -424,7 +424,7 @@ public class Cubo extends JFrame {
             case 0:
                 return sign > 0 ? 5 : 4;
             case 1:
-                return sign > 0 ? 2 : 3;
+                return sign > 0 ? 3 : 2;
             default:
                 return sign > 0 ? 1 : 0;
         }
