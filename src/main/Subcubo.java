@@ -46,6 +46,17 @@ public class Subcubo {
     private double[][] rotMatrix;
 
     /**
+     * Ciclos de rotación de las caras para cada eje.
+     * Cada ciclo describe el orden en que las caras se desplazan al rotar 90°
+     * en sentido horario alrededor del eje correspondiente.
+     */
+    private static final int[][] FACE_CYCLES = {
+        {0, 3, 1, 2}, // X axis: back -> top -> front -> bottom
+        {0, 5, 1, 4}, // Y axis: back -> right -> front -> left
+        {3, 5, 2, 4}  // Z axis: top -> right -> bottom -> left
+    };
+
+    /**
      * Crea un subcubo identificándolo por sus índices dentro del cubo de Rubik.
      */
     public Subcubo(int ix, int iy, int iz, int size) {
@@ -129,62 +140,28 @@ public class Subcubo {
      * @param clockwise sentido horario si es {@code true}
      */
     public void rotateColors(int axis, boolean clockwise) {
-        switch (axis) {
-            case 0: { // X axis
-                Color back = colores[0];
-                Color front = colores[1];
-                Color bottom = colores[2];
-                Color top = colores[3];
-                if (clockwise) {
-                    // back -> top -> front -> bottom -> back
-                    colores[3] = back;   // top
-                    colores[1] = top;    // front
-                    colores[2] = front;  // bottom
-                    colores[0] = bottom; // back
-                } else {
-                    // inverse cycle: top -> back -> bottom -> front -> top
-                    colores[0] = top;    // back
-                    colores[3] = front;  // top
-                    colores[1] = bottom; // front
-                    colores[2] = back;   // bottom
-                }
-                break;
-            }
-            case 1: { // Y axis
-                Color back = colores[0];
-                Color front = colores[1];
-                Color left = colores[4];
-                Color right = colores[5];
-                if (clockwise) {
-                    colores[5] = back;   // right
-                    colores[1] = right;  // front
-                    colores[4] = front;  // left
-                    colores[0] = left;   // back
-                } else {
-                    colores[4] = back;   // left
-                    colores[1] = left;   // front
-                    colores[5] = front;  // right
-                    colores[0] = right;  // back
-                }
-                break;
-            }
-            case 2: { // Z axis
-                Color top = colores[3];
-                Color bottom = colores[2];
-                Color left = colores[4];
-                Color right = colores[5];
-                if (clockwise) {
-                    colores[5] = top;    // right
-                    colores[2] = right;  // bottom
-                    colores[4] = bottom; // left
-                    colores[3] = left;   // top
-                } else {
-                    colores[4] = top;    // left
-                    colores[2] = left;   // bottom
-                    colores[5] = bottom; // right
-                    colores[3] = right;  // top
-                }
-                break;
+        if (axis < 0 || axis >= FACE_CYCLES.length) {
+            return;
+        }
+        rotateCycle(FACE_CYCLES[axis], clockwise);
+    }
+
+    /**
+     * Rota los colores según el ciclo indicado.
+     *
+     * @param cycle     arreglo con los índices de las caras a rotar
+     * @param clockwise {@code true} para rotación horaria, {@code false} para
+     *                  antihoraria
+     */
+    private void rotateCycle(int[] cycle, boolean clockwise) {
+        Color[] orig = colores.clone();
+        for (int i = 0; i < cycle.length; i++) {
+            int from = cycle[i];
+            int to = cycle[(i + 1) % cycle.length];
+            if (clockwise) {
+                colores[to] = orig[from];
+            } else {
+                colores[from] = orig[to];
             }
         }
     }

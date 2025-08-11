@@ -69,5 +69,23 @@ public class SubcuboColorRotationTest {
         }
         return r;
     }
+
+    @Test
+    public void testFourRotationsReturnOriginal() throws Exception {
+        Field field = Subcubo.class.getDeclaredField("colores");
+        field.setAccessible(true);
+
+        for (int axis = 0; axis < 3; axis++) {
+            for (boolean cw : new boolean[]{true, false}) {
+                Subcubo sc = new Subcubo(0, 0, 0, 1);
+                Color[] orig = ((Color[]) field.get(sc)).clone();
+                for (int i = 0; i < 4; i++) {
+                    sc.rotateColors(axis, cw);
+                }
+                Color[] actual = (Color[]) field.get(sc);
+                assertArrayEquals("axis=" + axis + " cw=" + cw, orig, actual);
+            }
+        }
+    }
 }
 
