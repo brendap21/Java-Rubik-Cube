@@ -358,47 +358,6 @@ public class Cubo extends JFrame {
         return r;
     }
 
-    private double[] cross(double[] a, double[] b) {
-        return new double[]{
-            a[1] * b[2] - a[2] * b[1],
-            a[2] * b[0] - a[0] * b[2],
-            a[0] * b[1] - a[1] * b[0]
-        };
-    }
-
-    private double dot(double[] a, double[] b) {
-        return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-    }
-
-    private double length(double[] v) {
-        return Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-    }
-
-    private double[] normalize(double[] v) {
-        double len = length(v);
-        if (len == 0) {
-            return new double[]{0, 0, 0};
-        }
-        return new double[]{v[0] / len, v[1] / len, v[2] / len};
-    }
-
-    private int[] mapDirection(double[] v, boolean negClockwise) {
-        double ax = Math.abs(v[0]);
-        double ay = Math.abs(v[1]);
-        double az = Math.abs(v[2]);
-        int axis;
-        if (ax >= ay && ax >= az) {
-            axis = 0;
-        } else if (ay >= ax && ay >= az) {
-            axis = 1;
-        } else {
-            axis = 2;
-        }
-        boolean cw = negClockwise ? v[axis] < 0 : v[axis] > 0;
-        return new int[]{axis, cw ? 1 : 0};
-    }
-
-
     // Calcula el eje y sentido de rotación a partir de un vector de flecha en
     // pantalla y la cara seleccionada de un subcubo
     /**
@@ -416,50 +375,41 @@ public class Cubo extends JFrame {
      *   <li>Abajo: flechas <em>abajo</em> o <em>derecha</em> rotan en sentido horario.</li>
      * </ul>
      *
-     * <p>La cara seleccionada se clasifica según la componente dominante de su
-     * vector normal y las flechas se mapean a ejes predefinidos para cada
-     * grupo de caras.</p>
+     * <p>Para simplificar, las caras se agrupan según su orientación dominante
+     * y cada grupo responde a las flechas con un eje de giro predefinido.</p>
      */
     private int[] getArrowRotation(double[] arrowVec, Subcubo sc, int face) {
-        double[] rArrow = normalize(arrowVec);
-        double[] normal = normalize(sc.getFaceNormalGlobal(face, anguloX, anguloY, anguloZ));
-
-        // Eje dominante de la cara seleccionada
-        int faceAxis = 0;
-        double max = Math.abs(normal[0]);
-        for (int i = 1; i < 3; i++) {
-            if (Math.abs(normal[i]) > max) {
-                faceAxis = i;
-                max = Math.abs(normal[i]);
-            }
-        }
-
-        // Transformar la flecha al espacio mundial según la orientación actual
-        double[] wArrow = rotateVector(rArrow, anguloX, anguloY, anguloZ);
-        // Producto cruz para obtener el eje de rotación
-        double[] axisVec = cross(normal, wArrow);
-        if (length(axisVec) < 1e-6) {
-            axisVec = cross(normal, new double[]{1, 0, 0});
-            if (length(axisVec) < 1e-6) {
-                axisVec = cross(normal, new double[]{0, 1, 0});
-            }
-        }
-
-        int axis = 0;
-        double maxComp = Math.abs(axisVec[0]);
-        for (int i = 1; i < 3; i++) {
-            if (Math.abs(axisVec[i]) > maxComp) {
-                axis = i;
-                maxComp = Math.abs(axisVec[i]);
-            }
-        }
-        double axisComp = axisVec[axis];
-        double faceNorm = normal[faceAxis];
+        double ax = arrowVec[0];
+        double ay = arrowVec[1];
+        boolean vertical = Math.abs(ay) >= Math.abs(ax);
+        int axis;
         boolean cw;
-        if (faceNorm > 0) {
-            cw = axisComp <= 0;
-        } else {
-            cw = axisComp < 0;
+
+        switch (face) {
+            case 0: // back
+            case 1: // front
+            case 4: // left
+            case 5: // right
+                axis = vertical ? 0 : 1;
+                boolean pos = (face == 0 || face == 5); // back or right
+                if (vertical) {
+                    cw = pos ? ay < 0 : ay > 0;
+                } else {
+                    cw = pos ? ax > 0 : ax < 0;
+                }
+                break;
+            case 2: // bottom
+            case 3: // top
+                axis = 2;
+                if (vertical) {
+                    cw = ay > 0; // abajo es horario
+                } else {
+                    cw = (face == 3) ? ax < 0 : ax > 0;
+                }
+                break;
+            default:
+                axis = 0;
+                cw = false;
         }
         return new int[]{axis, cw ? 1 : 0};
     }
