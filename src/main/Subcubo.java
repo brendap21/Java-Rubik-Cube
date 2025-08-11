@@ -52,7 +52,7 @@ public class Subcubo {
      */
     private static final int[][] FACE_CYCLES = {
         {0, 3, 1, 2}, // X axis: back -> top -> front -> bottom
-        {0, 5, 1, 4}, // Y axis: back -> right -> front -> left
+        {0, 4, 1, 5}, // Y axis: back -> left -> front -> right
         {3, 5, 2, 4}  // Z axis: top -> right -> bottom -> left
     };
 
