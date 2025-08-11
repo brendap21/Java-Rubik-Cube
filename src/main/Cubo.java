@@ -450,11 +450,11 @@ public class Cubo extends JFrame {
                 }
                 break;
             case 1: // Caras arriba/abajo (normal en Y)
-                axis = 2;
+                axis = 1;
                 if (vertical) {
-                    cw = rArrow[1] > 0;
+                    cw = (rArrow[1] > 0) ^ (sign > 0);
                 } else {
-                    cw = (rArrow[0] > 0) ^ (sign < 0);
+                    cw = (rArrow[0] < 0) ^ (sign > 0);
                 }
                 break;
             case 2: // Caras frente/atrás (normal en Z)
