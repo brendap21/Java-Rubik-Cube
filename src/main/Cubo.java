@@ -400,6 +400,36 @@ public class Cubo extends JFrame {
         return new double[]{v[0] / len, v[1] / len, v[2] / len};
     }
 
+    // Tabla de mapeo para flechas paralelas a la normal en coordenadas locales
+    private static final int[][][] PARALLEL_TABLE = {
+        {{0, 0}, {0, 1}}, // back
+        {{0, 0}, {0, 1}}, // front
+        {{0, 1}, {0, 0}}, // bottom
+        {{0, 0}, {0, 1}}, // top
+        {{1, 1}, {1, 0}}, // left
+        {{1, 1}, {1, 0}}  // right
+    };
+
+    private int orientationFromNormal(double[] n) {
+        int axis = 0;
+        double max = Math.abs(n[0]);
+        for (int i = 1; i < 3; i++) {
+            if (Math.abs(n[i]) > max) {
+                axis = i;
+                max = Math.abs(n[i]);
+            }
+        }
+        double sign = n[axis];
+        switch (axis) {
+            case 0:
+                return sign > 0 ? 5 : 4;
+            case 1:
+                return sign > 0 ? 2 : 3;
+            default:
+                return sign > 0 ? 1 : 0;
+        }
+    }
+
     private int[] mapDirection(double[] v, boolean negClockwise) {
         double ax = Math.abs(v[0]);
         double ay = Math.abs(v[1]);
@@ -440,68 +470,32 @@ public class Cubo extends JFrame {
      */
     private int[] getArrowRotation(double[] arrowVec, Subcubo sc, int face) {
         double[] rArrow = normalize(arrowVec);
-        double[] normal = normalize(sc.getFaceNormalGlobal(face, anguloX, anguloY, anguloZ));
+        double[] normalW = normalize(sc.getFaceNormalGlobal(face, anguloX, anguloY, anguloZ));
 
-        // Eje dominante de la cara seleccionada
-        int faceAxis = 0;
-        double max = Math.abs(normal[0]);
-        for (int i = 1; i < 3; i++) {
-            if (Math.abs(normal[i]) > max + 1e-6) {
-                faceAxis = i;
-                max = Math.abs(normal[i]);
-            }
-        }
-
-        // Transformar la flecha al espacio mundial según la orientación actual.
-        // La flecha está en coordenadas de pantalla; para llevarla al espacio
-        // del cubo debemos aplicar la rotación inversa a la que se usa para
-        // proyectar el cubo en pantalla.  Anteriormente se aplicaban los
-        // mismos ángulos positivos, lo que equivalía a rotar la flecha en la
-        // misma dirección que el cubo y producía resultados incoherentes al
-        // determinar el eje y sentido de giro.  Al usar los ángulos negativos
-        // convertimos correctamente la dirección de la flecha al sistema de
-        // coordenadas mundial del cubo.
+        // Convertir flecha y normal a coordenadas locales del cubo
         double[] wArrow = rotateVector(rArrow, -anguloX, -anguloY, -anguloZ);
+        double[] arrowLocal = new double[]{
+            rotMatrix[0][0] * wArrow[0] + rotMatrix[1][0] * wArrow[1] + rotMatrix[2][0] * wArrow[2],
+            rotMatrix[0][1] * wArrow[0] + rotMatrix[1][1] * wArrow[1] + rotMatrix[2][1] * wArrow[2],
+            rotMatrix[0][2] * wArrow[0] + rotMatrix[1][2] * wArrow[1] + rotMatrix[2][2] * wArrow[2]
+        };
+        double[] normalLocal = new double[]{
+            rotMatrix[0][0] * normalW[0] + rotMatrix[1][0] * normalW[1] + rotMatrix[2][0] * normalW[2],
+            rotMatrix[0][1] * normalW[0] + rotMatrix[1][1] * normalW[1] + rotMatrix[2][1] * normalW[2],
+            rotMatrix[0][2] * normalW[0] + rotMatrix[1][2] * normalW[1] + rotMatrix[2][2] * normalW[2]
+        };
 
-        // Detectar cuando la flecha es paralela a la normal de la cara
-        double dot = dot(wArrow, normal);
+        // Detectar flecha paralela a la normal de la cara
+        double dot = dot(arrowLocal, normalLocal);
         if (Math.abs(dot) >= 1 - 1e-6) {
-            int axis;
-            boolean cw;
-            double ax = wArrow[0];
-            double ay = wArrow[1];
-            switch (face) {
-                case 3: // top
-                    axis = 0;
-                    cw = (ax != 0) ? ax < 0 : ay > 0;
-                    break;
-                case 2: // bottom
-                    axis = 0;
-                    cw = (ax != 0) ? ax > 0 : ay > 0;
-                    break;
-                case 4: // left
-                    axis = 1;
-                    cw = (ay != 0) ? ay > 0 : ax < 0;
-                    break;
-                case 5: // right
-                    axis = 1;
-                    cw = (ay != 0) ? ay < 0 : ax > 0;
-                    break;
-                case 0: // back
-                    axis = (ax != 0) ? 1 : 0;
-                    cw = (ax != 0) ? ax > 0 : ay < 0;
-                    break;
-                case 1: // front
-                default:
-                    axis = (ax != 0) ? 1 : 0;
-                    cw = (ax != 0) ? ax < 0 : ay > 0;
-                    break;
-            }
-            return new int[]{axis, cw ? 1 : 0};
+            int ori = orientationFromNormal(normalLocal);
+            int s = dot > 0 ? 0 : 1;
+            int[] m = PARALLEL_TABLE[ori][s];
+            return new int[]{m[0], m[1]};
         }
 
-        // Producto cruz para obtener el eje de rotación en el caso general
-        double[] axisVec = cross(normal, wArrow);
+        // Producto cruz en coordenadas locales para obtener el eje de rotación
+        double[] axisVec = cross(normalLocal, arrowLocal);
 
         int axis = 0;
         double maxComp = Math.abs(axisVec[0]);
@@ -511,14 +505,20 @@ public class Cubo extends JFrame {
                 maxComp = Math.abs(axisVec[i]);
             }
         }
-        double axisComp = axisVec[axis];
-        double faceNorm = normal[faceAxis];
-        boolean cw;
-        if (faceNorm > 0) {
-            cw = axisComp <= 0;
-        } else {
-            cw = axisComp < 0;
+
+        // Componente de la normal dominante para determinar sentido
+        int faceAxis = 0;
+        double max = Math.abs(normalLocal[0]);
+        for (int i = 1; i < 3; i++) {
+            if (Math.abs(normalLocal[i]) > max + 1e-6) {
+                faceAxis = i;
+                max = Math.abs(normalLocal[i]);
+            }
         }
+
+        double axisComp = axisVec[axis];
+        double faceNorm = normalLocal[faceAxis];
+        boolean cw = (faceNorm > 0) ? axisComp <= 0 : axisComp < 0;
         return new int[]{axis, cw ? 1 : 0};
     }
 
