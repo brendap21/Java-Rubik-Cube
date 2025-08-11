@@ -246,6 +246,21 @@ public class Subcubo {
     }
 
     /**
+     * Devuelve la normal de una cara transformada por las rotaciones globales
+     * del cubo.
+     *
+     * @param face    índice de la cara
+     * @param anguloX rotación global en X
+     * @param anguloY rotación global en Y
+     * @param anguloZ rotación global en Z
+     * @return vector normal transformado al espacio global
+     */
+    public double[] getFaceNormalGlobal(int face, double anguloX, double anguloY, double anguloZ) {
+        double[] world = getFaceNormalWorld(face);
+        return rotar(world, anguloX, anguloY, anguloZ);
+    }
+
+    /**
      * Dibuja el subcubo aplicando las transformaciones indicadas.
      */
     public void dibujar(Graficos g, double escala, double anguloX, double anguloY, double anguloZ,

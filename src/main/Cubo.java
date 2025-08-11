@@ -421,9 +421,8 @@ public class Cubo extends JFrame {
      * grupo de caras.</p>
      */
     private int[] getArrowRotation(double[] arrowVec, Subcubo sc, int face) {
-        double[] rArrow = rotateVector(arrowVec, -anguloX, -anguloY, -anguloZ);
-        double[] normal = normalize(sc.getFaceNormalWorld(face));
-        rArrow = normalize(rArrow);
+        double[] rArrow = normalize(arrowVec);
+        double[] normal = normalize(sc.getFaceNormalGlobal(face, anguloX, anguloY, anguloZ));
 
         // Eje dominante de la cara seleccionada
         int faceAxis = 0;
