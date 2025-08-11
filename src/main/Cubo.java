@@ -795,6 +795,20 @@ public class Cubo extends JFrame {
             for (int x = 0; x < 3; x++) {
                 for (int y = 0; y < 3; y++) {
                     for (int z = 0; z < 3; z++) {
+                        // Posición relativa al centro del cubo
+                        double posX = (x - 1) * size * escala;
+                        double posY = (y - 1) * size * escala;
+                        double posZ = (z - 1) * size * escala;
+
+                        // Aplicar rotaciones globales
+                        double[] rotatedPos = cuboRubik[x][y][z].rotar(
+                                new double[]{posX, posY, posZ}, anguloX, anguloY, anguloZ);
+
+                        // Traslación global
+                        int finalX = (int) (rotatedPos[0] + trasX);
+                        int finalY = (int) (rotatedPos[1] + trasY);
+                        int finalZ = (int) (rotatedPos[2] + trasZ);
+
                         boolean highlight = gameMode && x == selX && y == selY && z == selZ;
                         double tX = highlight ? selTX : 0;
                         double tY = highlight ? selTY : 0;
@@ -809,7 +823,7 @@ public class Cubo extends JFrame {
                         opt.idxY = y;
                         opt.idxZ = z;
                         cuboRubik[x][y][z].dibujar(graficos, 1.0, anguloX, anguloY, anguloZ,
-                                trasX, trasY, trasZ, lines, opt);
+                                finalX, finalY, finalZ, lines, opt);
                     }
                 }
             }
