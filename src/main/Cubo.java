@@ -593,7 +593,7 @@ public class Cubo extends JFrame {
             return;
         }
         animating = true;
-        int dir = clockwise ? -1 : 1;
+        int dir = clockwise ? 1 : -1;
         double offset = (layer - 1) * size * escala;
 
         final int[] ang = {0};
