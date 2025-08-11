@@ -463,7 +463,7 @@ public class Cubo extends JFrame {
                 if (vertical) {
                     cw = rArrow[1] > 0;
                 } else {
-                    cw = (rArrow[0] < 0) ^ (sign < 0);
+                    cw = (rArrow[0] > 0) ^ (sign < 0);
                 }
                 break;
         }
