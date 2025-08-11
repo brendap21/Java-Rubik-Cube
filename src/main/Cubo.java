@@ -428,7 +428,7 @@ public class Cubo extends JFrame {
         int faceAxis = 0;
         double max = Math.abs(normal[0]);
         for (int i = 1; i < 3; i++) {
-            if (Math.abs(normal[i]) > max) {
+            if (Math.abs(normal[i]) > max + 1e-6) {
                 faceAxis = i;
                 max = Math.abs(normal[i]);
             }
@@ -444,19 +444,51 @@ public class Cubo extends JFrame {
         // convertimos correctamente la dirección de la flecha al sistema de
         // coordenadas mundial del cubo.
         double[] wArrow = rotateVector(rArrow, -anguloX, -anguloY, -anguloZ);
-        // Producto cruz para obtener el eje de rotación
-        double[] axisVec = cross(normal, wArrow);
-        if (length(axisVec) < 1e-6) {
-            axisVec = cross(normal, new double[]{1, 0, 0});
-            if (length(axisVec) < 1e-6) {
-                axisVec = cross(normal, new double[]{0, 1, 0});
+
+        // Detectar cuando la flecha es paralela a la normal de la cara
+        double dot = dot(wArrow, normal);
+        if (Math.abs(dot) >= 1 - 1e-6) {
+            int axis;
+            boolean cw;
+            double ax = rArrow[0];
+            double ay = rArrow[1];
+            switch (face) {
+                case 3: // top
+                    axis = 0;
+                    cw = (ax != 0) ? ax < 0 : ay > 0;
+                    break;
+                case 2: // bottom
+                    axis = 0;
+                    cw = (ax != 0) ? ax > 0 : ay > 0;
+                    break;
+                case 4: // left
+                    axis = 1;
+                    cw = (ay != 0) ? ay > 0 : ax < 0;
+                    break;
+                case 5: // right
+                    axis = 1;
+                    cw = (ay != 0) ? ay < 0 : ax > 0;
+                    break;
+                case 0: // back
+                    axis = (ax != 0) ? 1 : 0;
+                    cw = (ax != 0) ? ax > 0 : ay < 0;
+                    break;
+                case 1: // front
+                default:
+                    axis = (ax != 0) ? 1 : 0;
+                    cw = (ax != 0) ? ax < 0 : ay > 0;
+                    break;
             }
+            return new int[]{axis, cw ? 1 : 0};
         }
+
+        // Producto cruz para obtener el eje de rotación en el caso general
+        double[] axisVec = cross(normal, wArrow);
 
         int axis = 0;
         double maxComp = Math.abs(axisVec[0]);
         for (int i = 1; i < 3; i++) {
-            if (Math.abs(axisVec[i]) > maxComp) {
+            if (Math.abs(axisVec[i]) > maxComp + 1e-6) {
                 axis = i;
                 maxComp = Math.abs(axisVec[i]);
             }
