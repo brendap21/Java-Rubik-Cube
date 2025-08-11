@@ -172,70 +172,88 @@ public class Cubo extends JFrame {
      * piezas que la componen.
      */
     private void rotateLayer(int axis, int layer, boolean clockwise) {
-        Subcubo[][][] nuevo = new Subcubo[3][3][3];
+        Subcubo[][] temp = new Subcubo[3][3];
 
-        // Copiar todas las piezas inicialmente
-        for (int x = 0; x < 3; x++) {
-            for (int y = 0; y < 3; y++) {
-                for (int z = 0; z < 3; z++) {
-                    nuevo[x][y][z] = cuboRubik[x][y][z];
-                }
-            }
-        }
-
-        // Aplicar la rotación a la capa indicada
-        for (int x = 0; x < 3; x++) {
-            for (int y = 0; y < 3; y++) {
-                for (int z = 0; z < 3; z++) {
-                    if ((axis == 0 && x == layer) ||
-                        (axis == 1 && y == layer) ||
-                        (axis == 2 && z == layer)) {
-
-                        int nx = x, ny = y, nz = z;
-
-                        switch (axis) {
-                            case 0: // X
-                                if (clockwise) {
-                                    ny = z;
-                                    nz = 2 - y;
-                                } else {
-                                    ny = 2 - z;
-                                    nz = y;
-                                }
-                                break;
-                            case 1: // Y
-                                if (clockwise) {
-                                    nx = 2 - z;
-                                    nz = x;
-                                } else {
-                                    nx = z;
-                                    nz = 2 - x;
-                                }
-                                break;
-                            case 2: // Z
-                                if (clockwise) {
-                                    nx = y;
-                                    ny = 2 - x;
-                                } else {
-                                    nx = 2 - y;
-                                    ny = x;
-                                }
-                                break;
-                        }
-
-                        Subcubo moved = cuboRubik[x][y][z];
-                        nuevo[nx][ny][nz] = moved;
-                        moved.x = nx;
-                        moved.y = ny;
-                        moved.z = nz;
-                        moved.rotateColors(axis, clockwise);
-                        moved.applyGlobalRotation(axis, clockwise);
+        switch (axis) {
+            case 0: // X axis, rotate in YZ plane
+                for (int y = 0; y < 3; y++) {
+                    for (int z = 0; z < 3; z++) {
+                        temp[y][z] = cuboRubik[layer][y][z];
                     }
                 }
-            }
+                for (int y = 0; y < 3; y++) {
+                    for (int z = 0; z < 3; z++) {
+                        int ny, nz;
+                        if (clockwise) {
+                            ny = z;
+                            nz = 2 - y;
+                        } else {
+                            ny = 2 - z;
+                            nz = y;
+                        }
+                        Subcubo sc = temp[y][z];
+                        cuboRubik[layer][ny][nz] = sc;
+                        sc.x = layer;
+                        sc.y = ny;
+                        sc.z = nz;
+                        sc.rotateColors(axis, clockwise);
+                        sc.applyGlobalRotation(axis, clockwise);
+                    }
+                }
+                break;
+            case 1: // Y axis, rotate in XZ plane
+                for (int x = 0; x < 3; x++) {
+                    for (int z = 0; z < 3; z++) {
+                        temp[x][z] = cuboRubik[x][layer][z];
+                    }
+                }
+                for (int x = 0; x < 3; x++) {
+                    for (int z = 0; z < 3; z++) {
+                        int nx, nz;
+                        if (clockwise) {
+                            nx = 2 - z;
+                            nz = x;
+                        } else {
+                            nx = z;
+                            nz = 2 - x;
+                        }
+                        Subcubo sc = temp[x][z];
+                        cuboRubik[nx][layer][nz] = sc;
+                        sc.x = nx;
+                        sc.y = layer;
+                        sc.z = nz;
+                        sc.rotateColors(axis, clockwise);
+                        sc.applyGlobalRotation(axis, clockwise);
+                    }
+                }
+                break;
+            case 2: // Z axis, rotate in XY plane
+                for (int x = 0; x < 3; x++) {
+                    for (int y = 0; y < 3; y++) {
+                        temp[x][y] = cuboRubik[x][y][layer];
+                    }
+                }
+                for (int x = 0; x < 3; x++) {
+                    for (int y = 0; y < 3; y++) {
+                        int nx, ny;
+                        if (clockwise) {
+                            nx = y;
+                            ny = 2 - x;
+                        } else {
+                            nx = 2 - y;
+                            ny = x;
+                        }
+                        Subcubo sc = temp[x][y];
+                        cuboRubik[nx][ny][layer] = sc;
+                        sc.x = nx;
+                        sc.y = ny;
+                        sc.z = layer;
+                        sc.rotateColors(axis, clockwise);
+                        sc.applyGlobalRotation(axis, clockwise);
+                    }
+                }
+                break;
         }
-
-        cuboRubik = nuevo;
     }
 
     /**
