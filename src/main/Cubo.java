@@ -450,8 +450,8 @@ public class Cubo extends JFrame {
         if (Math.abs(dot) >= 1 - 1e-6) {
             int axis;
             boolean cw;
-            double ax = rArrow[0];
-            double ay = rArrow[1];
+            double ax = wArrow[0];
+            double ay = wArrow[1];
             switch (face) {
                 case 3: // top
                     axis = 0;
