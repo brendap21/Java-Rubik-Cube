@@ -438,6 +438,37 @@ public class Subcubo {
     }
 
     /**
+     * Producto cruz entre dos vectores de 3 componentes.
+     */
+    private static double[] cross(double[] a, double[] b) {
+        return new double[]{
+            a[1] * b[2] - a[2] * b[1],
+            a[2] * b[0] - a[0] * b[2],
+            a[0] * b[1] - a[1] * b[0]
+        };
+    }
+
+    /**
+     * Producto punto entre dos vectores de 3 componentes.
+     */
+    private static double dot(double[] a, double[] b) {
+        return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    }
+
+    /**
+     * Normaliza un vector a longitud 1.
+     */
+    private static void normalize(double[] v) {
+        double len = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+        if (len == 0) {
+            return;
+        }
+        v[0] /= len;
+        v[1] /= len;
+        v[2] /= len;
+    }
+
+    /**
      * Normaliza la matriz de rotación acumulada {@link #rotMatrix} corrigiendo
      * pequeñas desviaciones numéricas para mantenerla en un estado discreto
      * (valores -1, 0 o 1). Esto evita la acumulación de errores tras muchas
@@ -459,9 +490,10 @@ public class Subcubo {
                 }
             }
         }
-        // Reconstruir a partir de estados discretos para garantizar
-        // ortogonalidad y evitar acumulación de errores.
-        double[][] rebuilt = new double[3][3];
+        // Reconstruir a partir de estados discretos garantizando una base
+        // ortonormal y con determinante 1. Seleccionamos el eje dominante de
+        // cada fila y usamos un producto cruz para obtener el tercer eje.
+        double[][] axes = new double[3][3];
         for (int i = 0; i < 3; i++) {
             int maxIdx = 0;
             for (int j = 1; j < 3; j++) {
@@ -470,9 +502,19 @@ public class Subcubo {
                 }
             }
             double sign = Math.signum(rotMatrix[i][maxIdx]);
-            rebuilt[i][maxIdx] = sign == 0 ? 1 : sign;
+            axes[i][maxIdx] = sign == 0 ? 1 : sign;
         }
-        rotMatrix = rebuilt;
+        double[] cross = cross(axes[0], axes[1]);
+        normalize(cross);
+        // Alinear el tercer eje con el signo originalmente detectado para la
+        // tercera fila
+        if (dot(cross, axes[2]) < 0) {
+            for (int i = 0; i < 3; i++) {
+                cross[i] = -cross[i];
+            }
+        }
+        axes[2] = cross;
+        rotMatrix = axes;
     }
 
     /**
