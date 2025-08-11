@@ -453,7 +453,14 @@ public class Cubo extends JFrame {
                 maxComp = Math.abs(axisVec[i]);
             }
         }
-        boolean cw = (axisVec[axis] * normal[faceAxis] > 0) ^ (normal[faceAxis] > 0);
+        double axisComp = axisVec[axis];
+        double faceNorm = normal[faceAxis];
+        boolean cw;
+        if (faceNorm > 0) {
+            cw = axisComp <= 0;
+        } else {
+            cw = axisComp < 0;
+        }
         return new int[]{axis, cw ? 1 : 0};
     }
 
