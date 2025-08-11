@@ -13,6 +13,8 @@ import main.RenderPanel;
 
 public class Cubo extends JFrame {
 
+    private static final double ROT_SENS = 1.0;
+
     /**
      * Contenedor de utilidades de dibujo.
      */
@@ -1231,8 +1233,8 @@ public class Cubo extends JFrame {
                 } else if ((e.getModifiersEx() & InputEvent.BUTTON3_DOWN_MASK) != 0) {
                     int dx = e.getX() - lastX, dy = e.getY() - lastY;
                     // --- ARRASTRE DERECHO: también invertido ---
-                    applyRotation(1, -dx / 2.0); // antes era += dx/2.0
-                    applyRotation(0, dy / 2.0);  // antes era -= dy/2.0
+                    applyRotation(1, -dx * ROT_SENS / 2.0); // antes era += dx/2.0
+                    applyRotation(0, dy * ROT_SENS / 2.0);  // antes era -= dy/2.0
                     lastX = e.getX();
                     lastY = e.getY();
                     moverCubo();
